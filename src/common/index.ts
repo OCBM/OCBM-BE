@@ -1,2 +1,2 @@
 export * from './constants';
-export * from './enum/enum';
+export * from './enum';
