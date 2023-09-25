@@ -18,13 +18,8 @@ export class AuthController {
       admin: {
         summary: "Admin User",
         description: "Default Admin User Credentials",
-        value: { username: "Admin", password: "Admin@123", role: Role.ADMIN } as LoginDto
-      },
-      user: {
-        summary: "General User",
-        description: "Default User Credentials",
-        value: { username: "User", password: "User@123", role: Role.USER } as LoginDto
-      },
+        value: { username: "abineshprabhakaran", password: "Abinesh@2023", role: Role.ADMIN } as LoginDto
+      }
     }
   })
   async login(@Body() loginData: LoginDto) {
