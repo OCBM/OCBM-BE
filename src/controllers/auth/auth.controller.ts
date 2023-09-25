@@ -8,7 +8,7 @@ import { Role } from '@/common';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('/login')
@@ -16,11 +16,15 @@ export class AuthController {
     type: LoginDto,
     examples: {
       admin: {
-        summary: "Admin User",
-        description: "Default Admin User Credentials",
-        value: { username: "abineshprabhakaran", password: "Abinesh@2023", role: Role.ADMIN } as LoginDto
-      }
-    }
+        summary: 'Admin User',
+        description: 'Default Admin User Credentials',
+        value: {
+          username: 'abineshprabhakaran',
+          password: 'Abinesh@2023',
+          role: Role.ADMIN,
+        } as LoginDto,
+      },
+    },
   })
   async login(@Body() loginData: LoginDto) {
     return this.authService.login(loginData);

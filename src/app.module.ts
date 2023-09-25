@@ -7,9 +7,10 @@ import { AuthModule } from './modules';
 import { AuthService, PrismaService, UserService } from './services';
 import { JwtStrategy } from './utils';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, PrismaModule],
   controllers: [AppController, AuthController, UserController],
   providers: [
     AppService,
@@ -20,8 +21,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     JwtStrategy,
     {
       provide: APP_INTERCEPTOR,
-      useClass: ClassSerializerInterceptor
-    }
+      useClass: ClassSerializerInterceptor,
+    },
   ],
 })
 export class AppModule {}

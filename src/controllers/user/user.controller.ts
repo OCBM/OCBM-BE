@@ -10,15 +10,12 @@ import {
   Req,
   ParseIntPipe,
   ParseEnumPipe,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
-import { PrismaValidation, Role, saltRounds } from '@/common';
-import { Public, Roles } from '@/decorator';
+import { Role, saltRounds } from '@/common';
+import { Roles } from '@/decorator';
 import { UserService } from '@/services';
 import {
   CreateUserDto,
@@ -111,9 +108,19 @@ export class UserController {
     @Param('role', new ParseEnumPipe(Role)) role: Role,
   ): Promise<UserResponseDto> {
     if (role === Role.ADMIN) {
-      return this.userService.updateAdmin(id, {...userData, ...(userData.password && {password: await bcrypt.hash(userData.password, saltRounds)})});
+      return this.userService.updateAdmin(id, {
+        ...userData,
+        ...(userData.password && {
+          password: await bcrypt.hash(userData.password, saltRounds),
+        }),
+      });
     } else if (role === Role.USER) {
-      return this.userService.updateUser(id, {...userData, ...(userData.password && {password: await bcrypt.hash(userData.password, saltRounds)})});
+      return this.userService.updateUser(id, {
+        ...userData,
+        ...(userData.password && {
+          password: await bcrypt.hash(userData.password, saltRounds),
+        }),
+      });
     }
   }
 

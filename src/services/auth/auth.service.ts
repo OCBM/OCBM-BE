@@ -1,36 +1,33 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-
 import { LoginDto } from '@/utils/dto';
-import { PrismaService } from '../prisma/prisma.service';
 import { jwtSecret } from '@/common';
+import { PrismaDynamicQueries } from '@/utils/dynamicQueries/PrismaDynamicQueries';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly prismaDynamic: PrismaDynamicQueries,
   ) {}
 
   async login(loginData: LoginDto) {
     const { username, password, role } = loginData;
     let user: any;
-    user = await this.prismaService.admin.findUnique({
+
+    user = await this.prismaDynamic['admin'].findUnique({
       where: { username, role },
     });
     if (!user) {
-      user = await this.prismaService.user.findUnique({
+      user = await this.prismaDynamic['user'].findUnique({
         where: { username, role },
       });
     }
     if (!user) {
       throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
     }
-    const isPasswordMatching = await bcrypt.compare(
-      password,
-      user.password,
-    );
+    const isPasswordMatching = await bcrypt.compare(password, user.password);
     if (!isPasswordMatching) {
       throw new HttpException(
         'Wrong credentials provided',
@@ -62,11 +59,11 @@ export class AuthService {
 
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
-      return this.prismaService.admin.findUnique({
+      return this.prismaDynamic['admin'].findUnique({
         where: { userid: payload.payload.userid },
       });
     } else if (payload.payload.role === 'USER') {
-      return this.prismaService.user.findUnique({
+      return this.prismaDynamic['user'].findUnique({
         where: { userid: payload.payload.userid },
       });
     }
