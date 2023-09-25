@@ -16,10 +16,10 @@ export class AuthService {
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ) {
     const user = await this.prisma.user.findUnique({
-      where: { username: loginData.username },
+      where: { username: loginData.username, role: loginData.role },
     });
     const admin = await this.prisma.admin.findUnique({
-      where: { username: loginData.username },
+      where: { username: loginData.username, role: loginData.role },
     });
     if (!user && !admin) {
       throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);

@@ -56,8 +56,6 @@ export class UserController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Get('/profile')
   async getOwnProfile(@Request() req) {

@@ -18,6 +18,11 @@ export class LoginDto {
   @IsNotEmpty()
   @ApiProperty()
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  role: string;
 }
 
 export class UserDto {
