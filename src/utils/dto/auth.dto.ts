@@ -4,8 +4,10 @@ import {
   IsNotEmpty,
   IsEmail,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@/common';
 
 export class LoginDto {
   @IsString()
@@ -22,6 +24,7 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @IsEnum(Role)
   role: string;
 }
 
@@ -54,6 +57,7 @@ export class UserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @IsEnum(Role)
   role: string;
 
   @IsString()
