@@ -91,18 +91,6 @@ export class UserController {
     }
   }
 
-  // @Public()
-  // @ApiBearerAuth('access-token')
-  // @Post('/create-admin')
-  // async createAdmin(@Body() userData: CreateUserDto): Promise<UserResponseDto> {
-  //   const saltOrRounds = 10;
-  //   const hashedPassword = await bcrypt.hash(userData.password, saltOrRounds);
-  //   return this.userService.createAdmin({
-  //     ...userData,
-  //     password: hashedPassword,
-  //   });
-  // }
-
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
@@ -123,9 +111,9 @@ export class UserController {
     @Param('role', new ParseEnumPipe(Role)) role: Role,
   ): Promise<UserResponseDto> {
     if (role === Role.ADMIN) {
-      return this.userService.updateAdmin(id, userData);
+      return this.userService.updateAdmin(id, {...userData, ...(userData.password && {password: await bcrypt.hash(userData.password, saltRounds)})});
     } else if (role === Role.USER) {
-      return this.userService.updateUser(id, userData);
+      return this.userService.updateUser(id, {...userData, ...(userData.password && {password: await bcrypt.hash(userData.password, saltRounds)})});
     }
   }
 

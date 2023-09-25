@@ -4,9 +4,11 @@ import {
   MinLength,
   IsEmail,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
+import { Role } from '@/common';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -37,6 +39,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @IsEnum(Role)
   role: string;
 
   @ApiProperty()
@@ -66,6 +69,12 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @IsOptional()
   position?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  password?: string;
 }
 
 export class UserDto {

@@ -136,7 +136,7 @@ export class UserService {
         data,
       });
       return new UserResponseDto({
-        statusCode: HttpStatus.ACCEPTED,
+        statusCode: HttpStatus.OK,
         message: new UserDto(updatedData),
       });
     } catch (error) {
@@ -168,7 +168,7 @@ export class UserService {
         data,
       });
       return new UserResponseDto({
-        statusCode: HttpStatus.ACCEPTED,
+        statusCode: HttpStatus.OK,
         message: new UserDto(updatedData),
       });
     } catch (error) {
@@ -198,6 +198,7 @@ export class UserService {
 
       return {
         statusCode: HttpStatus.OK,
+        message: "User deleted successfully"
       };
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
@@ -226,6 +227,7 @@ export class UserService {
 
       return {
         statusCode: HttpStatus.OK,
+        message: "User deleted successfully"
       };
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
