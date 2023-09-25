@@ -1,24 +1,33 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
-import { Public } from 'src/decorator';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Public } from '@/decorator';
 import { AuthService } from '@/services';
-import { LoginDto } from '@/utils';
+import { LoginDto } from '@/utils/dto';
+import { Role } from '@/common';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
+
   @Public()
-  @Post('login')
-  async login(
-    @Body() loginData: LoginDto,
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ) {
-    const result = await this.authService.login(
-      loginData,
-      userWhereUniqueInput,
-    );
-    return result;
+  @Post('/login')
+  @ApiBody({
+    type: LoginDto,
+    examples: {
+      admin: {
+        summary: "Admin User",
+        description: "Default Admin User Credentials",
+        value: { username: "Admin", password: "Admin@123", role: Role.ADMIN } as LoginDto
+      },
+      user: {
+        summary: "General User",
+        description: "Default User Credentials",
+        value: { username: "User", password: "User@123", role: Role.USER } as LoginDto
+      },
+    }
+  })
+  async login(@Body() loginData: LoginDto) {
+    return this.authService.login(loginData);
   }
 }

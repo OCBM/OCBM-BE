@@ -1,68 +1,72 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { LoginDto } from 'src/utils/dto/auth.dto';
-import { Prisma } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+
+import { LoginDto } from '@/utils/dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { jwtSecret } from '@/common';
+
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
   ) {}
-  async login(
-    loginData: LoginDto,
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ) {
-    const user = await this.prisma.user.findUnique({
-      where: { username: loginData.username, role: loginData.role },
+
+  async login(loginData: LoginDto) {
+    const { username, password, role } = loginData;
+    let user: any;
+    user = await this.prismaService.admin.findUnique({
+      where: { username, role },
     });
-    const admin = await this.prisma.admin.findUnique({
-      where: { username: loginData.username, role: loginData.role },
-    });
-    if (!user && !admin) {
+    if (!user) {
+      user = await this.prismaService.user.findUnique({
+        where: { username, role },
+      });
+    }
+    if (!user) {
       throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
     }
     const isPasswordMatching = await bcrypt.compare(
-      loginData.password,
-      !admin ? user.password : admin.password,
+      password,
+      user.password,
     );
-
     if (!isPasswordMatching) {
       throw new HttpException(
         'Wrong credentials provided',
         HttpStatus.BAD_REQUEST,
       );
     }
-    !admin ? (user.password = undefined) : (admin.password = undefined);
+
     const payload = {
-      userid: !admin ? user.userid : admin.userid,
-      username: !admin ? user.username : admin.username,
-      email: !admin ? user.email : admin.email,
-      sub: !admin ? user.userid : admin.userid,
+      userid: user.userid,
+      username: user.username,
+      email: user.email,
+      sub: user.userid,
       clientId: 'Omnex',
-      role: !admin ? user.role : admin.role,
+      role: user.role,
     };
+
     const token = this.jwtService.sign({ payload }, { privateKey: jwtSecret });
     return {
       statusCode: HttpStatus.OK,
       message: {
-        userid: !admin ? user.userid : admin.userid,
-        username: !admin ? user.username : admin.username,
-        email: !admin ? user.email : admin.email,
-        role: !admin ? user.role : admin.role,
+        userid: user.userid,
+        username: user.username,
+        email: user.email,
+        role: user.role,
         accessToken: token,
       },
     };
   }
+
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
-      return this.prisma.admin.findUnique({
+      return this.prismaService.admin.findUnique({
         where: { userid: payload.payload.userid },
       });
     } else if (payload.payload.role === 'USER') {
-      return this.prisma.user.findUnique({
+      return this.prismaService.user.findUnique({
         where: { userid: payload.payload.userid },
       });
     }

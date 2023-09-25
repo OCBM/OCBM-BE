@@ -1,0 +1,114 @@
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  IsEmail,
+  IsOptional,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude, Type } from 'class-transformer';
+
+export class CreateUserDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  username: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  employeeid: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  position: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  role: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  password: string;
+
+  @ApiProperty()
+  @IsOptional()
+  createdAt?: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  updatedAt?: Date;
+}
+
+export class UpdateUserDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  name?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  position?: string;
+}
+
+export class UserDto {
+  username: string;
+
+  name: string;
+
+  email: string;
+
+  employeeid: string;
+
+  position: string;
+
+  @Exclude()
+  password: string;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
+
+  constructor(partial: Partial<UserDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class UserResponseDto {
+  statusCode: number;
+
+  @Type(() => UserDto)
+  message: UserDto;
+
+  constructor(partial: Partial<UserResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class UsersResponseDto {
+  statusCode: number;
+
+  @Type(() => UserDto)
+  message: UserDto[];
+
+  constructor(partial: Partial<UserResponseDto>) {
+    Object.assign(this, partial);
+  }
+}

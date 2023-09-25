@@ -20,8 +20,14 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-  app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   await app.listen(4000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

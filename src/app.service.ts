@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getRoot(): string {
+  status(): string {
     return 'Omnex API is running';
   }
 }
