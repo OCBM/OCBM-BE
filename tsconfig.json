@@ -18,11 +18,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "controller/*": ["src/controller/*"],
-      "services/*": ["src/services/*"],
-      "modules/*": ["src/modules/*"],
-      "utils/*": ["src/utils/*"],
-      "common/*": ["src/common/*"],
       "@/*": ["./src/*"]
     }
   }
