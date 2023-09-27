@@ -3,24 +3,27 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '@/utils/dto';
 import { jwtSecret } from '@/common';
-import { PrismaDynamicQueries } from '@/utils/dynamicQueries/PrismaDynamicQueries';
+import { PrismaService } from '../prisma/prisma.service';
+
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prismaDynamic: PrismaDynamicQueries,
+    private readonly prismaDynamic: PrismaService,
   ) {}
 
   async login(loginData: LoginDto) {
     const { username, password, role } = loginData;
     let user: any;
 
-    user = await this.prismaDynamic['admin'].findUnique({
+    user = await this.prismaDynamic.findUnique('admin',{
       where: { username, role },
     });
+   
     if (!user) {
-      user = await this.prismaDynamic['user'].findUnique({
+      user = await this.prismaDynamic.findUnique('user',{
         where: { username, role },
       });
     }
@@ -59,11 +62,11 @@ export class AuthService {
 
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
-      return this.prismaDynamic['admin'].findUnique({
+      return this.prismaDynamic.findUnique('admin',{
         where: { userid: payload.payload.userid },
       });
     } else if (payload.payload.role === 'USER') {
-      return this.prismaDynamic['user'].findUnique({
+      return this.prismaDynamic.findUnique('user',{
         where: { userid: payload.payload.userid },
       });
     }

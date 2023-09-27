@@ -8,20 +8,20 @@ import {
   UsersResponseDto,
 } from '@/utils';
 import { Prisma } from '@prisma/client';
-import { PrismaDynamicQueries } from '@/utils/dynamicQueries/PrismaDynamicQueries';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaDynamic: PrismaDynamicQueries) {}
+  constructor(private readonly prismaDynamic: PrismaService) {}
 
   async getOwnProfile(user: TokenType): Promise<UserResponseDto> {
     let userDetails: any;
     if (user.role === Role.ADMIN) {
-      userDetails = await this.prismaDynamic['admin'].findUnique({
+      userDetails = await this.prismaDynamic.findUnique('admin',{
         where: { userid: user.userid },
       });
     } else if (user.role === Role.USER) {
-      userDetails = await this.prismaDynamic['user'].findUnique({
+      userDetails = await this.prismaDynamic.findUnique('user',{
         where: { userid: user.userid },
       });
     }
@@ -39,9 +39,9 @@ export class UserService {
   async getAllUsers(role: Role): Promise<UsersResponseDto> {
     let users: any;
     if (role === Role.ADMIN) {
-      users = await this.prismaDynamic['admin'].findMany({});
+      users = await this.prismaDynamic.findMany('admin',{});
     } else if (role === Role.USER) {
-      users = await this.prismaDynamic['user'].findMany({});
+      users = await this.prismaDynamic.findMany('user',{});
     } else if (role === Role.SUPERADMIN) {
       throw new HttpException(
         'Super Admin not supported',
@@ -57,11 +57,11 @@ export class UserService {
   async getUserById(userid: number, role: Role): Promise<UserResponseDto> {
     let user: any;
     if (role === Role.ADMIN) {
-      user = await this.prismaDynamic['admin'].findUnique({
+      user = await this.prismaDynamic.findUnique('admin',{
         where: { userid },
       });
     } else if (role === Role.USER) {
-      user = await this.prismaDynamic['user'].findUnique({
+      user = await this.prismaDynamic.findUnique('user',{
         where: { userid },
       });
     }
@@ -79,9 +79,7 @@ export class UserService {
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
     try {
-      const user = await this.prismaDynamic['user'].create({
-        data,
-      });
+      const user = await this.prismaDynamic.create('user',data);
       return {
         statusCode: HttpStatus.CREATED,
         message: new UserDto(user),
@@ -99,9 +97,7 @@ export class UserService {
 
   async createAdmin(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
     try {
-      const user = await this.prismaDynamic['admin'].create({
-        data,
-      });
+      const user = await this.prismaDynamic.create('admin',data);
       return {
         statusCode: HttpStatus.CREATED,
         message: new UserDto(user),
@@ -122,7 +118,7 @@ export class UserService {
     data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
-      const user: any = await this.prismaDynamic['admin'].findUnique({
+      const user: any = await this.prismaDynamic.findUnique('admin',{
         where: { userid },
       });
 
@@ -130,10 +126,7 @@ export class UserService {
         throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
       }
 
-      const updatedData = await this.prismaDynamic['admin'].update({
-        where: { userid },
-        data,
-      });
+      const updatedData = await this.prismaDynamic.update('admin',{where: {userid},data });
       return new UserResponseDto({
         statusCode: HttpStatus.OK,
         message: new UserDto(updatedData),
@@ -154,7 +147,7 @@ export class UserService {
     data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
-      const user: any = await this.prismaDynamic['user'].findUnique({
+      const user: any = await this.prismaDynamic.findUnique('user',{
         where: { userid },
       });
 
@@ -162,9 +155,9 @@ export class UserService {
         throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
       }
 
-      const updatedData = await this.prismaDynamic['user'].update({
+      const updatedData = await this.prismaDynamic.update('user',{
         where: { userid },
-        data,
+        data
       });
       return new UserResponseDto({
         statusCode: HttpStatus.OK,
@@ -183,7 +176,7 @@ export class UserService {
 
   async deleteAdmin(userid: number) {
     try {
-      const user: any = await this.prismaDynamic['admin'].findUnique({
+      const user: any = await this.prismaDynamic.findUnique('admin',{
         where: { userid },
       });
 
@@ -191,7 +184,7 @@ export class UserService {
         throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
       }
 
-      await this.prismaDynamic['admin'].delete({
+      await this.prismaDynamic.delete('admin',{
         where: { userid },
       });
 
@@ -212,7 +205,7 @@ export class UserService {
 
   async deleteUser(userid: number) {
     try {
-      const user: any = await this.prismaDynamic['user'].findUnique({
+      const user: any = await this.prismaDynamic.findUnique('user',{
         where: { userid },
       });
 
@@ -220,7 +213,7 @@ export class UserService {
         throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
       }
 
-      await this.prismaDynamic['user'].delete({
+      await this.prismaDynamic.delete('user',{
         where: { userid },
       });
 
