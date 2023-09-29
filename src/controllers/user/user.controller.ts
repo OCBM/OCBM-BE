@@ -8,8 +8,9 @@ import {
   Param,
   UseGuards,
   Req,
-  ParseIntPipe,
-  ParseEnumPipe,
+  HttpException,
+  HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
@@ -53,99 +54,71 @@ export class UserController {
     name: 'id',
     required: true,
   })
-  @ApiParam({
-    name: 'role',
-    enum: Role,
-    required: true,
-  })
-  @IsEnum(Role)
-  @Get('/:id/role=:role')
+  @Get('/:id')
   async getUserById(
-    @Param('id', ParseIntPipe) id: number,
-    @Param('role', new ParseEnumPipe(Role)) role: Role,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
-    return this.userService.getUserById(id, role);
+    return this.userService.getUserById(id);
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)  
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/create')
-  async createUser(@Body() userData: CreateUserDto): Promise<UserResponseDto> {
+  async createUser(@Body() userData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-    if (userData.role === Role.ADMIN) {
-      const result = await this.userService.createAdmin({
-        ...userData,
-        password: hashedPassword,
-      });
-      return result;
-    } else if (userData.role === Role.USER) {
-      const result = await this.userService.createUser({
-        ...userData,
-        password: hashedPassword,
-      });
-      return result;
+    const isUserExits = await this.userService.CheckUsername({
+      username: userData.username,
+    });
+
+    if (isUserExits) {
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    } else {
+      if (userData.role === Role.ADMIN) {
+        const result = await this.userService.createAdmin({
+          ...userData,
+          password: hashedPassword,
+        });
+        return result;
+      } else if (userData.role === Role.USER) {
+        const result = await this.userService.createUser({
+          ...userData,
+          password: hashedPassword,
+        });
+        return result;
+      }
     }
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @IsEnum(Role)
-  @ApiParam({
-    name: 'role',
-    required: true,
-    enum: Role,
-  })
   @ApiParam({
     name: 'id',
     required: true,
   })
-  @Put('/:id/role=:role')
+  @Put('/:id')
   async updateUser(
     @Body() userData: UpdateUserDto,
-    @Param('id', ParseIntPipe) id: number,
-    @Param('role', new ParseEnumPipe(Role)) role: Role,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
-    if (role === Role.ADMIN) {
-      return this.userService.updateAdmin(id, {
-        ...userData,
-        ...(userData.password && {
-          password: await bcrypt.hash(userData.password, saltRounds),
-        }),
-      });
-    } else if (role === Role.USER) {
-      return this.userService.updateUser(id, {
-        ...userData,
-        ...(userData.password && {
-          password: await bcrypt.hash(userData.password, saltRounds),
-        }),
-      });
-    }
+    return this.userService.updateUser(id, {
+      ...userData,
+      ...(userData.password && {
+        password: await bcrypt.hash(userData.password, saltRounds),
+      }),
+    });
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:id/role=:role')
+  @Delete('/:id')
   @ApiParam({
     name: 'id',
     required: true,
   })
-  @IsEnum(Role)
-  @ApiParam({
-    name: 'role',
-    required: true,
-    enum: Role,
-  })
-  async deleteUser(
-    @Param('id', ParseIntPipe) id: number,
-    @Param('role') role: Role,
-  ) {
-    if (role === Role.ADMIN) {
-      return this.userService.deleteAdmin(id);
-    } else if (role === Role.USER) {
-      return this.userService.deleteUser(id);
-    }
+  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
+    return this.userService.deleteUser(id);
   }
 }

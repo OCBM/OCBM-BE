@@ -1,4 +1,8 @@
-import { Injectable, OnModuleInit,InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
@@ -10,7 +14,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async enableShutdownHooks() {
     await this.$disconnect();
   }
-
 
   //dynamic queries
   async create(tablename: string, data: object) {
@@ -33,7 +36,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 
   async update(tablename: string, queryandData: object) {
-   
     try {
       return await this[tablename].update(queryandData);
     } catch (error: any) {
@@ -85,7 +87,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       throw new InternalServerErrorException(error);
     }
   }
-
 }
 
 // @Injectable()

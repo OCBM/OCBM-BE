@@ -10,7 +10,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule } from './modules/prisma/prisma.module';
 
 @Module({
-  imports: [AuthModule,PrismaModule],
+  imports: [AuthModule, PrismaModule],
   controllers: [AppController, AuthController, UserController],
   providers: [
     PrismaService,

@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Admin {
-  userid     Int       @id @default(autoincrement())
+  userid     String    @id @default(uuid()) @db.Uuid
   username   String    @unique
   employeeid String    @unique
   name       String?
@@ -24,7 +24,7 @@ model Admin {
 }
 
 model User {
-  userid     Int       @id @default(autoincrement())
+  userid     String    @id @default(uuid()) @db.Uuid
   username   String    @unique
   employeeid String    @unique
   name       String?

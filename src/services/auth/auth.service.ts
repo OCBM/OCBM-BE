@@ -5,8 +5,6 @@ import { LoginDto } from '@/utils/dto';
 import { jwtSecret } from '@/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -15,18 +13,19 @@ export class AuthService {
   ) {}
 
   async login(loginData: LoginDto) {
-    const { username, password, role } = loginData;
+    const { username, password } = loginData;
     let user: any;
 
-    user = await this.prismaDynamic.findUnique('admin',{
-      where: { username, role },
+    user = await this.prismaDynamic.findUnique('admin', {
+      where: { username },
     });
-   
+
     if (!user) {
-      user = await this.prismaDynamic.findUnique('user',{
-        where: { username, role },
+      user = await this.prismaDynamic.findUnique('user', {
+        where: { username },
       });
     }
+
     if (!user) {
       throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
     }
@@ -62,11 +61,11 @@ export class AuthService {
 
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
-      return this.prismaDynamic.findUnique('admin',{
+      return this.prismaDynamic.findUnique('admin', {
         where: { userid: payload.payload.userid },
       });
     } else if (payload.payload.role === 'USER') {
-      return this.prismaDynamic.findUnique('user',{
+      return this.prismaDynamic.findUnique('user', {
         where: { userid: payload.payload.userid },
       });
     }

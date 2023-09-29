@@ -3,7 +3,6 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/decorator';
 import { AuthService } from '@/services';
 import { LoginDto } from '@/utils/dto';
-import { Role } from '@/common';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -21,7 +20,6 @@ export class AuthController {
         value: {
           username: 'abineshprabhakaran',
           password: 'Abinesh@2023',
-          role: Role.ADMIN,
         } as LoginDto,
       },
     },
