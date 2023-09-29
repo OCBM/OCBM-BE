@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { GROUP_PERMISSIONS } from '@/common/enum';
-import { GROUP_PERMISSIONS_KEY } from '@/common';
+import { GROUP_PERMISSIONS } from '@/common';
+import { DECORATOR_KEYS } from '@/common';
 
 @Injectable()
 export class GroupsGuard implements CanActivate {
@@ -10,7 +10,10 @@ export class GroupsGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const requiredPermissions = this.reflector.getAllAndOverride<
       GROUP_PERMISSIONS[]
-    >(GROUP_PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
+    >(DECORATOR_KEYS.groupPermission, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     if (!requiredPermissions) {
       return true;
     }
