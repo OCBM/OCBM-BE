@@ -2,7 +2,7 @@ import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '@/utils/dto';
-import { jwtSecret } from '@/common';
+import { TOKEN_SECRET } from '@/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -46,7 +46,10 @@ export class AuthService {
       role: user.role,
     };
 
-    const token = this.jwtService.sign({ payload }, { privateKey: jwtSecret });
+    const token = this.jwtService.sign(
+      { payload },
+      { privateKey: TOKEN_SECRET.accessToken },
+    );
     return {
       statusCode: HttpStatus.OK,
       message: {

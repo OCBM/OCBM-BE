@@ -6,7 +6,6 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   Req,
   HttpException,
   HttpStatus,
@@ -15,12 +14,11 @@ import {
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
-import { Role, saltRounds } from '@/common';
+import { Role, BCRYPT_SALT_ROUNDS } from '@/common';
 import { Roles } from '@/decorator';
 import { UserService } from '@/services';
 import {
   CreateUserDto,
-  RolesGuard,
   UpdateUserDto,
   UserResponseDto,
   UsersResponseDto,
@@ -62,11 +60,13 @@ export class UserController {
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/create')
   async createUser(@Body() userData: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(
+      userData.password,
+      BCRYPT_SALT_ROUNDS,
+    );
     const isUserExits = await this.userService.CheckUsername({
       username: userData.username,
     });
@@ -91,7 +91,6 @@ export class UserController {
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'id',
@@ -105,13 +104,12 @@ export class UserController {
     return this.userService.updateUser(id, {
       ...userData,
       ...(userData.password && {
-        password: await bcrypt.hash(userData.password, saltRounds),
+        password: await bcrypt.hash(userData.password, BCRYPT_SALT_ROUNDS),
       }),
     });
   }
 
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/:id')
   @ApiParam({
