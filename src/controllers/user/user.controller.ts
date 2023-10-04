@@ -11,7 +11,7 @@ import {
   HttpStatus,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
 import { Role, BCRYPT_SALT_ROUNDS } from '@/common';
@@ -61,6 +61,34 @@ export class UserController {
 
   @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      admin: {
+        summary: 'Create User demo',
+        value: {
+          username: 'abinesh',
+          name: 'Abinesh Prabhakaran',
+          email: 'abinesh@gmail.com',
+          employeeid: 'FEC123',
+          position: 'Software Engineer',
+          role: 'USER',
+          groups: {
+            connect: [{ id: 1 }],
+          },
+          plants: {
+            connect: [{ plantid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dde6d' }],
+          },
+          organization: {
+            connect: [
+              { organizationid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+            ],
+          },
+          password: 'Abinesh@2023',
+        } as CreateUserDto,
+      },
+    },
+  })
   @Post('/create')
   async createUser(@Body() userData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(

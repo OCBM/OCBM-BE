@@ -22,6 +22,8 @@ export class UserService {
         where: { userid: user.userid },
         include: {
           groups: true,
+          organization: true,
+          plants: true,
         },
       });
     } else if (user.role === Role.USER) {
@@ -46,12 +48,16 @@ export class UserService {
       users = await this.prismaDynamic.findMany('admin', {
         include: {
           groups: true,
+          organization: true,
+          plants: true,
         },
       });
     } else if (role === Role.USER) {
       users = await this.prismaDynamic.findMany('user', {
         include: {
           groups: true,
+          organizations: true,
+          plants: true,
         },
       });
     } else if (role === Role.SUPERADMIN) {
@@ -73,6 +79,8 @@ export class UserService {
       where: { userid },
       include: {
         groups: true,
+        organization: true,
+        plants: true,
       },
     });
     if (!user) {
@@ -80,6 +88,8 @@ export class UserService {
         where: { userid },
         include: {
           groups: true,
+          organization: true,
+          plants: true,
         },
       });
     }
@@ -125,6 +135,7 @@ export class UserService {
         message: new UserDto(user),
       };
     } catch (error) {
+      console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
       }

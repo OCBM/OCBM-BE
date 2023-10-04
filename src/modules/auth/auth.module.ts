@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TOKEN_EXPIRY, TOKEN_SECRET } from '@/common';
-import { AuthController, UserController } from '@/controllers';
-import { AuthService, UserService } from '@/services';
+import { AuthController, PlantController, UserController } from '@/controllers';
+import { AuthService, UserService, PlantService } from '@/services';
 import { APP_GUARD } from '@nestjs/core';
 import { GroupsGuard, JwtAuthGuard, RolesGuard } from '@/utils';
 
@@ -16,10 +16,11 @@ import { GroupsGuard, JwtAuthGuard, RolesGuard } from '@/utils';
       signOptions: { expiresIn: TOKEN_EXPIRY.accessToken },
     }),
   ],
-  controllers: [AuthController, UserController],
+  controllers: [AuthController, UserController, PlantController],
   providers: [
     AuthService,
     UserService,
+    PlantService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

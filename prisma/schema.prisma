@@ -11,31 +11,35 @@ datasource db {
 }
 
 model Admin {
-  userid     String    @id @default(uuid()) @db.Uuid
-  username   String    @unique
-  employeeid String    @unique
-  name       String?
-  position   String?
-  role       String?
-  password   String?
-  email      String    @unique
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
-  groups     Group[]   @relation("AdminToGroup")
+  userid       String         @id @default(uuid()) @db.Uuid
+  username     String         @unique
+  employeeid   String         @unique
+  name         String?
+  position     String?
+  role         String?
+  password     String?
+  email        String         @unique
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @updatedAt
+  groups       Group[]        @relation("AdminToGroup")
+  plants       Plant[]        @relation("AdminToPlant")
+  organization Organization[] @relation("AdminToOrganization")
 }
 
 model User {
-  userid     String    @id @default(uuid()) @db.Uuid
-  username   String    @unique
-  employeeid String    @unique
-  name       String?
-  position   String?
-  role       String?
-  password   String?
-  email      String    @unique
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
-  groups     Group[]   @relation("UserToGroup")
+  userid       String         @id @default(uuid()) @db.Uuid
+  username     String         @unique
+  employeeid   String         @unique
+  name         String?
+  position     String?
+  role         String?
+  password     String?
+  email        String         @unique
+  createdAt    DateTime?      @default(now())
+  updatedAt    DateTime?      @updatedAt
+  groups       Group[]        @relation("UserToGroup")
+  plants       Plant[]        @relation("UserToPlant")
+  organization Organization[] @relation("UserToOrganization")
 }
 
 model Group {
@@ -47,4 +51,23 @@ model Group {
   admins      Admin[]  @relation("AdminToGroup")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Plant {
+  plantid     String    @id @default(uuid()) @db.Uuid
+  plantname   String
+  description String
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  users       User[]    @relation("UserToPlant")
+  admins      Admin[]   @relation("AdminToPlant")
+}
+
+model Organization {
+  organizationid   String    @id @default(uuid()) @db.Uuid
+  organizationname String
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime? @updatedAt
+  users            User[]    @relation("UserToOrganization")
+  admins           Admin[]   @relation("AdminToOrganization")
 }

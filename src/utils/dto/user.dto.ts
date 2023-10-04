@@ -47,6 +47,14 @@ export class CreateUserDto {
   @ApiProperty()
   groups: any;
 
+  @IsNotEmpty()
+  @ApiProperty()
+  plants: any;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  organization: any;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
