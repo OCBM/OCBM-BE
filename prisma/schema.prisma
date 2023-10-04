@@ -21,6 +21,7 @@ model Admin {
   email      String    @unique
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
+  groups     Group[]   @relation("AdminToGroup")
 }
 
 model User {
@@ -34,15 +35,16 @@ model User {
   email      String    @unique
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
-  groups     Group[]  @relation("UserToGroup")
+  groups     Group[]   @relation("UserToGroup")
 }
 
 model Group {
   id          Int      @id @default(autoincrement())
-  groupname  String
+  groupname   String
   role        String
-  permissions String[] 
+  permissions String[]
   users       User[]   @relation("UserToGroup")
+  admins      Admin[]  @relation("AdminToGroup")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

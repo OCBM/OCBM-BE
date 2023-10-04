@@ -20,6 +20,9 @@ export class UserService {
     if (user.role === Role.ADMIN) {
       userDetails = await this.prismaDynamic.findUnique('admin', {
         where: { userid: user.userid },
+        include: {
+          groups: true,
+        },
       });
     } else if (user.role === Role.USER) {
       userDetails = await this.prismaDynamic.findUnique('user', {
@@ -40,9 +43,17 @@ export class UserService {
   async getAllUsers(role: Role): Promise<UsersResponseDto> {
     let users: UserData[];
     if (role === Role.ADMIN) {
-      users = await this.prismaDynamic.findMany('admin', {});
+      users = await this.prismaDynamic.findMany('admin', {
+        include: {
+          groups: true,
+        },
+      });
     } else if (role === Role.USER) {
-      users = await this.prismaDynamic.findMany('user', {});
+      users = await this.prismaDynamic.findMany('user', {
+        include: {
+          groups: true,
+        },
+      });
     } else if (role === Role.SUPERADMIN) {
       throw new HttpException(
         'Super Admin not supported',
@@ -60,10 +71,16 @@ export class UserService {
 
     user = await this.prismaDynamic.findUnique('admin', {
       where: { userid },
+      include: {
+        groups: true,
+      },
     });
     if (!user) {
       user = await this.prismaDynamic.findUnique('user', {
         where: { userid },
+        include: {
+          groups: true,
+        },
       });
     }
     if (!user) {

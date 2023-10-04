@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsOptional,
   IsEnum,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
@@ -41,6 +42,10 @@ export class CreateUserDto {
   @ApiProperty()
   @IsEnum(Role)
   role: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  groups: any;
 
   @ApiProperty()
   @IsString()
