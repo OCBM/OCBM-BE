@@ -39,11 +39,6 @@ export class UpdateOrganizationDto {
   @IsNotEmpty()
   @IsOptional()
   organizationname?: string;
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  description?: string;
 }
 
 export class OrganizationResponseDto {
