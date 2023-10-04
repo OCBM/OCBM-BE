@@ -9,13 +9,14 @@ import {
 } from '@/utils';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserData } from '@/common';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
   async getOwnProfile(user: TokenType): Promise<UserResponseDto> {
-    let userDetails: any;
+    let userDetails: UserData;
     if (user.role === Role.ADMIN) {
       userDetails = await this.prismaDynamic.findUnique('admin', {
         where: { userid: user.userid },
@@ -37,7 +38,7 @@ export class UserService {
   }
 
   async getAllUsers(role: Role): Promise<UsersResponseDto> {
-    let users: any;
+    let users: UserData[];
     if (role === Role.ADMIN) {
       users = await this.prismaDynamic.findMany('admin', {});
     } else if (role === Role.USER) {
@@ -50,12 +51,12 @@ export class UserService {
     }
     return {
       statusCode: HttpStatus.OK,
-      message: users.map((user: any) => new UserDto(user)),
+      message: users.map((user: UserData) => new UserDto(user)),
     };
   }
 
   async getUserById(userid: string): Promise<UserResponseDto> {
-    let user: any;
+    let user: UserData;
 
     user = await this.prismaDynamic.findUnique('admin', {
       where: { userid },
@@ -78,7 +79,7 @@ export class UserService {
   async createSuperAdmin() {}
 
   async CheckUsername(data: any) {
-    let user: any;
+    let user: UserData;
     const username = data.username;
 
     try {
@@ -140,7 +141,7 @@ export class UserService {
     data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
-      let user: any;
+      let user: UserData;
 
       user = await this.prismaDynamic.findUnique('user', {
         where: { userid },
@@ -182,7 +183,7 @@ export class UserService {
 
   async deleteUser(userid: string) {
     try {
-      let user: any;
+      let user: UserData;
 
       user = await this.prismaDynamic.findUnique('user', {
         where: { userid },
