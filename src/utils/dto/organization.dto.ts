@@ -13,11 +13,6 @@ export class OrganizationDto {
   @IsNotEmpty()
   organizationname: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  description: string;
-
   @IsOptional()
   createdAt?: Date;
 
@@ -30,11 +25,6 @@ export class CreateOrganizationDto {
   @IsString()
   @IsNotEmpty()
   organizationname: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  description: string;
 
   @IsOptional()
   createdAt?: Date;

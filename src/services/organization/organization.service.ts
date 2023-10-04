@@ -21,6 +21,7 @@ export class OrganizationService {
         message: organization,
       };
     } catch (error) {
+      console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           'Organization already exists',
@@ -60,7 +61,7 @@ export class OrganizationService {
     let organization: any;
     try {
       organization = await this.prismaDynamic.findUnique('organization', {
-        where: { organization },
+        where: { organizationid },
       });
     } catch {
       throw new HttpException(
