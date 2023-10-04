@@ -34,4 +34,15 @@ model User {
   email      String    @unique
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
+  groups     Group[]  @relation("UserToGroup")
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  groupname  String
+  role        String
+  permissions String[] 
+  users       User[]   @relation("UserToGroup")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
