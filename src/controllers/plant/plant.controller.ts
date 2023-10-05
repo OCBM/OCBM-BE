@@ -27,7 +27,7 @@ export class PlantController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Post('/create')
+  @Post('/')
   async createPlant(@Body() plantData: CreatePlantDto) {
     const result = await this.plantService.createPlant({
       ...plantData,
@@ -35,7 +35,7 @@ export class PlantController {
     return result;
   }
   @ApiBearerAuth('access-token')
-  @Get('/get-all-plants')
+  @Get('/')
   async getAllPlants(plant): Promise<PlantResponseDto> {
     return this.plantService.getAllPlants(plant);
   }

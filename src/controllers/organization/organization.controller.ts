@@ -27,7 +27,7 @@ export class OrganizationController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Post('/create')
+  @Post('/')
   async createOrganization(@Body() organizationData: CreateOrganizationDto) {
     const result = await this.organizationService.createOrganization({
       ...organizationData,
@@ -35,7 +35,7 @@ export class OrganizationController {
     return result;
   }
   @ApiBearerAuth('access-token')
-  @Get('/get-all-organization')
+  @Get('/')
   async getAllOrganization(organization): Promise<OrganizationResponseDto> {
     return this.organizationService.getAllOrganization(organization);
   }

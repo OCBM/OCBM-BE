@@ -29,11 +29,11 @@ import {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiBearerAuth('access-token')
-  @Get('/profile')
-  async getOwnProfile(@Req() request: Request | any): Promise<UserResponseDto> {
-    return this.userService.getOwnProfile(request.user);
-  }
+  // @ApiBearerAuth('access-token')
+  // @Get('/profile')
+  // async getOwnProfile(@Req() request: Request | any): Promise<UserResponseDto> {
+  //   return this.userService.getOwnProfile(request.user);
+  // }
 
   @ApiBearerAuth('access-token')
   @ApiParam({
@@ -42,7 +42,7 @@ export class UserController {
     required: true,
   })
   @IsEnum(Role)
-  @Get('/get-all-users/role=:role')
+  @Get('/:role')
   async getAllUsers(@Param('role') role: Role): Promise<UsersResponseDto> {
     return this.userService.getAllUsers(role);
   }
@@ -89,7 +89,7 @@ export class UserController {
       },
     },
   })
-  @Post('/create')
+  @Post('/')
   async createUser(@Body() userData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(
       userData.password,

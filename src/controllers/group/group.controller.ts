@@ -27,7 +27,7 @@ import {
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
   @ApiBearerAuth('access-token')
-  @Get('/get-all-groups')
+  @Get('/')
   async getAllGroups(): Promise<GroupsResponseDto> {
     return this.groupService.getAllGroups();
   }
@@ -47,7 +47,7 @@ export class GroupController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Post('/create')
+  @Post('/')
   async createGroup(@Body() groupData: CreateGroupDto) {
     const result = await this.groupService.createGroup(groupData);
     return result;
