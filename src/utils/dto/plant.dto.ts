@@ -15,6 +15,11 @@ export class PlantDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  image?: string;
+
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   description: string;
 
@@ -36,6 +41,11 @@ export class CreatePlantDto {
   @IsNotEmpty()
   description: string;
 
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  image: string;
+
   @IsOptional()
   createdAt?: Date;
 
@@ -54,6 +64,11 @@ export class UpdatePlantDto {
   @IsNotEmpty()
   @IsOptional()
   description?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  image?: string;
 }
 
 export class PlantResponseDto {

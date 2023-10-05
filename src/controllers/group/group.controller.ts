@@ -8,6 +8,7 @@ import {
   Param,
   UseGuards,
   ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Role } from '@/common';
@@ -38,7 +39,7 @@ export class GroupController {
   })
   @Get('/:id')
   async getGroupById(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<GroupResponseDto> {
     return this.groupService.getGroupById(id);
   }
@@ -62,7 +63,7 @@ export class GroupController {
   @Put('/:id')
   async updateGroup(
     @Body() groupData: UpdateGroupDto,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<GroupResponseDto> {
     return this.groupService.updateGroup(id, groupData);
   }
@@ -75,7 +76,7 @@ export class GroupController {
     name: 'id',
     required: true,
   })
-  async deleteGroup(@Param('id', ParseIntPipe) id: number) {
+  async deleteGroup(@Param('id', ParseUUIDPipe) id: string) {
     return this.groupService.deleteGroup(id);
   }
 }

@@ -21,7 +21,7 @@ export class GroupService {
     };
   }
 
-  async getGroupById(id: number): Promise<GroupResponseDto> {
+  async getGroupById(id: string): Promise<GroupResponseDto> {
     const group = await this.prismaDynamic.findUnique('group', {
       where: { id },
     });
@@ -55,7 +55,7 @@ export class GroupService {
   }
 
   async updateGroup(
-    id: number,
+    id: string,
     data: UpdateGroupDto,
   ): Promise<GroupResponseDto> {
     try {
@@ -87,7 +87,7 @@ export class GroupService {
     }
   }
 
-  async deleteGroup(id: number) {
+  async deleteGroup(id: string) {
     const group = await this.prismaDynamic.findUnique('group', {
       where: { id },
     });

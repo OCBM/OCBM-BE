@@ -43,7 +43,7 @@ model User {
 }
 
 model Group {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid()) @db.Uuid
   groupname   String
   role        String
   permissions String[]
@@ -55,12 +55,14 @@ model Group {
 
 model Plant {
   plantid     String    @id @default(uuid()) @db.Uuid
+  image       String
   plantname   String
   description String
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
   users       User[]    @relation("UserToPlant")
   admins      Admin[]   @relation("AdminToPlant")
+  shop        Shop[]    @relation("PlantToShop")
 }
 
 model Organization {
@@ -70,4 +72,13 @@ model Organization {
   updatedAt        DateTime? @updatedAt
   users            User[]    @relation("UserToOrganization")
   admins           Admin[]   @relation("AdminToOrganization")
+}
+
+model Shop {
+  shopid    String    @id @default(uuid()) @db.Uuid
+  shopname  String
+  image     String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  plant     Plant[]   @relation("PlantToShop")
 }

@@ -18,17 +18,24 @@ export class AuthService {
 
     user = await this.prismaDynamic.findUnique('admin', {
       where: { username },
+      include: {
+        groups: true,
+      },
     });
 
     if (!user) {
       user = await this.prismaDynamic.findUnique('user', {
         where: { username },
+        include: {
+          groups: true,
+        },
       });
     }
 
     if (!user) {
       throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
     }
+
     const isPasswordMatching = await bcrypt.compare(password, user.password);
     if (!isPasswordMatching) {
       throw new HttpException(
@@ -58,6 +65,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         accessToken: token,
+        groups: user.groups,
       },
     };
   }

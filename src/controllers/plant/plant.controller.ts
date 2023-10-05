@@ -35,7 +35,7 @@ export class PlantController {
     return result;
   }
   @ApiBearerAuth('access-token')
-  @Get('/get-all-plant')
+  @Get('/get-all-plants')
   async getAllPlants(plant): Promise<PlantResponseDto> {
     return this.plantService.getAllPlants(plant);
   }
