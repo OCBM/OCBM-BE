@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { OrganizationResponseDto, UpdateOrganizationDto } from '@/utils';
-import { PrismaValidation } from '@/common';
+import { PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class OrganizationService {
@@ -13,7 +13,7 @@ export class OrganizationService {
   ): Promise<OrganizationResponseDto> {
     try {
       const organization = await this.prismaDynamic.create(
-        'organization',
+        TABLES.ORGANIZATION,
         data,
       );
       return {
@@ -40,7 +40,7 @@ export class OrganizationService {
   ): Promise<OrganizationResponseDto> {
     try {
       const organization = await this.prismaDynamic.findMany(
-        'organization',
+        TABLES.ORGANIZATION,
         {},
       );
       return {
@@ -56,12 +56,12 @@ export class OrganizationService {
   }
 
   async getOrganizationById(
-    organizationid: string,
+    organizationId: string,
   ): Promise<OrganizationResponseDto> {
     let organization: any;
     try {
-      organization = await this.prismaDynamic.findUnique('organization', {
-        where: { organizationid },
+      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
+        where: { organizationId },
       });
     } catch {
       throw new HttpException(
@@ -76,14 +76,14 @@ export class OrganizationService {
   }
 
   async updateOrganization(
-    organizationid: string,
+    organizationId: string,
     data: UpdateOrganizationDto,
   ): Promise<OrganizationResponseDto> {
     try {
       let organization: any;
 
-      organization = await this.prismaDynamic.findUnique('organization', {
-        where: { organizationid },
+      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
+        where: { organizationId },
       });
       if (!organization) {
         throw new HttpException(
@@ -91,8 +91,8 @@ export class OrganizationService {
           HttpStatus.BAD_REQUEST,
         );
       } else {
-        var updatedData = await this.prismaDynamic.update('organization', {
-          where: { organizationid },
+        var updatedData = await this.prismaDynamic.update(TABLES.ORGANIZATION, {
+          where: { organizationId },
           data,
         });
       }
@@ -114,12 +114,12 @@ export class OrganizationService {
     }
   }
 
-  async deleteOrganization(organizationid: string) {
+  async deleteOrganization(organizationId: string) {
     try {
       let organization: any;
 
-      organization = await this.prismaDynamic.findUnique('organization', {
-        where: { organizationid },
+      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
+        where: { organizationId },
       });
       if (!organization) {
         throw new HttpException(
@@ -127,8 +127,8 @@ export class OrganizationService {
           HttpStatus.BAD_REQUEST,
         );
       } else {
-        await this.prismaDynamic.delete('organization', {
-          where: { organizationid },
+        await this.prismaDynamic.delete(TABLES.ORGANIZATION, {
+          where: { organizationId },
         });
       }
 

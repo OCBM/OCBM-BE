@@ -1,5 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaValidation } from '@/common';
+import { PrismaValidation, TABLES } from '@/common';
 import {
   UpdateGroupDto,
   GroupDto,
@@ -14,7 +14,7 @@ export class GroupService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
   async getAllGroups(): Promise<GroupsResponseDto> {
-    const groups = await this.prismaDynamic.findMany('group', {});
+    const groups = await this.prismaDynamic.findMany(TABLES.GROUP, {});
     return {
       statusCode: HttpStatus.OK,
       message: groups.map((group: any) => new GroupDto(group)),
@@ -22,7 +22,7 @@ export class GroupService {
   }
 
   async getGroupById(id: string): Promise<GroupResponseDto> {
-    const group = await this.prismaDynamic.findUnique('group', {
+    const group = await this.prismaDynamic.findUnique(TABLES.GROUP, {
       where: { id },
     });
 
@@ -38,7 +38,7 @@ export class GroupService {
 
   async createGroup(data: Prisma.GroupCreateInput): Promise<GroupResponseDto> {
     try {
-      const group = await this.prismaDynamic.create('group', data);
+      const group = await this.prismaDynamic.create(TABLES.GROUP, data);
       return {
         statusCode: HttpStatus.CREATED,
         message: new GroupDto(group),
@@ -59,7 +59,7 @@ export class GroupService {
     data: UpdateGroupDto,
   ): Promise<GroupResponseDto> {
     try {
-      const group = await this.prismaDynamic.findUnique('group', {
+      const group = await this.prismaDynamic.findUnique(TABLES.GROUP, {
         where: { id },
       });
 
@@ -67,7 +67,7 @@ export class GroupService {
         throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
       }
 
-      const updatedData = await this.prismaDynamic.update('group', {
+      const updatedData = await this.prismaDynamic.update(TABLES.GROUP, {
         where: { id },
         data,
       });
@@ -88,7 +88,7 @@ export class GroupService {
   }
 
   async deleteGroup(id: string) {
-    const group = await this.prismaDynamic.findUnique('group', {
+    const group = await this.prismaDynamic.findUnique(TABLES.GROUP, {
       where: { id },
     });
 
@@ -96,7 +96,7 @@ export class GroupService {
       throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
     }
 
-    await this.prismaDynamic.delete('group', {
+    await this.prismaDynamic.delete(TABLES.GROUP, {
       where: { id },
     });
 
@@ -107,7 +107,7 @@ export class GroupService {
   }
 
   async checkGroupName({ groupname }: { groupname: string }) {
-    const group = await this.prismaDynamic.findUnique('group', {
+    const group = await this.prismaDynamic.findUnique(TABLES.GROUP, {
       where: { groupname },
     });
 

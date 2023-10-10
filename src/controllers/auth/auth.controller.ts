@@ -18,7 +18,7 @@ export class AuthController {
         summary: 'Admin User',
         description: 'Default Admin User Credentials',
         value: {
-          username: 'abineshprabhakaran',
+          userName: 'abineshprabhakaran',
           password: 'Abinesh@2023',
         } as LoginDto,
       },

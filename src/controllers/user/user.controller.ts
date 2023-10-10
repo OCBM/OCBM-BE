@@ -44,7 +44,11 @@ export class UserController {
   @IsEnum(Role)
   @Get('/:role')
   async getAllUsers(@Param('role') role: Role): Promise<UsersResponseDto> {
-    return this.userService.getAllUsers(role);
+    try {
+      return this.userService.getAllUsers(role);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   @ApiBearerAuth('access-token')
@@ -67,21 +71,18 @@ export class UserController {
       admin: {
         summary: 'Create User demo',
         value: {
-          username: 'abinesh',
+          userName: 'abinesh',
           name: 'Abinesh Prabhakaran',
           email: 'abinesh@gmail.com',
-          employeeid: 'FEC123',
+          employeeId: 'FEC123',
           position: 'Software Engineer',
           role: 'USER',
           groups: {
-            connect: [{ id: 1 }],
-          },
-          plants: {
-            connect: [{ plantid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dde6d' }],
+            connect: [{ groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
           },
           organization: {
             connect: [
-              { organizationid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+              { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
             ],
           },
           password: 'Abinesh@2023',
@@ -96,7 +97,7 @@ export class UserController {
       BCRYPT_SALT_ROUNDS,
     );
     const isUserExits = await this.userService.CheckUsername({
-      username: userData.username,
+      userName: userData.userName,
     });
 
     if (isUserExits) {

@@ -13,7 +13,7 @@ export class CreateGroupDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  groupname: string;
+  groupName: string;
 
   @ApiProperty()
   @IsString()
@@ -51,9 +51,9 @@ export class UpdateGroupDto {
 }
 
 export class GroupDto {
-  id: string;
+  groupId: string;
 
-  groupname: string;
+  groupName: string;
 
   role: string;
 

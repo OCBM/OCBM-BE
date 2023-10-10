@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Admin {
-  userid       String         @id @default(uuid()) @db.Uuid
-  username     String         @unique
-  employeeid   String         @unique
+  userId       String         @id @default(uuid()) @db.Uuid
+  userName     String         @unique
+  employeeId   String         @unique
   name         String?
   position     String?
   role         String?
@@ -22,14 +22,13 @@ model Admin {
   createdAt    DateTime?      @default(now())
   updatedAt    DateTime?      @updatedAt
   groups       Group[]        @relation("AdminToGroup")
-  plants       Plant[]        @relation("AdminToPlant")
   organization Organization[] @relation("AdminToOrganization")
 }
 
 model User {
-  userid       String         @id @default(uuid()) @db.Uuid
-  username     String         @unique
-  employeeid   String         @unique
+  userId       String         @id @default(uuid()) @db.Uuid
+  userName     String         @unique
+  employeeId   String         @unique
   name         String?
   position     String?
   role         String?
@@ -38,13 +37,12 @@ model User {
   createdAt    DateTime?      @default(now())
   updatedAt    DateTime?      @updatedAt
   groups       Group[]        @relation("UserToGroup")
-  plants       Plant[]        @relation("UserToPlant")
   organization Organization[] @relation("UserToOrganization")
 }
 
 model Group {
-  id          String   @id @default(uuid()) @db.Uuid
-  groupname   String
+  groupId     String   @id @default(uuid()) @db.Uuid
+  groupName   String
   role        String
   permissions String[]
   users       User[]   @relation("UserToGroup")
@@ -53,32 +51,34 @@ model Group {
   updatedAt   DateTime @updatedAt
 }
 
-model Plant {
-  plantid     String    @id @default(uuid()) @db.Uuid
-  image       String
-  plantname   String
-  description String
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-  users       User[]    @relation("UserToPlant")
-  admins      Admin[]   @relation("AdminToPlant")
-  shop        Shop[]    @relation("PlantToShop")
-}
-
 model Organization {
-  organizationid   String    @id @default(uuid()) @db.Uuid
-  organizationname String
+  organizationId   String    @id @default(uuid()) @db.Uuid
+  organizationName String
   createdAt        DateTime? @default(now())
   updatedAt        DateTime? @updatedAt
   users            User[]    @relation("UserToOrganization")
   admins           Admin[]   @relation("AdminToOrganization")
+  plants           Plant[]
+}
+
+model Plant {
+  plantId        String       @id @default(uuid()) @db.Uuid
+  image          String
+  plantName      String
+  description    String
+  createdAt      DateTime?    @default(now())
+  updatedAt      DateTime?    @updatedAt
+  organizationId String       @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [organizationId])
+  shops          Shop[]
 }
 
 model Shop {
-  shopid    String    @id @default(uuid()) @db.Uuid
-  shopname  String
+  shopId    String    @id @default(uuid()) @db.Uuid
+  shopName  String
   image     String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  plant     Plant[]   @relation("PlantToShop")
+  plantId   String    @db.Uuid
+  plant     Plant     @relation(fields: [plantId], references: [plantId])
 }

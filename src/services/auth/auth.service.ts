@@ -2,7 +2,7 @@ import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from '@/utils/dto';
-import { TOKEN_SECRET } from '@/common';
+import { TOKEN_SECRET, TABLES, APP_CONSTANTS } from '@/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -13,19 +13,19 @@ export class AuthService {
   ) {}
 
   async login(loginData: LoginDto) {
-    const { username, password } = loginData;
+    const { userName, password } = loginData;
     let user: any;
 
-    user = await this.prismaDynamic.findUnique('admin', {
-      where: { username },
+    user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+      where: { userName },
       include: {
         groups: true,
       },
     });
 
     if (!user) {
-      user = await this.prismaDynamic.findUnique('user', {
-        where: { username },
+      user = await this.prismaDynamic.findUnique(TABLES.USER, {
+        where: { userName },
         include: {
           groups: true,
         },
@@ -33,22 +33,25 @@ export class AuthService {
     }
 
     if (!user) {
-      throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.USER_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const isPasswordMatching = await bcrypt.compare(password, user.password);
     if (!isPasswordMatching) {
       throw new HttpException(
-        'Wrong credentials provided',
+        APP_CONSTANTS.WRONG_CREDENTIALS,
         HttpStatus.BAD_REQUEST,
       );
     }
 
     const payload = {
-      userid: user.userid,
-      username: user.username,
+      userId: user.userId,
+      userName: user.userName,
       email: user.email,
-      sub: user.userid,
+      sub: user.userId,
       clientId: 'Omnex',
       role: user.role,
     };
@@ -60,8 +63,8 @@ export class AuthService {
     return {
       statusCode: HttpStatus.OK,
       message: {
-        userid: user.userid,
-        username: user.username,
+        userId: user.userId,
+        userName: user.userName,
         email: user.email,
         role: user.role,
         accessToken: token,
@@ -72,12 +75,12 @@ export class AuthService {
 
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
-      return this.prismaDynamic.findUnique('admin', {
-        where: { userid: payload.payload.userid },
+      return this.prismaDynamic.findUnique(TABLES.ADMIN, {
+        where: { userId: payload.payload.userId },
       });
     } else if (payload.payload.role === 'USER') {
-      return this.prismaDynamic.findUnique('user', {
-        where: { userid: payload.payload.userid },
+      return this.prismaDynamic.findUnique(TABLES.USER, {
+        where: { userId: payload.payload.userId },
       });
     }
   }

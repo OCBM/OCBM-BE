@@ -31,6 +31,11 @@ export class PlantController {
   async createPlant(@Body() plantData: CreatePlantDto) {
     const result = await this.plantService.createPlant({
       ...plantData,
+      organization: {
+        connect: {
+          organizationId: plantData.organizationId,
+        },
+      },
     });
     return result;
   }

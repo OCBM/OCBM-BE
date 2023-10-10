@@ -15,7 +15,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  username: string;
+  userName: string;
 
   @ApiProperty()
   @IsString()
@@ -30,7 +30,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  employeeid: string;
+  employeeId: string;
 
   @ApiProperty()
   @IsString()
@@ -46,10 +46,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @ApiProperty()
   groups: any;
-
-  @IsNotEmpty()
-  @ApiProperty()
-  plants: any;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -91,15 +87,21 @@ export class UpdateUserDto {
 }
 
 export class UserDto {
-  username: string;
+  userName: string;
 
   name: string;
 
   email: string;
 
-  employeeid: string;
+  employeeId: string;
 
   position: string;
+
+  role: string;
+
+  groups: any;
+
+  organization: any;
 
   @Exclude()
   password: string;

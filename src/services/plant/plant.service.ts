@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { PlantResponseDto, UpdatePlantDto } from '@/utils';
-import { PrismaValidation } from '@/common';
+import { PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class PlantService {
@@ -10,12 +10,13 @@ export class PlantService {
 
   async createPlant(data: Prisma.PlantCreateInput): Promise<PlantResponseDto> {
     try {
-      const plant = await this.prismaDynamic.create('plant', data);
+      const plant = await this.prismaDynamic.create(TABLES.PLANT, data);
       return {
         statusCode: HttpStatus.CREATED,
         message: plant,
       };
     } catch (error) {
+      console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException('Plant already exists', HttpStatus.BAD_REQUEST);
       }
@@ -28,7 +29,7 @@ export class PlantService {
 
   async getAllPlants(plant: any): Promise<PlantResponseDto> {
     try {
-      const plants = await this.prismaDynamic.findMany('plant', {});
+      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {});
       return {
         statusCode: HttpStatus.OK,
         message: plants,
@@ -41,7 +42,7 @@ export class PlantService {
   async getPlantById(plantid: string): Promise<PlantResponseDto> {
     let plant: any;
     try {
-      plant = await this.prismaDynamic.findUnique('plant', {
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantid },
       });
     } catch {
@@ -60,13 +61,13 @@ export class PlantService {
     try {
       let plant: any;
 
-      plant = await this.prismaDynamic.findUnique('plant', {
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantid },
       });
       if (!plant) {
         throw new HttpException('Plant not exists', HttpStatus.BAD_REQUEST);
       } else {
-        var updatedData = await this.prismaDynamic.update('plant', {
+        var updatedData = await this.prismaDynamic.update(TABLES.PLANT, {
           where: { plantid },
           data,
         });
@@ -90,13 +91,13 @@ export class PlantService {
     try {
       let plant: any;
 
-      plant = await this.prismaDynamic.findUnique('plant', {
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantid },
       });
       if (!plant) {
         throw new HttpException('Plant not exists', HttpStatus.BAD_REQUEST);
       } else {
-        await this.prismaDynamic.delete('plant', {
+        await this.prismaDynamic.delete(TABLES.PLANT, {
           where: { plantid },
         });
       }

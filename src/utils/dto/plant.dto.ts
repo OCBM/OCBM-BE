@@ -1,22 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  isNotEmpty,
+  isString,
+} from 'class-validator';
 
 export class PlantDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  plantid: string;
+  plantId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  plantname: string;
+  plantName: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
   image?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  organizationId: string;
 
   @ApiProperty()
   @IsString()
@@ -34,7 +45,7 @@ export class CreatePlantDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  plantname: string;
+  plantName: string;
 
   @ApiProperty()
   @IsString()
@@ -46,11 +57,19 @@ export class CreatePlantDto {
   @IsOptional()
   image: string;
 
+  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  organizationId: string;
+
   @IsOptional()
   createdAt?: Date;
 
   @IsOptional()
   updatedAt?: Date;
+
+  @IsOptional()
+  organizations: any;
 }
 
 export class UpdatePlantDto {
@@ -58,7 +77,7 @@ export class UpdatePlantDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  plantname?: string;
+  plantName?: string;
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

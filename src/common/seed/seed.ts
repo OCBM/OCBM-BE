@@ -2,10 +2,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   const group = await prisma.group.upsert({
-    where: { id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    where: { groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
     create: {
-      id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-      groupname: 'Omnex Admin',
+      groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      groupName: 'Omnex Admin',
       role: 'ADMIN',
       permissions: ['READ', 'WRITE', 'UPDATE', 'DELETE'],
       createdAt: '2023-10-04T13:19:57.171Z',
@@ -14,10 +14,10 @@ async function main() {
     update: {},
   });
   const organization = await prisma.organization.upsert({
-    where: { organizationid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    where: { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
     create: {
-      organizationid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-      organizationname: 'Flyerssoft Private Limited',
+      organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      organizationName: 'Flyerssoft Private Limited',
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',
     },
@@ -25,46 +25,40 @@ async function main() {
   });
 
   const plant = await prisma.plant.upsert({
-    where: { plantid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    where: { plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
     create: {
-      plantid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-      plantname: 'Chennai',
+      plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      plantName: 'Chennai',
       image: '',
       description: 'Chennai Plant',
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',
+      organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
     },
     update: {},
   });
 
   const admin = await prisma.admin.upsert({
-    where: { username: 'abineshprabhakaran' },
+    where: { userName: 'abineshprabhakaran' },
     create: {
-      userid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-      username: 'abineshprabhakaran',
+      userId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      userName: 'abineshprabhakaran',
       name: 'Abinesh Prabhakaran',
       email: 'abinesh.prabhakaran@flyerssoft.com',
-      employeeid: 'FEC0050',
+      employeeId: 'FEC0050',
       position: 'Software Engineer',
       role: 'ADMIN',
       groups: {
         connect: [
           {
-            id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-          },
-        ],
-      },
-      plants: {
-        connect: [
-          {
-            plantid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+            groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
           },
         ],
       },
       organization: {
         connect: [
           {
-            organizationid: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+            organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
           },
         ],
       },
