@@ -38,6 +38,7 @@ model User {
   updatedAt    DateTime?      @updatedAt
   groups       Group[]        @relation("UserToGroup")
   organization Organization[] @relation("UserToOrganization")
+  plants Plant[] @relation("UserToPlant")
 }
 
 model Group {
@@ -71,6 +72,7 @@ model Plant {
   organizationId String       @db.Uuid
   organization   Organization @relation(fields: [organizationId], references: [organizationId])
   shops          Shop[]
+  users User[] @relation("UserToPlant")
 }
 
 model Shop {

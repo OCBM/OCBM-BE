@@ -94,7 +94,8 @@ export class PlantResponseDto {
   statusCode: number;
 
   @Type(() => PlantDto)
-  message: PlantDto;
+  message?: PlantDto;
+  Error?: string;
 
   constructor(partial: Partial<PlantResponseDto>) {
     Object.assign(this, partial);

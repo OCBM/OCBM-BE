@@ -14,62 +14,112 @@ import {
   ParseUUIDPipe,
   UseGuards,
   Delete,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { PlantService } from '@/services/plant/plant.service';
 import { Roles } from '@/decorator';
-import { Role } from '@/common';
+import { Role, TABLES } from '@/common';
+import { PrismaService } from '@/services';
 
 @ApiTags('Plant')
 @Controller('plant')
 export class PlantController {
-  constructor(private readonly plantService: PlantService) {}
+  [x: string]: any;
+  constructor(
+    private readonly plantService: PlantService,
+    private readonly prismaDynamic: PrismaService,
+  ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   async createPlant(@Body() plantData: CreatePlantDto) {
-    const result = await this.plantService.createPlant({
+    const data = {
       ...plantData,
       organization: {
         connect: {
           organizationId: plantData.organizationId,
         },
       },
+    };
+    let organization: any;
+    organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
+      where: { organizationId: data.organizationId },
     });
-    return result;
+    if (!organization) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        Error: 'Organization not Exists',
+      };
+    } else {
+      delete data.organizationId;
+      const result = await this.plantService.createPlant(data);
+      return result;
+    }
   }
   @ApiBearerAuth('access-token')
-  @Get('/')
-  async getAllPlants(plant): Promise<PlantResponseDto> {
-    return this.plantService.getAllPlants(plant);
-  }
-
   @ApiParam({
-    name: 'id',
+    name: 'organizationId',
     required: true,
   })
-  @ApiBearerAuth('access-token')
-  @Get('/:id')
-  async getPlantById(
-    @Param('id', ParseUUIDPipe) id: string,
+  @Get('/:organizationId')
+  async getAllPlants(
+    @Param('organizationId', ParseUUIDPipe) organizationId: string,
   ): Promise<PlantResponseDto> {
-    return this.plantService.getPlantById(id);
+    return this.plantService.getAllPlants(organizationId);
   }
 
+  @ApiBearerAuth('access-token')
+  @ApiParam({
+    name: 'organizationId',
+    required: true,
+  })
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  @Get('/:organizationId/:plantId')
+  async getPlantByOrganizationId(
+    @Param('organizationId', ParseUUIDPipe) organizationId: string,
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+  ): Promise<PlantResponseDto> {
+    return this.plantService.getPlantByOrganizationId(organizationId, plantId);
+  }
+  @ApiParam({
+    name: 'userId',
+    required: true,
+  })
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  // @ApiBearerAuth('access-token')
+  // @Get('/:userId/:plantId')
+  // async getPlantByUserId(
+  //   @Param('userId', ParseUUIDPipe) userId: string,
+  //   @Param('plantId', ParseUUIDPipe) plantId: string,
+  // ): Promise<PlantResponseDto> {
+  //   return this.plantService.getPlantByUserId(userId, plantId);
+  // }
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
-    name: 'id',
+    name: 'organizationId',
     required: true,
   })
-  @Put('/:id')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  @Put('/:organizationId/:plantId')
   async updatePlant(
     @Body() plantData: UpdatePlantDto,
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('organizationId', ParseUUIDPipe) organizationId: string,
+    @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<PlantResponseDto> {
-    return this.plantService.updatePlant(id, {
+    return this.plantService.updatePlant(organizationId, plantId, {
       ...plantData,
     });
   }
@@ -77,12 +127,19 @@ export class PlantController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:id')
+  @Delete('/:organizationId/:plantId')
   @ApiParam({
-    name: 'id',
+    name: 'organizationId',
     required: true,
   })
-  async deletePlant(@Param('id', ParseUUIDPipe) id: string) {
-    return this.plantService.deletePlant(id);
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  async deletePlant(
+    @Param('organizationId', ParseUUIDPipe) organizationId: string,
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+  ) {
+    return this.plantService.deletePlant(organizationId, plantId);
   }
 }
