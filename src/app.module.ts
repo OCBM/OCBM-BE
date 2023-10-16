@@ -5,13 +5,17 @@ import { JwtService } from '@nestjs/jwt';
 import {
   AuthController,
   OrganizationController,
+  PlantController,
+  ShopController,
   UserController,
 } from './controllers';
 import { AuthModule, GroupModule } from './modules';
 import {
   AuthService,
   OrganizationService,
+  PlantService,
   PrismaService,
+  ShopService,
   UserService,
 } from './services';
 import { JwtStrategy } from './utils';
@@ -25,6 +29,8 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     AuthController,
     UserController,
     OrganizationController,
+    PlantController,
+    ShopController,
   ],
   providers: [
     PrismaService,
@@ -34,6 +40,8 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     OrganizationService,
     JwtService,
     JwtStrategy,
+    PlantService,
+    ShopService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

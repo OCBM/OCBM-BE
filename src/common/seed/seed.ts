@@ -37,6 +37,18 @@ async function main() {
     },
     update: {},
   });
+  const shop = await prisma.shop.upsert({
+    where: { shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    create: {
+      shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      shopName: 'Chennai',
+      image: '',
+      createdAt: '2023-10-04T13:19:57.171Z',
+      updatedAt: '2023-10-04T13:19:57.171Z',
+      plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+    },
+    update: {},
+  });
 
   const admin = await prisma.admin.upsert({
     where: { userName: 'abineshprabhakaran' },

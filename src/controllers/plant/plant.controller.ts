@@ -86,14 +86,14 @@ export class PlantController {
   ): Promise<PlantResponseDto> {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
-  @ApiParam({
-    name: 'userId',
-    required: true,
-  })
-  @ApiParam({
-    name: 'plantId',
-    required: true,
-  })
+  // @ApiParam({
+  //   name: 'userId',
+  //   required: true,
+  // })
+  // @ApiParam({
+  //   name: 'plantId',
+  //   required: true,
+  // })
   // @ApiBearerAuth('access-token')
   // @Get('/:userId/:plantId')
   // async getPlantByUserId(

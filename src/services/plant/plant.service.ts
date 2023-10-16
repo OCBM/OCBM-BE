@@ -211,15 +211,9 @@ export class PlantService {
         };
       }
     } catch (error) {
-      if (error?.status === HttpStatus.BAD_REQUEST) {
-        throw new HttpException(
-          'Organazation/Plant not exists',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
       throw new HttpException(
-        'Failed to update plant',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        'Organization/Plant not exists',
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -265,7 +259,8 @@ export class PlantService {
           message: 'Plant deleted successfully',
         };
       } else if (
-        checkPlant && organization &&
+        checkPlant &&
+        organization &&
         checkPlant?.organizationId !== organization?.organizationId
       ) {
         return {
