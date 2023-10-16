@@ -2,12 +2,20 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   const group = await prisma.group.upsert({
-    where: { groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    where: { groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'},
     create: {
       groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
       groupName: 'Omnex Admin',
-      role: 'ADMIN',
-      permissions: ['READ', 'WRITE', 'UPDATE', 'DELETE'],
+      services: {
+        create:[
+          {
+            serviceName: "plant",
+            permissions: [
+              "READ","WRITE","UPDATE","DELETE"
+            ]
+          }
+        ]
+      },
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',
     },

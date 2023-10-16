@@ -25,11 +25,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       throw new InternalServerErrorException(error);
     }
   }
-  async createMany(tablename: string, data: object) {
+  async createMany(tablename: string, data: any) {
     try {
       return await this[tablename].createMany({
         data: data,
       });
+    } catch (error: any) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async createManywithUptions(tablename: string, data: any) {
+    try {
+      return await this[tablename].createMany(data);
     } catch (error: any) {
       throw new InternalServerErrorException(error);
     }
