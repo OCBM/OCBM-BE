@@ -8,6 +8,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { GROUP_PERMISSIONS } from '@/common';
+import { createServiceDto } from './groupServices.dto';
 
 export class CreateGroupDto {
   @ApiProperty()
@@ -15,16 +16,9 @@ export class CreateGroupDto {
   @IsNotEmpty()
   groupName: string;
 
-  @ApiProperty()
-  @IsString()
+  @ApiProperty({ type: createServiceDto, isArray: true })
   @IsNotEmpty()
-  role: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsArray()
-  @IsEnum(GROUP_PERMISSIONS, { each: true })
-  permissions: GROUP_PERMISSIONS[];
+  services:createServiceDto[]
 
   @ApiProperty()
   @IsOptional()
@@ -40,14 +34,13 @@ export class UpdateGroupDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  groupname?: string;
+  groupName?: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: createServiceDto, isArray: true })
   @IsNotEmpty()
   @IsOptional()
-  @IsArray()
-  @IsEnum(GROUP_PERMISSIONS, { each: true })
-  permissions?: GROUP_PERMISSIONS[];
+  services:createServiceDto[]
+
 }
 
 export class GroupDto {
