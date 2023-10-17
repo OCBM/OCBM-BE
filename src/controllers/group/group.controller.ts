@@ -7,7 +7,6 @@ import {
   Body,
   Param,
   UseGuards,
-  ParseIntPipe,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';

@@ -1,13 +1,6 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsArray,
-  IsEnum,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { GROUP_PERMISSIONS } from '@/common';
 import { createServiceDto } from './groupServices.dto';
 
 export class CreateGroupDto {
@@ -18,7 +11,7 @@ export class CreateGroupDto {
 
   @ApiProperty({ type: createServiceDto, isArray: true })
   @IsNotEmpty()
-  services:createServiceDto[]
+  services: createServiceDto[];
 
   @ApiProperty()
   @IsOptional()
@@ -39,8 +32,7 @@ export class UpdateGroupDto {
   @ApiProperty({ type: createServiceDto, isArray: true })
   @IsNotEmpty()
   @IsOptional()
-  services:createServiceDto[]
-
+  services: createServiceDto[];
 }
 
 export class GroupDto {

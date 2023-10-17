@@ -86,14 +86,14 @@ export class ShopController {
   ): Promise<ShopResponseDto> {
     return this.shopService.getShopByPlantId(plantId, shopId);
   }
-//   @ApiParam({
-//     name: 'userId',
-//     required: true,
-//   })
-//   @ApiParam({
-//     name: 'plantId',
-//     required: true,
-//   })
+  //   @ApiParam({
+  //     name: 'userId',
+  //     required: true,
+  //   })
+  //   @ApiParam({
+  //     name: 'plantId',
+  //     required: true,
+  //   })
   // @ApiBearerAuth('access-token')
   // @Get('/:userId/:plantId')
   // async getPlantByUserId(
