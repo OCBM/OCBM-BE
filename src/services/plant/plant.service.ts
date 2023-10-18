@@ -66,17 +66,21 @@ export class PlantService {
     try {
       const user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId: userId },
+        include: { plants: true }
       });
-      if (!user) {
+
+      const admin = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+        where: { userId: userId },
+        include: { plants: true }
+      });
+      if (!user && !admin) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no User',
+          Error: 'There no User/Admin',
         };
       }
-      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
-        where: { userId: user.userId },
-      });
-      if (plants.length > 0) {
+      const plants = user?.plants || admin?.plants
+      if (plants?.length) {
         return {
           statusCode: HttpStatus.OK,
           message: plants,

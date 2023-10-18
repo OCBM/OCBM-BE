@@ -63,7 +63,7 @@ export class PlantController {
     name: 'organizationId',
     required: true,
   })
-  @Get('/:organizationId')
+  @Get('/organization/:organizationId')
   async getAllPlantsByOrganization(
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
   ): Promise<PlantResponseDto> {
@@ -74,7 +74,7 @@ export class PlantController {
     name: 'userId',
     required: true,
   })
-  @Get('/:userId')
+  @Get('user/:userId')
   async getAllPlantsByUser(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<PlantResponseDto> {

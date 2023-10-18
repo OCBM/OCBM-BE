@@ -50,6 +50,10 @@ export class CreateUserDto {
   @ApiProperty()
   organization: any;
 
+  @IsNotEmpty()
+  @ApiProperty()
+  plants: any;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -82,6 +86,7 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  @MinLength(8)
   password?: string;
 }
 

@@ -19,6 +19,7 @@ async function main() {
     },
     update: {},
   });
+
   const organization = await prisma.organization.upsert({
     where: { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
     create: {
@@ -43,19 +44,7 @@ async function main() {
     },
     update: {},
   });
-  const shop = await prisma.shop.upsert({
-    where: { shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
-    create: {
-      shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-      shopName: 'Chennai',
-      image: '',
-      createdAt: '2023-10-04T13:19:57.171Z',
-      updatedAt: '2023-10-04T13:19:57.171Z',
-      plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-    },
-    update: {},
-  });
-
+  
   const admin = await prisma.admin.upsert({
     where: { userName: 'abineshprabhakaran' },
     create: {
@@ -70,17 +59,37 @@ async function main() {
         connect: [
           {
             groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-          },
+          }
         ],
       },
       organization: {
         connect: [
           {
             organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-          },
+          }
         ],
       },
+      plants: {
+        connect: [
+          {
+            plantId: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+          }
+        ]
+      },
       password: '$2b$10$PVhCLgY2.yi7de0s8FgTcuZjx18CTh2ffgZ8T6LSmYRIH5M7VJeQ6',
+    },
+    update: {},
+  });
+
+  const shop = await prisma.shop.upsert({
+    where: { shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+    create: {
+      shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      shopName: 'Chennai',
+      image: '',
+      createdAt: '2023-10-04T13:19:57.171Z',
+      updatedAt: '2023-10-04T13:19:57.171Z',
+      plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
     },
     update: {},
   });

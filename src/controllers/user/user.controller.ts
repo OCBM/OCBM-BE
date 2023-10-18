@@ -84,6 +84,11 @@ export class UserController {
               { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
             ],
           },
+          plants: {
+            connect: [
+              { plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+            ],
+          },
           password: 'Abinesh@2023',
         } as CreateUserDto,
       },
