@@ -64,12 +64,22 @@ export class PlantController {
     required: true,
   })
   @Get('/:organizationId')
-  async getAllPlants(
+  async getAllPlantsByOrganization(
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
   ): Promise<PlantResponseDto> {
-    return this.plantService.getAllPlants(organizationId);
+    return this.plantService.getAllPlantsByOrganization(organizationId);
   }
-
+  @ApiBearerAuth('access-token')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+  })
+  @Get('/:userId')
+  async getAllPlantsByUser(
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<PlantResponseDto> {
+    return this.plantService.getAllPlantsByUser(userId);
+  }
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'organizationId',
@@ -86,22 +96,16 @@ export class PlantController {
   ): Promise<PlantResponseDto> {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
-  // @ApiParam({
-  //   name: 'userId',
-  //   required: true,
-  // })
-  // @ApiParam({
-  //   name: 'plantId',
-  //   required: true,
-  // })
-  // @ApiBearerAuth('access-token')
-  // @Get('/:userId/:plantId')
-  // async getPlantByUserId(
-  //   @Param('userId', ParseUUIDPipe) userId: string,
-  //   @Param('plantId', ParseUUIDPipe) plantId: string,
-  // ): Promise<PlantResponseDto> {
-  //   return this.plantService.getPlantByUserId(userId, plantId);
-  // }
+  @ApiBearerAuth('access-token')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+  })
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+ 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')

@@ -27,7 +27,9 @@ export class PlantService {
     }
   }
 
-  async getAllPlants(organizationId: any): Promise<PlantResponseDto> {
+  async getAllPlantsByOrganization(
+    organizationId: any,
+  ): Promise<PlantResponseDto> {
     try {
       const organization = await this.prismaDynamic.findUnique(
         TABLES.ORGANIZATION,
@@ -53,6 +55,36 @@ export class PlantService {
         return {
           statusCode: HttpStatus.OK,
           Error: 'There is no plant in this organisation',
+        };
+      }
+    } catch (e) {
+      throw new HttpException('unable to fetch plants', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getAllPlantsByUser(userId: any): Promise<PlantResponseDto> {
+    try {
+      const user = await this.prismaDynamic.findUnique(TABLES.USER, {
+        where: { userId: userId },
+      });
+      if (!user) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'There no User',
+        };
+      }
+      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
+        where: { userId: user.userId },
+      });
+      if (plants.length > 0) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: plants,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.OK,
+          Error: 'There is no plant for this User',
         };
       }
     } catch (e) {
@@ -119,39 +151,6 @@ export class PlantService {
       );
     }
   }
-  // async getPlantByUserId(
-  //   userId: string,
-  //   plantid: string,
-  // ): Promise<PlantResponseDto> {
-  //   let plant: any;
-
-  //   let user: any;
-
-  //   try {
-  //     user = await this.prismaDynamic.findUnique(TABLES.USER, {
-  //       where: { UserId: userId },
-  //     });
-
-  //     if (!user) {
-  //       throw new HttpException('Invalid User', HttpStatus.BAD_REQUEST);
-  //     } else {
-  //       plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-  //         where: { plantId: plantid },
-  //       });
-  //     }
-  //   } catch {
-  //     throw new HttpException(
-  //       'Organazation/Plant not exists',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-
-  //   return {
-  //     statusCode: HttpStatus.OK,
-
-  //     message: plant,
-  //   };
-  // }
 
   async updatePlant(
     organizationId: string,

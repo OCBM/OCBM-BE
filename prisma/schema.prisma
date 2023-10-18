@@ -23,7 +23,7 @@ model Admin {
   updatedAt    DateTime?      @updatedAt
   groups       Group[]        @relation("AdminToGroup")
   organization Organization[] @relation("AdminToOrganization")
-  plant        Plant[]        @relation("AdminToPlant")
+  plants        Plant[]        @relation("AdminToPlant")
 }
 
 model User {
