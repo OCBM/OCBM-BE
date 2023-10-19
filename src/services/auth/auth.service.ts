@@ -50,6 +50,7 @@ export class AuthService {
     const payload = {
       userId: user.userId,
       userName: user.userName,
+      name: user.name,
       email: user.email,
       sub: user.userId,
       clientId: 'Omnex',
@@ -64,6 +65,7 @@ export class AuthService {
       statusCode: HttpStatus.OK,
       message: {
         userId: user.userId,
+        name: user.name,
         userName: user.userName,
         email: user.email,
         role: user.role,
