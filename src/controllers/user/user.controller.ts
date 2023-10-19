@@ -52,7 +52,7 @@ export class UserController {
     required: true,
   })
   @IsEnum(Role)
-  @Get('/:role')
+  @Get('/role=:role')
   async getAllUsers(@Param('role') role: Role): Promise<UsersResponseDto> {
     try {
       return this.userService.getAllUsers(role);
