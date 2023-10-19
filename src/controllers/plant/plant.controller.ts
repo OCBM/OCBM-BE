@@ -63,7 +63,7 @@ export class PlantController {
     name: 'organizationId',
     required: true,
   })
-  @Get('/organization/:organizationId')
+  @Get('/organizationId=:organizationId')
   async getAllPlantsByOrganization(
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
   ): Promise<PlantResponseDto> {
@@ -74,7 +74,7 @@ export class PlantController {
     name: 'userId',
     required: true,
   })
-  @Get('user/:userId')
+  @Get('/userId=:userId')
   async getAllPlantsByUser(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<PlantResponseDto> {
@@ -89,7 +89,7 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
-  @Get('/:organizationId/:plantId')
+  @Get('/organizationId=:organizationId&plantId:plantId')
   async getPlantByOrganizationId(
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
     @Param('plantId', ParseUUIDPipe) plantId: string,
@@ -105,7 +105,6 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
- 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
@@ -117,7 +116,7 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
-  @Put('/:organizationId/:plantId')
+  @Put('/organizationId=:organizationId&plantId:plantId')
   async updatePlant(
     @Body() plantData: UpdatePlantDto,
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
@@ -131,7 +130,7 @@ export class PlantController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:organizationId/:plantId')
+  @Delete('/organizationId=:organizationId&plantId:plantId')
   @ApiParam({
     name: 'organizationId',
     required: true,

@@ -35,6 +35,17 @@ export class UserController {
   // }
 
   @ApiBearerAuth('access-token')
+  @IsEnum(Role)
+  @Get('/')
+  async getAllUserswithoutRole(): Promise<UserResponseDto> {
+    try {
+      return this.userService.getAllUserswithoutRole();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'role',
     enum: Role,
@@ -85,9 +96,7 @@ export class UserController {
             ],
           },
           plants: {
-            connect: [
-              { plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
-            ],
+            connect: [{ plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
           },
           password: 'Abinesh@2023',
         } as CreateUserDto,

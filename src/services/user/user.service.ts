@@ -15,6 +15,16 @@ import { UserData } from '@/common';
 export class UserService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
+  async getAllUserswithoutRole(): Promise<UserResponseDto> {
+    let userDetails: any;
+    userDetails = await this.prismaDynamic
+      .$queryRaw`SELECT * FROM "Admin" UNION SELECT * from "User"`;
+    return {
+      statusCode: HttpStatus.OK,
+      message: userDetails,
+    };
+  }
+
   async getOwnProfile(user: TokenType): Promise<UserResponseDto> {
     let userDetails: UserData;
     if (user.role === Role.ADMIN) {
