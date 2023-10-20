@@ -29,7 +29,7 @@ export class ShopController {
   constructor(
     private readonly shopService: ShopService,
     private readonly prismaDynamic: PrismaService,
-  ) {}
+  ) { }
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
@@ -63,7 +63,7 @@ export class ShopController {
     name: 'plantId',
     required: true,
   })
-  @Get('/:plantId')
+  @Get('/plantId=:plantId')
   async getAllShops(
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<ShopResponseDto> {
@@ -79,7 +79,7 @@ export class ShopController {
     name: 'shopId',
     required: true,
   })
-  @Get('/:plantId/:shopId')
+  @Get('/plantId=:plantId&shopId=:shopId')
   async getShopByPlantId(
     @Param('plantId', ParseUUIDPipe) plantId: string,
     @Param('shopId', ParseUUIDPipe) shopId: string,
@@ -113,7 +113,7 @@ export class ShopController {
     name: 'shopId',
     required: true,
   })
-  @Put('/:plantId/:shopId')
+  @Put('/plantId=:plantId&shopId=:shopId')
   async updateShop(
     @Body() shopData: UpdateShopDto,
     @Param('plantId', ParseUUIDPipe) plantId: string,
@@ -127,7 +127,7 @@ export class ShopController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/:plantId/:shopId')
+  @Delete('/plantId=:plantId&shopId=:shopId')
   @ApiParam({
     name: 'plantId',
     required: true,
