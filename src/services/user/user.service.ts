@@ -13,7 +13,7 @@ import { UserData } from '@/common';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaDynamic: PrismaService) {}
+  constructor(private readonly prismaDynamic: PrismaService) { }
 
   async getAllUserswithoutRole(): Promise<UserResponseDto> {
     let userDetails: any;
@@ -111,7 +111,7 @@ export class UserService {
     };
   }
 
-  async createSuperAdmin() {}
+  async createSuperAdmin() { }
 
   async CheckUsername(data: any) {
     let user: UserData;
@@ -132,7 +132,7 @@ export class UserService {
         return true;
       }
       return false;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
@@ -178,23 +178,107 @@ export class UserService {
   ): Promise<UserResponseDto> {
     try {
       let user: UserData;
+      let userData: any = {
+        ...data,
+      };
 
       user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId },
+        include: {
+          plants: true,
+          organization: true,
+          groups: true,
+        },
       });
       if (user) {
+        if (
+          user?.organization?.length &&
+          userData?.organization?.connect?.length
+        ) {
+          userData = {
+            ...userData,
+            organization: {
+              disconnect: user.organization.map((organization) => ({
+                organizationId: organization.organizationId,
+              })),
+              ...userData.organization,
+            },
+          };
+        }
+        if (user?.plants?.length && userData?.plants?.connect?.length) {
+          userData = {
+            ...userData,
+            plants: {
+              disconnect: user.plants.map((plant) => ({
+                plantId: plant.plantId,
+              })),
+              ...userData.plants,
+            },
+          };
+        }
+        if (user?.groups?.length && userData?.groups?.connect?.length) {
+          userData = {
+            ...userData,
+            groups: {
+              disconnect: user.groups.map((group) => ({
+                groupId: group.groupId,
+              })),
+              ...userData.groups,
+            },
+          };
+        }
         var updatedData = await this.prismaDynamic.update(TABLES.USER, {
           where: { userId },
-          data,
+          data: userData,
         });
       } else {
         user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
           where: { userId },
+          include: {
+            plants: true,
+            organization: true,
+            groups: true,
+          },
         });
-
+        if (
+          user?.organization?.length &&
+          userData?.organization?.connect?.length
+        ) {
+          userData = {
+            ...userData,
+            organization: {
+              disconnect: user.organization.map((organization) => ({
+                organizationId: organization.organizationId,
+              })),
+              ...userData.organization,
+            },
+          };
+        }
+        if (user?.plants?.length && userData?.plant?.connect?.length) {
+          userData = {
+            ...userData,
+            plant: {
+              disconnect: user.plants.map((plant) => ({
+                plantId: plant.plantId,
+              })),
+              ...userData.plant,
+            },
+          };
+        }
+        if (user?.groups?.length && userData?.group?.connect?.length) {
+          userData = {
+            ...userData,
+            group: {
+              disconnect: user.groups.map((group) => ({
+                groupId: group.groupId,
+              })),
+              ...userData.group,
+            },
+          };
+        }
         var updatedData = await this.prismaDynamic.update(TABLES.ADMIN, {
           where: { userId },
-          data,
+          data: updatedData,
         });
       }
 

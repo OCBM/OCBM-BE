@@ -89,22 +89,19 @@ export class UpdateUserDto {
   role?: string;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
   @IsOptional()
-  group?: string;
+  groups?: any;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
   @IsOptional()
-  organization?: string;
+  organization?: any;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
   @IsOptional()
-  plant?: string;
+  plants?: any;
 
   @ApiProperty()
   @IsString()

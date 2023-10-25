@@ -26,7 +26,7 @@ import {
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   // @ApiBearerAuth('access-token')
   // @Get('/profile')
@@ -137,6 +137,31 @@ export class UserController {
   @ApiParam({
     name: 'id',
     required: true,
+  })
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      admin: {
+        summary: 'Create User demo',
+        value: {
+          name: 'Abinesh Prabhakaran',
+          position: 'Software Engineer',
+          role: 'USER',
+          groups: {
+            connect: [{ groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
+          },
+          organization: {
+            connect: [
+              { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
+            ],
+          },
+          plants: {
+            connect: [{ plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
+          },
+          password: 'Abinesh@2023',
+        } as CreateUserDto,
+      },
+    },
   })
   @Put('/:id')
   async updateUser(
