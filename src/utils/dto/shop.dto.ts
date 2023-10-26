@@ -21,6 +21,11 @@ export class ShopDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   plantId: string;
 
   @IsOptional()
@@ -40,6 +45,11 @@ export class CreateShopDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
   @IsString()
   @ApiProperty()
@@ -62,6 +72,12 @@ export class UpdateShopDto {
   @IsNotEmpty()
   @IsOptional()
   shopName?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  description?: string;
 
   @ApiProperty()
   @IsString()

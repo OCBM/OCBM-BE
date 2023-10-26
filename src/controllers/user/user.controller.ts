@@ -6,11 +6,13 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpException,
   HttpStatus,
   ParseUUIDPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
 import { Role, BCRYPT_SALT_ROUNDS } from '@/common';
@@ -35,11 +37,26 @@ export class UserController {
   // }
 
   @ApiBearerAuth('access-token')
-  @IsEnum(Role)
+  @ApiQuery({
+    name: 'page',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+  })
   @Get('/')
-  async getAllUserswithoutRole(): Promise<UserResponseDto> {
+  async getAllUserswithoutRole(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('search') search: string = ""
+  ): Promise<UserResponseDto> {
     try {
-      return this.userService.getAllUserswithoutRole();
+      return this.userService.getAllUserswithoutRole(page, limit, search);
     } catch (e) {
       console.log(e);
     }
