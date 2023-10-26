@@ -21,4 +21,5 @@ export const TABLES = {
   GROUP: 'group',
   SHOP: 'shop',
   Service: 'service',
+  MACHINELINE: 'machineLine',
 };

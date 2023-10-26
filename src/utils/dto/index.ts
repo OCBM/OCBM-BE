@@ -4,3 +4,4 @@ export * from './group.dto';
 export * from './plant.dto';
 export * from './organization.dto';
 export * from './shop.dto';
+export * from './machineLine.dto';

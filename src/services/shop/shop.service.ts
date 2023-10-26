@@ -6,7 +6,7 @@ import { PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class ShopService {
-  constructor(private readonly prismaDynamic: PrismaService) {}
+  constructor(private readonly prismaDynamic: PrismaService) { }
 
   async createShop(data: Prisma.ShopCreateInput): Promise<ShopResponseDto> {
     try {
@@ -69,13 +69,7 @@ export class ShopService {
       plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
       });
-      // if (!organization) {
-      //   // throw new HttpException('Invalid Organization', HttpStatus.BAD_REQUEST);
-      //   return {
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //     message: organization,
-      //   };
-      // }
+
       const checkShop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: {
           shopId: shopId,
@@ -88,7 +82,6 @@ export class ShopService {
         },
       });
 
-      //   console.log(plant, shop, checkShop);
       if (shop) {
         return shop;
       } else if (checkShop && checkShop?.plantId !== plant?.plantId) {
@@ -101,48 +94,11 @@ export class ShopService {
           statusCode: HttpStatus.BAD_REQUEST,
           Error: 'There no shop',
         };
-        // throw new HttpException(
-        //   'Organazation and Plant is mismatching',
-        //   HttpStatus.BAD_REQUEST,
-        // );
       }
     } catch {
       throw new HttpException('Plant/Shop not exists', HttpStatus.BAD_REQUEST);
     }
   }
-  // async getPlantByUserId(
-  //   userId: string,
-  //   plantid: string,
-  // ): Promise<PlantResponseDto> {
-  //   let plant: any;
-
-  //   let user: any;
-
-  //   try {
-  //     user = await this.prismaDynamic.findUnique(TABLES.USER, {
-  //       where: { UserId: userId },
-  //     });
-
-  //     if (!user) {
-  //       throw new HttpException('Invalid User', HttpStatus.BAD_REQUEST);
-  //     } else {
-  //       plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-  //         where: { plantId: plantid },
-  //       });
-  //     }
-  //   } catch {
-  //     throw new HttpException(
-  //       'Organazation/Plant not exists',
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-
-  //   return {
-  //     statusCode: HttpStatus.OK,
-
-  //     message: plant,
-  //   };
-  // }
 
   async updateShop(
     plantId: string,
@@ -155,22 +111,10 @@ export class ShopService {
       plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
       });
-      // if (!organization) {
-      //   return {
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //     Error: 'Organization not exist',
-      //   };
-      // }
+
       const checkShop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId: shopId },
       });
-      // if (!checkPlant) {
-      //   return {
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //     Error: 'Plant not exist',
-      //   };
-      // }
-
       shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: {
           shopId: shopId,
@@ -210,21 +154,11 @@ export class ShopService {
       plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId },
       });
-      // if (!organization) {
-      //   return {
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //     Error: 'Organization not Exists',
-      //   };
-      // }
+
       const checkShop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId: shopId },
       });
-      // if (!plant) {
-      //   return {
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //     Error: 'Plant not Exists',
-      //   };
-      // }
+
       shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: {
           shopId: shopId,

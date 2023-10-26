@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { JwtService } from '@nestjs/jwt';
 import {
   AuthController,
+  MachineLineController,
   OrganizationController,
   PlantController,
   ShopController,
@@ -12,6 +13,7 @@ import {
 import { AuthModule, GroupModule } from './modules';
 import {
   AuthService,
+  MachineLineService,
   OrganizationService,
   PlantService,
   PrismaService,
@@ -31,6 +33,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     OrganizationController,
     PlantController,
     ShopController,
+    MachineLineController,
   ],
   providers: [
     PrismaService,
@@ -42,6 +45,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     JwtStrategy,
     PlantService,
     ShopService,
+    MachineLineService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

@@ -86,22 +86,7 @@ export class ShopController {
   ): Promise<ShopResponseDto> {
     return this.shopService.getShopByPlantId(plantId, shopId);
   }
-  //   @ApiParam({
-  //     name: 'userId',
-  //     required: true,
-  //   })
-  //   @ApiParam({
-  //     name: 'plantId',
-  //     required: true,
-  //   })
-  // @ApiBearerAuth('access-token')
-  // @Get('/:userId/:plantId')
-  // async getPlantByUserId(
-  //   @Param('userId', ParseUUIDPipe) userId: string,
-  //   @Param('plantId', ParseUUIDPipe) plantId: string,
-  // ): Promise<PlantResponseDto> {
-  //   return this.plantService.getPlantByUserId(userId, plantId);
-  // }
+
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
