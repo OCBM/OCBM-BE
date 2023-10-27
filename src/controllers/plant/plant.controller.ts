@@ -89,7 +89,7 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
-  @Get('/organizationId=:organizationId&plantId:plantId')
+  @Get('/plantId=:plantId&organizationId=:organizationId')
   async getPlantByOrganizationId(
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
     @Param('plantId', ParseUUIDPipe) plantId: string,
@@ -116,7 +116,7 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
-  @Put('/organizationId=:organizationId&plantId:plantId')
+  @Put('/organizationId=:organizationId&plantId=:plantId')
   async updatePlant(
     @Body() plantData: UpdatePlantDto,
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
@@ -130,7 +130,7 @@ export class PlantController {
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/organizationId=:organizationId&plantId:plantId')
+  @Delete('/organizationId=:organizationId&plantId=:plantId')
   @ApiParam({
     name: 'organizationId',
     required: true,
