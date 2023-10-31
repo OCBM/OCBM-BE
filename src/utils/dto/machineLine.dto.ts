@@ -26,7 +26,7 @@ export class MachineLineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 
   @ApiProperty()
   @IsString()
@@ -59,7 +59,7 @@ export class CreateMachineLineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 
   @IsString()
   @ApiProperty()
@@ -97,7 +97,7 @@ export class UpdateMachineLineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 }
 
 export class MachineLineResponseDto {

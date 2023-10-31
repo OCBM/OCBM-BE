@@ -21,7 +21,7 @@ export class ShopDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 
   @ApiProperty()
   @IsString()

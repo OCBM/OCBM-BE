@@ -21,7 +21,7 @@ export class PlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 
   @ApiProperty()
   @IsString()
@@ -96,7 +96,7 @@ export class UpdatePlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName?: string;
+  imageName: string;
 }
 
 export class PlantResponseDto {

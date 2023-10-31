@@ -37,6 +37,7 @@ async function main() {
       plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
       plantName: 'Chennai',
       image: '',
+      imageName: 'Chennai.png',
       description: 'Chennai Plant',
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',
@@ -44,7 +45,7 @@ async function main() {
     },
     update: {},
   });
-  
+
   const admin = await prisma.admin.upsert({
     where: { userName: 'abineshprabhakaran' },
     create: {
@@ -59,22 +60,22 @@ async function main() {
         connect: [
           {
             groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-          }
+          },
         ],
       },
       organization: {
         connect: [
           {
             organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-          }
+          },
         ],
       },
       plants: {
         connect: [
           {
-            plantId: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
-          }
-        ]
+            plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+          },
+        ],
       },
       password: '$2b$10$PVhCLgY2.yi7de0s8FgTcuZjx18CTh2ffgZ8T6LSmYRIH5M7VJeQ6',
     },
@@ -88,6 +89,7 @@ async function main() {
       shopName: 'Chennai',
       description: 'Chennai Plant',
       image: '',
+      imageName: 'Chennai.png',
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',
       plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
