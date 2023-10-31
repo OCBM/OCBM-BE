@@ -27,7 +27,7 @@ export class ShopService {
     }
   }
 
-  async getAllShops(plantId: any): Promise<ShopResponseDto> {
+  async getAllShopsByPlantId(plantId: any): Promise<ShopResponseDto> {
     try {
       const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
@@ -50,6 +50,25 @@ export class ShopService {
         return {
           statusCode: HttpStatus.OK,
           Error: 'There is no shop in this plant',
+        };
+      }
+    } catch (e) {
+      throw new HttpException('unable to fetch shops', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getAllShops(): Promise<ShopResponseDto> {
+    try {
+      const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {});
+      if (shops.length > 0) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: shops,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.OK,
+          Error: 'There is no shop',
         };
       }
     } catch (e) {

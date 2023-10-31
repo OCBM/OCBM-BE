@@ -23,7 +23,7 @@ model Admin {
   updatedAt    DateTime?      @updatedAt
   groups       Group[]        @relation("AdminToGroup")
   organization Organization[] @relation("AdminToOrganization")
-  plants        Plant[]        @relation("AdminToPlant")
+  plants       Plant[]        @relation("AdminToPlant")
 }
 
 model User {
@@ -73,6 +73,7 @@ model Organization {
 model Plant {
   plantId        String       @id @default(uuid()) @db.Uuid
   image          String
+  imageName      String
   plantName      String
   description    String
   createdAt      DateTime?    @default(now())
@@ -85,23 +86,25 @@ model Plant {
 }
 
 model Shop {
-  shopId    String    @id @default(uuid()) @db.Uuid
-  shopName  String
-  image     String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  plantId   String    @db.Uuid
-  plant     Plant     @relation(fields: [plantId], references: [plantId])
+  shopId       String        @id @default(uuid()) @db.Uuid
+  shopName     String
+  image        String
+  imageName    String
+  createdAt    DateTime?     @default(now())
+  updatedAt    DateTime?     @updatedAt
+  plantId      String        @db.Uuid
+  plant        Plant         @relation(fields: [plantId], references: [plantId])
   machineLines MachineLine[]
 }
 
 model MachineLine {
-   machineLineId    String    @id @default(uuid()) @db.Uuid
-  machineLineName  String
+  machineLineId          String    @id @default(uuid()) @db.Uuid
+  machineLineName        String
   machineLineDescription String
-  image     String
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
-  shopId   String    @db.Uuid
-  shop     Shop     @relation(fields: [shopId], references: [shopId])
+  image                  String
+  imageName              String
+  createdAt              DateTime? @default(now())
+  updatedAt              DateTime? @updatedAt
+  shopId                 String    @db.Uuid
+  shop                   Shop      @relation(fields: [shopId], references: [shopId])
 }

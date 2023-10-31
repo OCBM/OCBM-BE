@@ -25,6 +25,11 @@ export class MachineLineDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  imageName?: string;
+
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   shopId: string;
 
@@ -50,6 +55,11 @@ export class CreateMachineLineDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageName?: string;
 
   @IsString()
   @ApiProperty()
@@ -83,6 +93,11 @@ export class UpdateMachineLineDto {
   @IsString()
   @IsOptional()
   image?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageName?: string;
 }
 
 export class MachineLineResponseDto {

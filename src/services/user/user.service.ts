@@ -15,13 +15,17 @@ import { UserData } from '@/common';
 export class UserService {
   constructor(private readonly prismaDynamic: PrismaService) { }
 
-  async getAllUserswithoutRole(): Promise<UserResponseDto> {
-    let userDetails: any;
-    userDetails = await this.prismaDynamic
-      .$queryRaw`SELECT * FROM "Admin" UNION SELECT * from "User"`;
+  async getAllUserswithoutRole(page: number = 1, limit: number = 10, search: string): Promise<UserResponseDto> {
+    let countQuery : string = search.trim() ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`: `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
+    let query : string = search.trim() ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 LIMIT $2 OFFSET $3`: `SELECT * FROM "Admin" UNION ALL SELECT * from "User" LIMIT $2 OFFSET $3`;
+    let userDetails: any = await this.prismaDynamic
+    .$queryRawUnsafe(query, `%${search.trim().replace(/"/g,"")}%`, limit, (page - 1) * limit);
+    let totalCountDetails : any = await this.prismaDynamic
+      .$queryRawUnsafe(countQuery, `%${search.trim().replace(/"/g,"")}%`);
     return {
       statusCode: HttpStatus.OK,
-      message: userDetails,
+      count: totalCountDetails.length,
+      message: userDetails
     };
   }
 

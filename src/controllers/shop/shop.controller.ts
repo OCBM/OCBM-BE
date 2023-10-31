@@ -58,16 +58,23 @@ export class ShopController {
       return result;
     }
   }
+  
+  @ApiBearerAuth('access-token')
+  @Get('/')
+  async getAllShops(): Promise<ShopResponseDto> {
+    return this.shopService.getAllShops();
+  }
+
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'plantId',
     required: true,
   })
   @Get('/plantId=:plantId')
-  async getAllShops(
+  async getAllShopsByPlantId(
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<ShopResponseDto> {
-    return this.shopService.getAllShops(plantId);
+    return this.shopService.getAllShopsByPlantId(plantId);
   }
 
   @ApiBearerAuth('access-token')

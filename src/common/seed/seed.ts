@@ -86,6 +86,7 @@ async function main() {
     create: {
       shopId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
       shopName: 'Chennai',
+      description: 'Chennai Plant',
       image: '',
       createdAt: '2023-10-04T13:19:57.171Z',
       updatedAt: '2023-10-04T13:19:57.171Z',

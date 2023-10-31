@@ -143,6 +143,8 @@ export class UserDto {
 export class UserResponseDto {
   statusCode: number;
 
+  count?: number;
+
   @Type(() => UserDto)
   message: UserDto;
 
@@ -153,6 +155,8 @@ export class UserResponseDto {
 
 export class UsersResponseDto {
   statusCode: number;
+
+  count?: number;
 
   @Type(() => UserDto)
   message: UserDto[];

@@ -20,6 +20,11 @@ export class PlantDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  imageName?: string;
+
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   organizationId: string;
 
@@ -50,6 +55,11 @@ export class CreatePlantDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageName: string;
 
   @IsString()
   @ApiProperty()
@@ -82,6 +92,11 @@ export class UpdatePlantDto {
   @IsString()
   @IsOptional()
   image?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageName?: string;
 }
 
 export class PlantResponseDto {
