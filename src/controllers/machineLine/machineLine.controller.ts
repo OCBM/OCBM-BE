@@ -79,7 +79,7 @@ export class MachineLineController {
     name: 'machineLineId',
     required: true,
   })
-  @Get('/shopId=:shopId&machineLineId=:machineLineId')
+  @Get('/machineLineId=:machineLineId&shopId=:shopId')
   async getMachineLineByShopId(
     @Param('shopId', ParseUUIDPipe) shopId: string,
     @Param('machineLineId', ParseUUIDPipe) machineLineId: string,

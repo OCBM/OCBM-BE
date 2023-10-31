@@ -86,7 +86,7 @@ export class ShopController {
     name: 'shopId',
     required: true,
   })
-  @Get('/plantId=:plantId&shopId=:shopId')
+  @Get('/shopId=:shopId&plantId=:plantId')
   async getShopByPlantId(
     @Param('plantId', ParseUUIDPipe) plantId: string,
     @Param('shopId', ParseUUIDPipe) shopId: string,
