@@ -5,3 +5,4 @@ export * from './plant.dto';
 export * from './organization.dto';
 export * from './shop.dto';
 export * from './machineLine.dto';
+export * from './machine.dto';

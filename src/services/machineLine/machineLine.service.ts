@@ -35,6 +35,31 @@ export class MachineLineService {
     }
   }
 
+  async getAllMachineLine(): Promise<MachineLineResponseDto> {
+    try {
+      const machineLine = await this.prismaDynamic.findMany(
+        TABLES.MACHINELINE,
+        {},
+      );
+      if (machineLine.length > 0) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: machineLine,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.OK,
+          Error: 'There is no MachineLine',
+        };
+      }
+    } catch (e) {
+      throw new HttpException(
+        'unable to fetch MachineLines',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async getAllMachineLines(shopId: any): Promise<MachineLineResponseDto> {
     try {
       const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {

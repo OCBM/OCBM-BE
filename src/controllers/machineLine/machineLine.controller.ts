@@ -58,6 +58,12 @@ export class MachineLineController {
       return result;
     }
   }
+
+  @ApiBearerAuth('access-token')
+  @Get('/')
+  async getAllMachineLine(): Promise<MachineLineResponseDto> {
+    return this.machineLineService.getAllMachineLine();
+  }
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'shopId',

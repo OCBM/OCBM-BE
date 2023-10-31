@@ -6,3 +6,4 @@ export * from './plant/plant.service';
 export * from './organization/organization.service';
 export * from './shop/shop.service';
 export * from './machineLine/machineLine.service';
+export * from './machine/machine.service';

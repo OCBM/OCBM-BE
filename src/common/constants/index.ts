@@ -22,4 +22,5 @@ export const TABLES = {
   SHOP: 'shop',
   Service: 'service',
   MACHINELINE: 'machineLine',
+  MACHINE: 'machine',
 };
