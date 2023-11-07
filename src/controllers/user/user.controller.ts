@@ -5,6 +5,7 @@ import {
   Put,
   Delete,
   Body,
+  Req,
   Param,
   Query,
   HttpException,
@@ -182,10 +183,11 @@ export class UserController {
   })
   @Put('/:id')
   async updateUser(
+    @Req() req: Request | any,
     @Body() userData: UpdateUserDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, {
+    return this.userService.updateUser(id, req.user.role,{
       ...userData,
       ...(userData.password && {
         password: await bcrypt.hash(userData.password, BCRYPT_SALT_ROUNDS),

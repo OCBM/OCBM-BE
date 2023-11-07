@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { TABLES, TokenType } from '@/common';
 import { PrismaValidation, Role } from '@/common';
 import {
@@ -178,10 +178,11 @@ export class UserService {
 
   async updateUser(
     userId: string,
+    role: string,
     data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
-      let user: UserData;
+      let user: any;
       let userData: any = {
         ...data,
       };
@@ -244,46 +245,49 @@ export class UserService {
             groups: true,
           },
         });
-        if (
-          user?.organization?.length &&
-          userData?.organization?.connect?.length
-        ) {
-          userData = {
-            ...userData,
-            organization: {
-              disconnect: user.organization.map((organization) => ({
-                organizationId: organization.organizationId,
-              })),
-              ...userData.organization,
-            },
-          };
+        if(role === Role.ADMIN,user.role === Role.ADMIN) {
+        throw new UnauthorizedException();
         }
-        if (user?.plants?.length && userData?.plant?.connect?.length) {
-          userData = {
-            ...userData,
-            plant: {
-              disconnect: user.plants.map((plant) => ({
-                plantId: plant.plantId,
-              })),
-              ...userData.plant,
-            },
-          };
-        }
-        if (user?.groups?.length && userData?.group?.connect?.length) {
-          userData = {
-            ...userData,
-            group: {
-              disconnect: user.groups.map((group) => ({
-                groupId: group.groupId,
-              })),
-              ...userData.group,
-            },
-          };
-        }
-        var updatedData = await this.prismaDynamic.update(TABLES.ADMIN, {
-          where: { userId },
-          data: updatedData,
-        });
+        // if (
+        //   user?.organization?.length &&
+        //   userData?.organization?.connect?.length
+        // ) {
+        //   userData = {
+        //     ...userData,
+        //     organization: {
+        //       disconnect: user.organization.map((organization) => ({
+        //         organizationId: organization.organizationId,
+        //       })),
+        //       ...userData.organization,
+        //     },
+        //   };
+        // }
+        // if (user?.plants?.length && userData?.plant?.connect?.length) {
+        //   userData = {
+        //     ...userData,
+        //     plant: {
+        //       disconnect: user.plants.map((plant) => ({
+        //         plantId: plant.plantId,
+        //       })),
+        //       ...userData.plant,
+        //     },
+        //   };
+        // }
+        // if (user?.groups?.length && userData?.group?.connect?.length) {
+        //   userData = {
+        //     ...userData,
+        //     group: {
+        //       disconnect: user.groups.map((group) => ({
+        //         groupId: group.groupId,
+        //       })),
+        //       ...userData.group,
+        //     },
+        //   };
+        // }
+        // var updatedData = await this.prismaDynamic.update(TABLES.ADMIN, {
+        //   where: { userId },
+        //   data: updatedData,
+        // });
       }
 
       if (!user) {
@@ -297,6 +301,9 @@ export class UserService {
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
         throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+      }
+      if (error?.status === HttpStatus.UNAUTHORIZED) {
+        throw new UnauthorizedException();
       }
       throw new HttpException(
         'Failed to update user',

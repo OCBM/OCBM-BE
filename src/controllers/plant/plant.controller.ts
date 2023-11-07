@@ -96,15 +96,7 @@ export class PlantController {
   ): Promise<PlantResponseDto> {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
-  @ApiBearerAuth('access-token')
-  @ApiParam({
-    name: 'userId',
-    required: true,
-  })
-  @ApiParam({
-    name: 'plantId',
-    required: true,
-  })
+  
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
