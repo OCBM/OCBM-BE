@@ -6,3 +6,4 @@ export * from './organization.dto';
 export * from './shop.dto';
 export * from './machineLine.dto';
 export * from './machine.dto';
+export * from './element.dto';
