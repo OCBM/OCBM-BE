@@ -28,8 +28,10 @@ jobs:
        touch .env
         echo "${{ secrets.DEV_ENV_FILE }}" > .env
     - run: npm i
-    - run: npx prisma generate
     - run: npx prisma migrate dev
+    - run: npx prisma generate
+    - run: pm2 restart devapi
+    
     
     
    
