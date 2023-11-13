@@ -32,5 +32,5 @@ jobs:
     - run: npm i
     - run: npx prisma migrate dev
     - run: npx prisma generate
-    - run: build
+    - run: npm build
     
