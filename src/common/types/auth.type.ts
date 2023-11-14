@@ -1,8 +1,8 @@
 import { Role } from '@/common';
 
 export interface TokenType {
-  userid: number;
-  username: string;
+  userId: number;
+  userName: string;
   email: string;
   role: Role;
   accessToken: string;

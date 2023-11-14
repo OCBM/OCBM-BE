@@ -14,7 +14,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  username: string;
+  userName: string;
 
   @ApiProperty()
   @IsString()
@@ -29,7 +29,7 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  employeeid: string;
+  employeeId: string;
 
   @ApiProperty()
   @IsString()
@@ -41,6 +41,18 @@ export class CreateUserDto {
   @ApiProperty()
   @IsEnum(Role)
   role: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  groups: any;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  organization: any;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  plants: any;
 
   @ApiProperty()
   @IsString()
@@ -74,19 +86,47 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  role?: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsOptional()
+  groups?: any;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsOptional()
+  organization?: any;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsOptional()
+  plants?: any;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  @MinLength(8)
   password?: string;
 }
 
 export class UserDto {
-  username: string;
+  userName: string;
 
   name: string;
 
   email: string;
 
-  employeeid: string;
+  employeeId: string;
 
   position: string;
+
+  role: string;
+
+  groups: any;
+
+  organization: any;
 
   @Exclude()
   password: string;
@@ -103,6 +143,8 @@ export class UserDto {
 export class UserResponseDto {
   statusCode: number;
 
+  count?: number;
+
   @Type(() => UserDto)
   message: UserDto;
 
@@ -113,6 +155,8 @@ export class UserResponseDto {
 
 export class UsersResponseDto {
   statusCode: number;
+
+  count?: number;
 
   @Type(() => UserDto)
   message: UserDto[];

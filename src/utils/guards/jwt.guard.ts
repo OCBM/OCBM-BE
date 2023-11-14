@@ -1,4 +1,4 @@
-import { IS_PUBLIC_KEY } from '@/common';
+import { DECORATOR_KEYS } from '@/common';
 import { Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
@@ -11,10 +11,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContextHost) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isPublic = this.reflector.getAllAndOverride<boolean>(
+      DECORATOR_KEYS.public,
+      [context.getHandler(), context.getClass()],
+    );
     if (isPublic) {
       return true;
     }
