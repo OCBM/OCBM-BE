@@ -28,7 +28,7 @@ jobs:
        touch .env
         echo "${{ secrets.DEV_ENV_FILE }}" > .env
     - run: npm i    
-    - run: npx prisma migrate reset
+    - run: npx prisma migrate reset --force
     - run: npx prisma migrate deploy    
     - run: npx prisma generate
     
