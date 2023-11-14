@@ -25,7 +25,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      transformOptions: { enableImplicitConversion: true },
+      transformOptions: { enableImplicitConversion: false }, //do not set it to true it will convert array of object into multidimentional array it will cause issue in prisma
     }),
   );
   await app.listen(4000);

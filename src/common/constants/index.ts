@@ -1,4 +1,26 @@
-export const jwtSecret = 'hellothisisjwtsecret';
-export const ROLES_KEY = 'roles';
-export const IS_PUBLIC_KEY = 'isPublic';
-export const saltRounds = 10;
+export * as APP_CONSTANTS from './appconstants';
+export const BCRYPT_SALT_ROUNDS = 10;
+
+export const DECORATOR_KEYS = {
+  roles: 'ROLES',
+  public: 'IS_PUBLIC',
+  groupPermission: 'GROUP_PERMISSION',
+};
+export const TOKEN_EXPIRY = {
+  accessToken: '24h',
+};
+export const TOKEN_SECRET = {
+  accessToken: 'hellothisisjwtsecret',
+};
+
+export const TABLES = {
+  ADMIN: 'admin',
+  USER: 'user',
+  PLANT: 'plant',
+  ORGANIZATION: 'organization',
+  GROUP: 'group',
+  SHOP: 'shop',
+  Service: 'service',
+  MACHINELINE: 'machineLine',
+  MACHINE: 'machine',
+};
