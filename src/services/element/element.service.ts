@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ElementResponseDto, UpdateElementDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class ElementService {
@@ -21,12 +21,12 @@ export class ElementService {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
-          'Element already exists',
+          APP_CONSTANTS.ELEMENT_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Failed to create element',
+        APP_CONSTANTS.FAILED_TO_CREATE_ELEMENT,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -43,12 +43,12 @@ export class ElementService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no Element',
+          Error: APP_CONSTANTS.NO_ELEMENT,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch Element',
+        APP_CONSTANTS.UNABLE_TO_FETCH_ELEMENTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -61,7 +61,7 @@ export class ElementService {
       if (!machine) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Machine',
+          Error: APP_CONSTANTS.NO_MACHINE,
         };
       }
       const element = await this.prismaDynamic.findMany(TABLES.ELEMENT, {
@@ -75,12 +75,12 @@ export class ElementService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no Element in this Machine',
+          Error: APP_CONSTANTS.NO_ELEMENT_IN_THIS_MACHINE,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch elements',
+        APP_CONSTANTS.UNABLE_TO_FETCH_ELEMENTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -119,17 +119,17 @@ export class ElementService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Machine and element is mismatching',
+          Error: APP_CONSTANTS.ELEMENT_AND_MACHINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Element',
+          Error: APP_CONSTANTS.NO_ELEMENT,
         };
       }
     } catch {
       throw new HttpException(
-        'Element/Machine not exists',
+        APP_CONSTANTS.ELEMENT_OR_MACHINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -172,17 +172,17 @@ export class ElementService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Machine and Element is mismatching',
+          Error: APP_CONSTANTS.ELEMENT_AND_MACHINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no element',
+          Error: APP_CONSTANTS.NO_ELEMENT,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Machine/Element not exists',
+        APP_CONSTANTS.ELEMENT_OR_MACHINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -216,7 +216,7 @@ export class ElementService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'Element deleted successfully',
+          message: APP_CONSTANTS.ELEMENT_DELETED_SUCCESSFULLY,
         };
       } else if (
         checkElement &&
@@ -225,17 +225,17 @@ export class ElementService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Machine and Element is mismatching',
+          Error: APP_CONSTANTS.ELEMENT_AND_MACHINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Element',
+          Error: APP_CONSTANTS.NO_ELEMENT,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Machine/Element not exists',
+        APP_CONSTANTS.ELEMENT_OR_MACHINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -45,7 +45,8 @@ export class OrganizationResponseDto {
   statusCode: number;
 
   @Type(() => OrganizationDto)
-  message: OrganizationDto;
+  message?: OrganizationDto;
+  Error?: string;
 
   constructor(partial: Partial<OrganizationResponseDto>) {
     Object.assign(this, partial);

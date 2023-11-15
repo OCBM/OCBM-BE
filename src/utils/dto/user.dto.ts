@@ -146,7 +146,8 @@ export class UserResponseDto {
   count?: number;
 
   @Type(() => UserDto)
-  message: UserDto;
+  message?: UserDto;
+  Error?: string;
 
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
@@ -159,7 +160,8 @@ export class UsersResponseDto {
   count?: number;
 
   @Type(() => UserDto)
-  message: UserDto[];
+  message?: UserDto[];
+  Error?: string;
 
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);

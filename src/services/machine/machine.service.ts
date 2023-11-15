@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { MachineResponseDto, UpdateMachineDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class MachineService {
@@ -21,12 +21,12 @@ export class MachineService {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
-          'Machine already exists',
+          APP_CONSTANTS.MACHINE_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Failed to create machine',
+        APP_CONSTANTS.FAILED_TO_CREATE_MACHINE,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -43,12 +43,12 @@ export class MachineService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no Machine',
+          Error: APP_CONSTANTS.NO_MACHINE,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch Machine',
+        APP_CONSTANTS.UNABLE_TO_FETCH_MACHINE,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -64,7 +64,7 @@ export class MachineService {
       if (!machineLine) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no machineLine',
+          Error: APP_CONSTANTS.NO_MACHINELINE,
         };
       }
       const machine = await this.prismaDynamic.findMany(TABLES.MACHINE, {
@@ -78,12 +78,12 @@ export class MachineService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no Machine in this machineLine',
+          Error: APP_CONSTANTS.NO_MACHINE_IN_THIS_MACHINELINE,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch machines',
+        APP_CONSTANTS.UNABLE_TO_FETCH_MACHINE,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -122,17 +122,17 @@ export class MachineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'MachineLine and machine is mismatching',
+          Error: APP_CONSTANTS.MACHINE_AND_MACHINELINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Machine',
+          Error: APP_CONSTANTS.NO_MACHINE,
         };
       }
     } catch {
       throw new HttpException(
-        'Machine/MachineLine not exists',
+        APP_CONSTANTS.MACHINE_OR_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -175,17 +175,17 @@ export class MachineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'MachineLine and Machine is mismatching',
+          Error: APP_CONSTANTS.MACHINE_AND_MACHINELINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no machine',
+          Error: APP_CONSTANTS.NO_MACHINE,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'MachineLine/Machine not exists',
+        APP_CONSTANTS.MACHINE_OR_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -219,7 +219,7 @@ export class MachineService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'MachineLine deleted successfully',
+          message: APP_CONSTANTS.MACHINE_DELEATED_SUCCESSFULLY,
         };
       } else if (
         checkmachine &&
@@ -228,17 +228,17 @@ export class MachineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'MachineLine and Machine is mismatching',
+          Error: APP_CONSTANTS.MACHINE_AND_MACHINELINE_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Machine',
+          Error: APP_CONSTANTS.NO_MACHINE,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'MachineLine/Machine not exists',
+        APP_CONSTANTS.MACHINE_OR_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }

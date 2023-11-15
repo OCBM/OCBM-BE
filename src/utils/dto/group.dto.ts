@@ -57,7 +57,8 @@ export class GroupResponseDto {
   statusCode: number;
 
   @Type(() => GroupDto)
-  message: GroupDto;
+  message?: GroupDto;
+  Error?: string;
 
   constructor(partial: Partial<GroupResponseDto>) {
     Object.assign(this, partial);
@@ -68,7 +69,8 @@ export class GroupsResponseDto {
   statusCode: number;
 
   @Type(() => GroupDto)
-  message: GroupDto[];
+  message?: GroupDto[];
+  Error?: string;
 
   constructor(partial: Partial<GroupResponseDto>) {
     Object.assign(this, partial);
