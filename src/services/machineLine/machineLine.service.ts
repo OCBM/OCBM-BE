@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { MachineLineResponseDto, UpdateMachineLineDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
 
 @Injectable()
 export class MachineLineService {
@@ -24,12 +24,12 @@ export class MachineLineService {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
-          'MachineLine already exists',
+          APP_CONSTANTS.MACHINELINE_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Failed to create machineLine',
+        APP_CONSTANTS.FAILED_TO_CREATE_MACHINELINE,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -49,12 +49,12 @@ export class MachineLineService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no MachineLine',
+          Error: APP_CONSTANTS.THERE_IS_NO_MACHINELINE,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch MachineLines',
+        APP_CONSTANTS.UNABLE_TO_FETCH_MACHINELINES,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -68,7 +68,7 @@ export class MachineLineService {
       if (!shop) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP,
         };
       }
       const machineLine = await this.prismaDynamic.findMany(
@@ -85,12 +85,12 @@ export class MachineLineService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no MachineLines in this Shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_MACHINELINE_IN_THIS_SHOP,
         };
       }
     } catch (e) {
       throw new HttpException(
-        'unable to fetch machineLine',
+        APP_CONSTANTS.UNABLE_TO_FETCH_MACHINELINES,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -132,17 +132,17 @@ export class MachineLineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Shop and machineLine is mismatching',
+          Error: APP_CONSTANTS.SHOP_AND_MACHINELINE_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no machineLine',
+          Error: APP_CONSTANTS.THERE_IS_NO_MACHINELINE,
         };
       }
     } catch {
       throw new HttpException(
-        'MachineLine/Shop not exists',
+        APP_CONSTANTS.MACHINELIONE_AND_SHOP_NOT_EXISTS  ,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -191,17 +191,17 @@ export class MachineLineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Shop and MachineLine is mismatching',
+          Error: APP_CONSTANTS.SHOP_AND_MACHINELINE_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no machineLine',
+          Error: APP_CONSTANTS.THERE_IS_NO_MACHINELINE,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Shop/MachineLine not exists',
+        APP_CONSTANTS.SHOP_AND_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -238,7 +238,7 @@ export class MachineLineService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'MachineLine deleted successfully',
+          message: APP_CONSTANTS.MACHINELINE_DELETED_SUCCESSFULLY,
         };
       } else if (
         checkmachineLine &&
@@ -247,17 +247,17 @@ export class MachineLineService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Shop and MachineLine is mismatching',
+          Error: APP_CONSTANTS.SHOP_AND_MACHINELINE_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no MachineLine',
+          Error: APP_CONSTANTS.THERE_IS_NO_MACHINELINE,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Shop/MachineLine not exists',
+        APP_CONSTANTS.SHOP_AND_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }

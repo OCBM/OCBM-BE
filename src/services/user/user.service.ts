@@ -9,7 +9,7 @@ import {
 } from '@/utils';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserData } from '@/common';
+import { UserData, APP_CONSTANTS } from '@/common';
 
 @Injectable()
 export class UserService {
@@ -47,7 +47,7 @@ export class UserService {
     }
 
     if (!userDetails) {
-      throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
     }
 
     return {
@@ -106,7 +106,7 @@ export class UserService {
       });
     }
     if (!user) {
-      throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
     }
 
     return {
@@ -149,10 +149,10 @@ export class UserService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
-        'Failed to create user',
+        APP_CONSTANTS.FAILED_TO_CREATE_USER,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -167,10 +167,10 @@ export class UserService {
       };
     } catch (error) {
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
-        'Failed to create admin',
+        APP_CONSTANTS.FAILED_TO_CREATE_ADMIN,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -291,7 +291,7 @@ export class UserService {
       }
 
       if (!user) {
-        throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
       }
 
       return new UserResponseDto({
@@ -300,13 +300,13 @@ export class UserService {
       });
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
-        throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
       }
       if (error?.status === HttpStatus.UNAUTHORIZED) {
         throw new UnauthorizedException();
       }
       throw new HttpException(
-        'Failed to update user',
+        APP_CONSTANTS.FAILED_TO_UPDATE_USER,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -334,18 +334,18 @@ export class UserService {
       }
 
       if (!user) {
-        throw new HttpException('User not exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
       }
 
       return {
         statusCode: HttpStatus.OK,
-        message: 'User deleted successfully',
+        message: APP_CONSTANTS.USER_DELETED_SUCCESSFULLY,
       };
     } catch (error) {
       console.log(error);
 
       throw new HttpException(
-        'Failed to delete user',
+        APP_CONSTANTS.FAILED_TO_DELETE_USER,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

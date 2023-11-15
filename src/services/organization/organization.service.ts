@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { OrganizationResponseDto, UpdateOrganizationDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
 
 @Injectable()
 export class OrganizationService {
@@ -24,12 +24,12 @@ export class OrganizationService {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
-          'Organization already exists',
+          APP_CONSTANTS.ORGANIZATION_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Failed to create organization',
+        APP_CONSTANTS.FAILED_TO_CREATE_ORGANIZATION,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -49,7 +49,7 @@ export class OrganizationService {
       };
     } catch (e) {
       throw new HttpException(
-        'Unable to fetch organization',
+        APP_CONSTANTS.UNABLE_TO_FETCH_ORGANIZATION,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -65,7 +65,7 @@ export class OrganizationService {
       });
     } catch {
       throw new HttpException(
-        'Organization not exists',
+        APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -87,7 +87,7 @@ export class OrganizationService {
       });
       if (!organization) {
         throw new HttpException(
-          'Organization not exists',
+          APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       } else {
@@ -103,12 +103,12 @@ export class OrganizationService {
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
         throw new HttpException(
-          'organization not exists',
+         APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
       throw new HttpException(
-        'Failed to update organization',
+        APP_CONSTANTS.FAILED_TO_UPDATE_ORGANIZATION,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -123,7 +123,7 @@ export class OrganizationService {
       });
       if (!organization) {
         throw new HttpException(
-          'Organization not exists',
+          APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       } else {
@@ -134,11 +134,11 @@ export class OrganizationService {
 
       return {
         statusCode: HttpStatus.OK,
-        message: 'Organization deleted successfully',
+        message: APP_CONSTANTS.ORGANIZATION_DELETED_SUCCESFULLY,
       };
     } catch (error) {
       throw new HttpException(
-        'Failed to delete organization',
+        APP_CONSTANTS.FAILED_TO_DELETE_ORGANIZATION,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
