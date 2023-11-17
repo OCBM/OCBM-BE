@@ -1,5 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { PrismaValidation, TABLES } from '@/common';
+import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 import {
   UpdateGroupDto,
   GroupDto,
@@ -30,7 +30,10 @@ export class GroupService {
     });
 
     if (!group) {
-      throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.GROUP_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return {
@@ -50,7 +53,7 @@ export class GroupService {
       const checkgroupNameExist = await this.checkGroupName(data.groupName);
       if (checkgroupNameExist) {
         throw new HttpException(
-          'groupName already exists',
+          APP_CONSTANTS.GROUPNAME_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -64,10 +67,13 @@ export class GroupService {
       };
     } catch (error) {
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException('Group already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.GROUP_ALREADY_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
-        'Failed to create Group',
+        APP_CONSTANTS.FAILED_TO_CREATE_GROUP,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -85,7 +91,10 @@ export class GroupService {
       });
 
       if (!group) {
-        throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.GROUP_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       if (services.length) {
@@ -112,10 +121,13 @@ export class GroupService {
       });
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
-        throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.GROUP_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
-        'Failed to update Group',
+        APP_CONSTANTS.FAILED_TO_UPDATE_GROUP,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -127,7 +139,10 @@ export class GroupService {
     });
 
     if (!group) {
-      throw new HttpException('Group not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.GROUP_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     await this.prismaDynamic.deleteMany(TABLES.Service, { where: { groupId } });
     await this.prismaDynamic.delete(TABLES.GROUP, {
@@ -136,7 +151,7 @@ export class GroupService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Group deleted successfully',
+      message: APP_CONSTANTS.GROUP_DELEATED_SUCCESSFULLY,
     };
   }
 

@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { TABLES, TokenType } from '@/common';
 import { PrismaValidation, Role } from '@/common';
 import {
@@ -13,19 +18,33 @@ import { UserData } from '@/common';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaDynamic: PrismaService) { }
+  constructor(private readonly prismaDynamic: PrismaService) {}
 
-  async getAllUserswithoutRole(page: number = 1, limit: number = 10, search: string): Promise<UserResponseDto> {
-    let countQuery : string = search.trim() ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`: `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
-    let query : string = search.trim() ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 LIMIT $2 OFFSET $3`: `SELECT * FROM "Admin" UNION ALL SELECT * from "User" LIMIT $2 OFFSET $3`;
-    let userDetails: any = await this.prismaDynamic
-    .$queryRawUnsafe(query, `%${search.trim().replace(/"/g,"")}%`, limit, (page - 1) * limit);
-    let totalCountDetails : any = await this.prismaDynamic
-      .$queryRawUnsafe(countQuery, `%${search.trim().replace(/"/g,"")}%`);
+  async getAllUserswithoutRole(
+    page: number = 1,
+    limit: number = 10,
+    search: string,
+  ): Promise<UserResponseDto> {
+    const countQuery: string = search.trim()
+      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
+      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
+    const query: string = search.trim()
+      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 LIMIT $2 OFFSET $3`
+      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" LIMIT $2 OFFSET $3`;
+    const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+      query,
+      `%${search.trim().replace(/"/g, '')}%`,
+      limit,
+      (page - 1) * limit,
+    );
+    const totalCountDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+      countQuery,
+      `%${search.trim().replace(/"/g, '')}%`,
+    );
     return {
       statusCode: HttpStatus.OK,
       count: totalCountDetails.length,
-      message: userDetails
+      message: userDetails,
     };
   }
 
@@ -115,7 +134,7 @@ export class UserService {
     };
   }
 
-  async createSuperAdmin() { }
+  async createSuperAdmin() {}
 
   async CheckUsername(data: any) {
     let user: UserData;
@@ -136,7 +155,7 @@ export class UserService {
         return true;
       }
       return false;
-    } catch (e) { }
+    } catch (e) {}
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
@@ -245,8 +264,8 @@ export class UserService {
             groups: true,
           },
         });
-        if(role === Role.ADMIN,user.role === Role.ADMIN) {
-        throw new UnauthorizedException();
+        if ((role === Role.ADMIN, user.role === Role.ADMIN)) {
+          throw new UnauthorizedException();
         }
         // if (
         //   user?.organization?.length &&
