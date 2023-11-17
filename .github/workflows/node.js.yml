@@ -30,8 +30,9 @@ jobs:
     - run: npx prisma migrate deploy    
     - run: npx prisma generate
     - run: npm run build --if-present
-    - run: pm2 start dist/main.js --name=devapi
+    #- run: pm2 start dist/main.js --name=devapi
     - run: pm2 restart devapi
+    - run: pm2 status
     
     
    
