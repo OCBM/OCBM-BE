@@ -2,7 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { PlantResponseDto, UpdatePlantDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { PrismaValidation, TABLES,APP_CONSTANTS } from '@/common';
+import { ApiAcceptedResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class PlantService {
@@ -18,10 +19,10 @@ export class PlantService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException('Plant already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.PLANT_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
-        'Failed to create plant',
+        APP_CONSTANTS.FAILED_TO_CREATE_PLANT,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -40,7 +41,7 @@ export class PlantService {
       if (!organization) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Organization',
+          Error: APP_CONSTANTS.THERE_NO_ORGANIZATION,
         };
       }
       const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
@@ -54,11 +55,11 @@ export class PlantService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no plant in this organisation',
+          Error: APP_CONSTANTS.THETE_IS_NO_PLANT_IN_THIS_ORGANIZATION,
         };
       }
     } catch (e) {
-      throw new HttpException('unable to fetch plants', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -76,7 +77,7 @@ export class PlantService {
       if (!user && !admin) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no User/Admin',
+          Error: APP_CONSTANTS.THERE_IS_NO_USER_AND_ADMIN,
         };
       }
       const plants = user?.plants || admin?.plants
@@ -88,11 +89,11 @@ export class PlantService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no plant for this User',
+          Error: APP_CONSTANTS.THERE_IS_NO_PLANT_FOR_THIS_USER,
         };
       }
     } catch (e) {
-      throw new HttpException('unable to fetch plants', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -136,12 +137,12 @@ export class PlantService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Organazation and Plant is mismatching',
+          Error: APP_CONSTANTS.ORGANIZATION_AND_PLANT_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no plant',
+          Error: APP_CONSTANTS.THERE_NO_PLANT,
         };
         // throw new HttpException(
         //   'Organazation and Plant is mismatching',
@@ -150,7 +151,7 @@ export class PlantService {
       }
     } catch {
       throw new HttpException(
-        'Organazation/Plant not exists',
+        APP_CONSTANTS.ORGANIZATION_AND_PLANT_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -205,17 +206,17 @@ export class PlantService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Organazation and Plant is mismatching',
+          Error: APP_CONSTANTS.ORGANIZATION_AND_PLANT_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no plant',
+          Error: APP_CONSTANTS.THERE_NO_PLANT,
         };
       }
     } catch (error) {
       throw new HttpException(
-        'Organization/Plant not exists',
+        APP_CONSTANTS.ORGANIZATION_AND_PLANT_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -259,7 +260,7 @@ export class PlantService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'Plant deleted successfully',
+          message: APP_CONSTANTS.PLANT_DELETEd_SUCCESSFULLY,
         };
       } else if (
         checkPlant &&
@@ -268,19 +269,27 @@ export class PlantService {
       ) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Organazation and Plant is mismatching',
+          Error: APP_CONSTANTS.ORGANIZATION_AND_PLANT_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no plant',
+          Error: APP_CONSTANTS.THERE_NO_PLANT,
         };
       }
     } catch (error) {
+      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+        throw new HttpException(
+          APP_CONSTANTS.UNABLETODELETE,
+          HttpStatus.BAD_REQUEST,
+        );
+      } 
+      else{
       throw new HttpException(
-        'Organazation/Plant not exists',
+        APP_CONSTANTS.ORGANIZATION_AND_PLANT_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
+      }
     }
   }
 }

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ShopResponseDto, UpdateShopDto } from '@/utils';
-import { PrismaValidation, TABLES } from '@/common';
+import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
 
 @Injectable()
 export class ShopService {
@@ -18,10 +18,10 @@ export class ShopService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException('Shop already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException(APP_CONSTANTS.SHOP_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
-        'Failed to create shop',
+        APP_CONSTANTS.FAILED_TO_CREATE_SHOP,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -35,7 +35,7 @@ export class ShopService {
       if (!plant) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no Plant',
+          Error: APP_CONSTANTS.THERE_NO_PLANT,
         };
       }
       const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
@@ -49,11 +49,11 @@ export class ShopService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no shop in this plant',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP_IN_THIS_PLANT,
         };
       }
     } catch (e) {
-      throw new HttpException('unable to fetch shops', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -68,11 +68,11 @@ export class ShopService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: 'There is no shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP,
         };
       }
     } catch (e) {
-      throw new HttpException('unable to fetch shops', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -106,16 +106,16 @@ export class ShopService {
       } else if (checkShop && checkShop?.plantId !== plant?.plantId) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Plant and Shop is mismatching',
+          Error: APP_CONSTANTS.PLANT_AND_SHOP_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP,
         };
       }
     } catch {
-      throw new HttpException('Plant/Shop not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -153,16 +153,16 @@ export class ShopService {
       } else if (checkShop && checkShop?.plantId !== plant?.plantId) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Plant and Shop is mismatching',
+          Error: APP_CONSTANTS.PLANT_AND_SHOP_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP,
         };
       }
     } catch (error) {
-      throw new HttpException('Plant/Shop not exists', HttpStatus.BAD_REQUEST);
+      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -194,21 +194,29 @@ export class ShopService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: 'Shop deleted successfully',
+          message: APP_CONSTANTS.SHOP_DELETED_SUCCESSFULLY,
         };
       } else if (checkShop && plant && checkShop?.plantId !== plant?.plantId) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Plant and shop is mismatching',
+          Error: APP_CONSTANTS.PLANT_AND_SHOP_IS_MISMATCHING,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'There no shop',
+          Error: APP_CONSTANTS.THERE_IS_NO_SHOP,
         };
       }
     } catch (error) {
-      throw new HttpException('Plant/Shop not exists', HttpStatus.BAD_REQUEST);
+      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+        throw new HttpException(
+          APP_CONSTANTS.UNABLETODELETE,
+          HttpStatus.BAD_REQUEST,
+        );
+      } 
+      else{
+      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }

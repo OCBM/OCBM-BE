@@ -237,10 +237,18 @@ export class MachineService {
         };
       }
     } catch (error) {
+      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+        throw new HttpException(
+          APP_CONSTANTS.UNABLETODELETE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      else{
       throw new HttpException(
         APP_CONSTANTS.MACHINE_OR_MACHINELINE_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
+      }
     }
   }
 }
