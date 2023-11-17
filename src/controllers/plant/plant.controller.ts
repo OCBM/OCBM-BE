@@ -58,6 +58,14 @@ export class PlantController {
       return result;
     }
   }
+
+  @ApiBearerAuth('access-token')
+  @Get('/')
+  async getAllPlants(): Promise<PlantResponseDto> {
+    return this.plantService.getAllPlants();
+  }
+
+
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'organizationId',

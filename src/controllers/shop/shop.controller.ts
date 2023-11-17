@@ -29,7 +29,7 @@ export class ShopController {
   constructor(
     private readonly shopService: ShopService,
     private readonly prismaDynamic: PrismaService,
-  ) { }
+  ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
@@ -58,7 +58,7 @@ export class ShopController {
       return result;
     }
   }
-  
+
   @ApiBearerAuth('access-token')
   @Get('/')
   async getAllShops(): Promise<ShopResponseDto> {

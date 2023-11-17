@@ -2,8 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { PlantResponseDto, UpdatePlantDto } from '@/utils';
-import { PrismaValidation, TABLES,APP_CONSTANTS } from '@/common';
-import { ApiAcceptedResponse } from '@nestjs/swagger';
+import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
 export class PlantService {
@@ -24,6 +23,28 @@ export class PlantService {
       throw new HttpException(
         APP_CONSTANTS.FAILED_TO_CREATE_PLANT,
         HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getAllPlants(): Promise<PlantResponseDto> {
+    try {
+      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {});
+      if (plants.length > 0) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: plants,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.OK,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch (e) {
+      throw new HttpException(
+        APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -67,12 +88,12 @@ export class PlantService {
     try {
       const user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId: userId },
-        include: { plants: true }
+        include: { plants: true },
       });
 
       const admin = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
         where: { userId: userId },
-        include: { plants: true }
+        include: { plants: true },
       });
       if (!user && !admin) {
         return {
@@ -80,7 +101,7 @@ export class PlantService {
           Error: APP_CONSTANTS.THERE_IS_NO_USER_AND_ADMIN,
         };
       }
-      const plants = user?.plants || admin?.plants
+      const plants = user?.plants || admin?.plants;
       if (plants?.length) {
         return {
           statusCode: HttpStatus.OK,

@@ -76,3 +76,4 @@ export const MACHINELIONE_AND_SHOP_NOT_EXISTS = 'MachineLine/Shop not exists';
 export const SHOP_AND_MACHINELINE_NOT_EXISTS = 'Shop/MachineLine not exists';
 export const MACHINELINE_DELETED_SUCCESSFULLY = 'MachineLine deleted successfully';
 export const UNABLETODELETE = 'Unable to delete because of dependency'
+export const NO_PLANT = 'There is no Plant';
