@@ -93,6 +93,11 @@ export class UpdateShopDto {
   @IsString()
   @IsOptional()
   image?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageName: string;
 }
 
 export class ShopResponseDto {

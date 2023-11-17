@@ -27,3 +27,5 @@ export const MACHINE_AND_MACHINELINE_MISMATCHING =
 export const MACHINE_OR_MACHINELINE_NOT_EXISTS =
   'Machine/MachineLine not exists';
 export const MACHINE_DELEATED_SUCCESSFULLY = 'Machine deleted successfully';
+export const NO_PLANT = 'There is no Plant';
+export const UNABLE_TO_FETCH_PLANTS = 'unable to fetch Plants';
