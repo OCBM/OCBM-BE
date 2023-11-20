@@ -1,4 +1,6 @@
 -- CreateTable
+DROP TABLE IF EXISTS "Admin";
+
 CREATE TABLE "Admin" (
     "userId" UUID NOT NULL,
     "userName" TEXT NOT NULL,
