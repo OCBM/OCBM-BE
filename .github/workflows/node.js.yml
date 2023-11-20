@@ -27,7 +27,7 @@ jobs:
        touch .env
         echo "${{ secrets.DEV_ENV_FILE }}" > .env
     - run: npm i    
-    - name: Apply all pending migrations to the database
+      name: Apply all pending migrations to the database
     - run: npx prisma migrate deploy    
     - run: npx prisma generate
     - run: npm run build --if-present
