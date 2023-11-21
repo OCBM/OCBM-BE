@@ -173,7 +173,7 @@ export class UserService {
       };
     } catch (error) {
       console.log(error);
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.USER_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
@@ -194,7 +194,7 @@ export class UserService {
         message: new UserDto(user),
       };
     } catch (error) {
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.USER_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,

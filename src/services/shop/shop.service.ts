@@ -17,7 +17,7 @@ export class ShopService {
       };
     } catch (error) {
       console.log(error);
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.SHOP_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,

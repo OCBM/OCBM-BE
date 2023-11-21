@@ -66,7 +66,7 @@ export class GroupService {
         message: new GroupDto(group),
       };
     } catch (error) {
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.GROUP_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
