@@ -103,7 +103,7 @@ export class OrganizationService {
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
         throw new HttpException(
-         APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
+          APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -137,16 +137,16 @@ export class OrganizationService {
         message: APP_CONSTANTS.ORGANIZATION_DELETED_SUCCESFULLY,
       };
     } catch (error) {
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
         throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
+          APP_CONSTANTS.UNABLE_TO_DELETE_ORGANIZATION,
           HttpStatus.BAD_REQUEST,
         );
-      } else{
-      throw new HttpException(
-        APP_CONSTANTS.FAILED_TO_DELETE_ORGANIZATION,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      } else {
+        throw new HttpException(
+          APP_CONSTANTS.FAILED_TO_DELETE_ORGANIZATION,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     }
   }

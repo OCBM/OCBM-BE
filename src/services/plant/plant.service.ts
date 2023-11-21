@@ -18,7 +18,10 @@ export class PlantService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException(APP_CONSTANTS.PLANT_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.PLANT_ALREADY_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
         APP_CONSTANTS.FAILED_TO_CREATE_PLANT,
@@ -80,7 +83,10 @@ export class PlantService {
         };
       }
     } catch (e) {
-      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -114,7 +120,10 @@ export class PlantService {
         };
       }
     } catch (e) {
-      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.UNABLE_TO_FETCH_PLANTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -299,17 +308,16 @@ export class PlantService {
         };
       }
     } catch (error) {
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
         throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
+          APP_CONSTANTS.UNABLE_TO_DELETE_PLANT,
           HttpStatus.BAD_REQUEST,
         );
-      } 
-      else{
-      throw new HttpException(
-        APP_CONSTANTS.ORGANIZATION_AND_PLANT_NOT_EXISTS,
-        HttpStatus.BAD_REQUEST,
-      );
+      } else {
+        throw new HttpException(
+          APP_CONSTANTS.ORGANIZATION_AND_PLANT_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
   }
