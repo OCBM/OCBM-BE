@@ -6,7 +6,7 @@ import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
 
 @Injectable()
 export class ShopService {
-  constructor(private readonly prismaDynamic: PrismaService) { }
+  constructor(private readonly prismaDynamic: PrismaService) {}
 
   async createShop(data: Prisma.ShopCreateInput): Promise<ShopResponseDto> {
     try {
@@ -18,7 +18,10 @@ export class ShopService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException(APP_CONSTANTS.SHOP_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.SHOP_ALREADY_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
         APP_CONSTANTS.FAILED_TO_CREATE_SHOP,
@@ -53,7 +56,10 @@ export class ShopService {
         };
       }
     } catch (e) {
-      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -72,7 +78,10 @@ export class ShopService {
         };
       }
     } catch (e) {
-      throw new HttpException(APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.UNABLE_TO_FETCH_SHOPS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -115,7 +124,10 @@ export class ShopService {
         };
       }
     } catch {
-      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -162,7 +174,10 @@ export class ShopService {
         };
       }
     } catch (error) {
-      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -208,14 +223,16 @@ export class ShopService {
         };
       }
     } catch (error) {
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
         throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
+          APP_CONSTANTS.UNABLE_TO_DELETE_SHOP,
           HttpStatus.BAD_REQUEST,
         );
-      } 
-      else{
-      throw new HttpException(APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(
+          APP_CONSTANTS.PLANT_AND_SHOP_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
   }

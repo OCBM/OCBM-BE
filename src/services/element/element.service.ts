@@ -234,19 +234,17 @@ export class ElementService {
         };
       }
     } catch (error) {
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
         throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
+          APP_CONSTANTS.UNABLE_TO_DELETE_ELEMENT,
           HttpStatus.BAD_REQUEST,
         );
-      }
-      else{
+      } else {
         throw new HttpException(
           APP_CONSTANTS.ELEMENT_OR_MACHINE_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       }
-      
     }
   }
 }

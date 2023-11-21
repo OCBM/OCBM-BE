@@ -66,7 +66,10 @@ export class UserService {
     }
 
     if (!userDetails) {
-      throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.USER_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return {
@@ -125,7 +128,10 @@ export class UserService {
       });
     }
     if (!user) {
-      throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        APP_CONSTANTS.USER_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return {
@@ -168,7 +174,10 @@ export class UserService {
     } catch (error) {
       console.log(error);
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException(APP_CONSTANTS.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.USER_ALREADY_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
         APP_CONSTANTS.FAILED_TO_CREATE_USER,
@@ -186,7 +195,10 @@ export class UserService {
       };
     } catch (error) {
       if (error.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException(APP_CONSTANTS.USER_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.USER_ALREADY_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       throw new HttpException(
         APP_CONSTANTS.FAILED_TO_CREATE_ADMIN,
@@ -310,7 +322,10 @@ export class UserService {
       }
 
       if (!user) {
-        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.USER_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return new UserResponseDto({
@@ -319,7 +334,10 @@ export class UserService {
       });
     } catch (error) {
       if (error?.status === HttpStatus.BAD_REQUEST) {
-        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.USER_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (error?.status === HttpStatus.UNAUTHORIZED) {
         throw new UnauthorizedException();
@@ -353,7 +371,10 @@ export class UserService {
       }
 
       if (!user) {
-        throw new HttpException(APP_CONSTANTS.USER_NOT_EXISTS, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          APP_CONSTANTS.USER_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return {
@@ -362,19 +383,17 @@ export class UserService {
       };
     } catch (error) {
       console.log(error);
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
-        throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      else{
-        throw new HttpException(
-          APP_CONSTANTS.FAILED_TO_DELETE_USER,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-     
+      // if (error.response.code === PrismaValidation.FOREIGN_KEY) {
+      //   throw new HttpException(
+      //     APP_CONSTANTS.UNABLETODELETE,
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // } else {
+      throw new HttpException(
+        APP_CONSTANTS.FAILED_TO_DELETE_USER,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+      //}
     }
   }
 }

@@ -142,7 +142,7 @@ export class MachineLineService {
       }
     } catch {
       throw new HttpException(
-        APP_CONSTANTS.MACHINELIONE_AND_SHOP_NOT_EXISTS  ,
+        APP_CONSTANTS.MACHINELIONE_AND_SHOP_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -256,17 +256,16 @@ export class MachineLineService {
         };
       }
     } catch (error) {
-      if(error.response.code === PrismaValidation.FOREIGN_KEY){
+      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
         throw new HttpException(
-          APP_CONSTANTS.UNABLETODELETE,
+          APP_CONSTANTS.UNABLE_TO_DELETE_MACHINELINE,
           HttpStatus.BAD_REQUEST,
         );
-      } 
-      else{
-      throw new HttpException(
-        APP_CONSTANTS.SHOP_AND_MACHINELINE_NOT_EXISTS,
-        HttpStatus.BAD_REQUEST,
-      );
+      } else {
+        throw new HttpException(
+          APP_CONSTANTS.SHOP_AND_MACHINELINE_NOT_EXISTS,
+          HttpStatus.BAD_REQUEST,
+        );
       }
     }
   }
