@@ -63,7 +63,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         {
           orderBy: [
             {
-              createdAt: 'asc',
+              createdAt: 'desc',
             },
           ],
         },
