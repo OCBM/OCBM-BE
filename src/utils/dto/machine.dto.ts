@@ -106,6 +106,7 @@ export class MachineResponseDto {
   @Type(() => MachineDto)
   message?: MachineDto;
   Error?: string;
+  meta?: any;
 
   constructor(partial: Partial<MachineResponseDto>) {
     Object.assign(this, partial);

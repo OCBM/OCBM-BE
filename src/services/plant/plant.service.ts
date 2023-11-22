@@ -36,6 +36,7 @@ export class PlantService {
     sort: string,
   ): Promise<PlantResponseDto> {
     try {
+      const plantsCount = await this.prismaDynamic.findMany(TABLES.PLANT, {});
       const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
         orderBy: [
           {
@@ -49,6 +50,12 @@ export class PlantService {
         return {
           statusCode: HttpStatus.OK,
           message: plants,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: plantsCount.length,
+            totalPage: Math.ceil(plantsCount.length / limit),
+          },
         };
       } else {
         return {

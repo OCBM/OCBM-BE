@@ -106,6 +106,7 @@ export class ShopResponseDto {
   @Type(() => ShopDto)
   message?: ShopDto;
   Error?: string;
+  meta?: any;
 
   constructor(partial: Partial<ShopResponseDto>) {
     Object.assign(this, partial);

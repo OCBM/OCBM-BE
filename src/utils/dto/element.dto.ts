@@ -106,6 +106,7 @@ export class ElementResponseDto {
   @Type(() => ElementDto)
   message?: ElementDto;
   Error?: string;
+  meta?: any;
 
   constructor(partial: Partial<ElementResponseDto>) {
     Object.assign(this, partial);

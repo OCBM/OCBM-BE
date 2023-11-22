@@ -96,4 +96,5 @@ export const UNABLE_TO_DELETE_ELEMENT =
 export const UNABLE_TO_DELETE_ORGANIZATION =
   'You have 1 or more plant belongs to this particular organization. So please delete the dependent plant before deleting the organization';
 export const NO_PLANT = 'There is no Plant';
-export const RECORD_TO_DELETE_DOES_NOT_EXIST = "Record to delete does not exists";
+export const RECORD_TO_DELETE_DOES_NOT_EXIST =
+  'Record to delete does not exists';
