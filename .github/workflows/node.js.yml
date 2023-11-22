@@ -10,7 +10,8 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: self-hosted     
+    name: 'ip-172-31-39-112'
     strategy:
       matrix:
         node-version: [18.x]
