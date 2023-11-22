@@ -6,7 +6,7 @@ name: Node.js CI/CD
 on:
   push:
     branches: [ "main" ]
-    
+
 jobs:
   build:
 
@@ -26,7 +26,6 @@ jobs:
     - run: |
        touch .env
         echo "${{ secrets.PROD_ENV_FILE }}" > .env
-        
     #- run: npm i  
     #- run: npx prisma migrate deploy    
     #- run: npx prisma generate
@@ -35,3 +34,10 @@ jobs:
     #- run: pm2 restart devapi
     #- run: pm2 status
     
+    
+   
+    
+    
+    
+    
+   
