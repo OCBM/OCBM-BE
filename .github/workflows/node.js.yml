@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: [self-hosted,ip-172-31-39-112 ]    
+    runs-on: self-hosted    
     
     strategy:
       matrix:
