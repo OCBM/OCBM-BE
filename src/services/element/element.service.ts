@@ -19,7 +19,7 @@ export class ElementService {
       };
     } catch (error) {
       console.log(error);
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.ELEMENT_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,

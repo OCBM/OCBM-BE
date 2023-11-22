@@ -17,7 +17,7 @@ export class PlantService {
       };
     } catch (error) {
       console.log(error);
-      if (error.code === PrismaValidation.ALREADY_EXITS) {
+      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
         throw new HttpException(
           APP_CONSTANTS.PLANT_ALREADY_EXISTS,
           HttpStatus.BAD_REQUEST,
