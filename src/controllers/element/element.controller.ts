@@ -15,6 +15,8 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { ElementService } from '@/services/element/element.service';
@@ -61,8 +63,10 @@ export class ElementController {
 
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllElements(): Promise<ElementResponseDto> {
-    return this.elementService.getAllElements();
+  async getAllElements(@Query('page', ParseIntPipe) page: number,
+  @Query('limit', ParseIntPipe) limit: number,
+  @Query('sort') sort: string,): Promise<ElementResponseDto> {
+    return this.elementService.getAllElements(page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')

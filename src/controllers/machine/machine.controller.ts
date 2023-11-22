@@ -15,6 +15,8 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { MachineService } from '@/services/machine/machine.service';
@@ -61,8 +63,10 @@ export class MachineController {
 
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllMachines(): Promise<MachineResponseDto> {
-    return this.machineService.getAllMachines();
+  async getAllMachines(@Query('page', ParseIntPipe) page: number,
+  @Query('limit', ParseIntPipe) limit: number,
+  @Query('sort') sort: string,): Promise<MachineResponseDto> {
+    return this.machineService.getAllMachines(page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')

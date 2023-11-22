@@ -15,6 +15,8 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { ShopService } from '@/services/shop/shop.service';
@@ -61,8 +63,12 @@ export class ShopController {
 
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllShops(): Promise<ShopResponseDto> {
-    return this.shopService.getAllShops();
+  async getAllShops(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: string,
+  ): Promise<ShopResponseDto> {
+    return this.shopService.getAllShops(page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')

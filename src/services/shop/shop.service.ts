@@ -63,9 +63,21 @@ export class ShopService {
     }
   }
 
-  async getAllShops(): Promise<ShopResponseDto> {
+  async getAllShops(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<ShopResponseDto> {
     try {
-      const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {});
+      const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (shops.length > 0) {
         return {
           statusCode: HttpStatus.OK,
