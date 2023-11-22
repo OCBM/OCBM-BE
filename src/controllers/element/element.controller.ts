@@ -73,7 +73,7 @@ export class ElementController {
   async getAllElements(
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
-    @Query('sort') sort: string,
+    @Query('sort') sort: Sort,
   ): Promise<ElementResponseDto> {
     return this.elementService.getAllElements(page, limit, sort);
   }
