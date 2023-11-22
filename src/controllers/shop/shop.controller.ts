@@ -18,11 +18,12 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ShopService } from '@/services/shop/shop.service';
 import { Roles } from '@/decorator';
-import { Role, TABLES } from '@/common';
+import { Role, Sort, TABLES } from '@/common';
 import { PrismaService } from '@/services';
+import { IsEnum } from 'class-validator';
 
 @ApiTags('Shop')
 @Controller('shop')
@@ -62,11 +63,17 @@ export class ShopController {
   }
 
   @ApiBearerAuth('access-token')
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
   @Get('/')
   async getAllShops(
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
-    @Query('sort') sort: string,
+    @Query('sort') sort: Sort,
   ): Promise<ShopResponseDto> {
     return this.shopService.getAllShops(page, limit, sort);
   }

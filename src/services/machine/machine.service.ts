@@ -38,6 +38,10 @@ export class MachineService {
     sort: string,
   ): Promise<MachineResponseDto> {
     try {
+      const machineCount = await this.prismaDynamic.findMany(
+        TABLES.MACHINE,
+        {},
+      );
       const machine = await this.prismaDynamic.findMany(TABLES.MACHINE, {
         orderBy: [
           {
@@ -51,6 +55,12 @@ export class MachineService {
         return {
           statusCode: HttpStatus.OK,
           message: machine,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: machineCount.length,
+            totalPage: Math.ceil(machineCount.length / limit),
+          },
         };
       } else {
         return {

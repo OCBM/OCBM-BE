@@ -69,6 +69,7 @@ export class ShopService {
     sort: string,
   ): Promise<ShopResponseDto> {
     try {
+      const shopsCount = await this.prismaDynamic.findMany(TABLES.SHOP,{});
       const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
         orderBy: [
           {
@@ -82,6 +83,12 @@ export class ShopService {
         return {
           statusCode: HttpStatus.OK,
           message: shops,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: shopsCount.length,
+            totalPage: Math.ceil(shopsCount.length / limit),
+          },
         };
       } else {
         return {

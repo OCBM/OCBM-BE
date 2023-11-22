@@ -2,6 +2,10 @@ export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',
 }
+export enum Sort {
+  ASC = 'asc',
+  DESC = 'desc',
+}
 export enum PrismaValidation {
   ALREADY_EXITS = 'P2002',
   FOREIGN_KEY = 'P2003',

@@ -38,6 +38,10 @@ export class ElementService {
     sort: string,
   ): Promise<ElementResponseDto> {
     try {
+      const elementCount = await this.prismaDynamic.findMany(
+        TABLES.ELEMENT,
+        {},
+      );
       const element = await this.prismaDynamic.findMany(TABLES.ELEMENT, {
         orderBy: [
           {
@@ -51,6 +55,12 @@ export class ElementService {
         return {
           statusCode: HttpStatus.OK,
           message: element,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: elementCount.length,
+            totalPage: Math.ceil(elementCount.length / limit),
+          },
         };
       } else {
         return {
