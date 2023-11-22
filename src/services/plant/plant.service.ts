@@ -30,9 +30,21 @@ export class PlantService {
     }
   }
 
-  async getAllPlants(): Promise<PlantResponseDto> {
+  async getAllPlants(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<PlantResponseDto> {
     try {
-      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {});
+      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (plants.length > 0) {
         return {
           statusCode: HttpStatus.OK,

@@ -35,11 +35,23 @@ export class MachineLineService {
     }
   }
 
-  async getAllMachineLine(): Promise<MachineLineResponseDto> {
+  async getAllMachineLine(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<MachineLineResponseDto> {
     try {
       const machineLine = await this.prismaDynamic.findMany(
         TABLES.MACHINELINE,
-        {},
+        {
+          orderBy: [
+            {
+              createdAt: sort,
+            },
+          ],
+          skip: (page - 1) * limit,
+          take: limit,
+        },
       );
       if (machineLine.length > 0) {
         return {

@@ -15,6 +15,8 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { PlantService } from '@/services/plant/plant.service';
@@ -61,8 +63,12 @@ export class PlantController {
 
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllPlants(): Promise<PlantResponseDto> {
-    return this.plantService.getAllPlants();
+  async getAllPlants(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: string,
+  ): Promise<PlantResponseDto> {
+    return this.plantService.getAllPlants(page, limit, sort);
   }
 
 

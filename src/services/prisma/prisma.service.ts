@@ -59,16 +59,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async findMany(tablename: string, query: object) {
     try {
-      return await this[tablename].findMany(
-        {
-          orderBy: [
-            {
-              createdAt: 'desc',
-            },
-          ],
-        },
-        query,
-      );
+      return await this[tablename].findMany(query);
     } catch (error: any) {
       throw new InternalServerErrorException(error);
     }

@@ -32,9 +32,21 @@ export class MachineService {
     }
   }
 
-  async getAllMachines(): Promise<MachineResponseDto> {
+  async getAllMachines(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<MachineResponseDto> {
     try {
-      const machine = await this.prismaDynamic.findMany(TABLES.MACHINE, {});
+      const machine = await this.prismaDynamic.findMany(TABLES.MACHINE, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (machine.length > 0) {
         return {
           statusCode: HttpStatus.OK,

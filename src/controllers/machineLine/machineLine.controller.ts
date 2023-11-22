@@ -15,6 +15,8 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { MachineLineService } from '@/services/machineLine/machineLine.service';
@@ -61,8 +63,12 @@ export class MachineLineController {
 
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllMachineLine(): Promise<MachineLineResponseDto> {
-    return this.machineLineService.getAllMachineLine();
+  async getAllMachineLine(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: string,
+  ): Promise<MachineLineResponseDto> {
+    return this.machineLineService.getAllMachineLine(page, limit, sort);
   }
   @ApiBearerAuth('access-token')
   @ApiParam({
