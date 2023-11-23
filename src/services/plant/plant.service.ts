@@ -98,7 +98,7 @@ export class PlantService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: APP_CONSTANTS.THETE_IS_NO_PLANT_IN_THIS_ORGANIZATION,
+          Error: APP_CONSTANTS.THERE_IS_NO_PLANT_IN_THIS_ORGANIZATION,
         };
       }
     } catch (e) {
@@ -309,7 +309,7 @@ export class PlantService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: APP_CONSTANTS.PLANT_DELETEd_SUCCESSFULLY,
+          message: APP_CONSTANTS.PLANT_DELETED_SUCCESSFULLY,
         };
       } else if (
         checkPlant &&
