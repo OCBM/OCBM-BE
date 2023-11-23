@@ -2,6 +2,7 @@ import { Expose } from 'class-transformer';
 import exp from 'constants';
 //USER
 export const USER_NOT_EXISTS = 'User not exists';
+export const USERNAME_OR_PASSWORD_INCORRECT = 'UserName or Password is incorrect';
 export const WRONG_CREDENTIALS = 'Wrong Credentials';
 export const ELEMENT_ALREADY_EXISTS = 'Element already exists';
 export const FAILED_TO_CREATE_ELEMENT = 'Failed to create element';
@@ -50,7 +51,7 @@ export const SHOP_DELETED_SUCCESSFULLY = 'Shop deleted successfully';
 export const PLANT_ALREADY_EXISTS = 'Plant already exists';
 export const FAILED_TO_CREATE_PLANT = 'Failed to create plant';
 export const THERE_NO_ORGANIZATION = 'There no Organization';
-export const THETE_IS_NO_PLANT_IN_THIS_ORGANIZATION =
+export const THERE_IS_NO_PLANT_IN_THIS_ORGANIZATION =
   'There is no plant in this organization';
 export const UNABLE_TO_FETCH_PLANTS = 'unable to fetch plants';
 export const THERE_IS_NO_USER_AND_ADMIN = 'There no User/Admin';
@@ -60,7 +61,7 @@ export const ORGANIZATION_AND_PLANT_IS_MISMATCHING =
   'Organazation and Plant is mismatching';
 export const ORGANIZATION_AND_PLANT_NOT_EXISTS =
   'Organization/Plant not exists';
-export const PLANT_DELETEd_SUCCESSFULLY = 'Plant deleted successfully';
+export const PLANT_DELETED_SUCCESSFULLY = 'Plant deleted successfully';
 //organization
 export const ORGANIZATION_ALREADY_EXISTS = 'Organization already exists';
 export const FAILED_TO_CREATE_ORGANIZATION = 'Failed to create organization';

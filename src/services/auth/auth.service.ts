@@ -34,7 +34,7 @@ export class AuthService {
 
     if (!user) {
       throw new HttpException(
-        APP_CONSTANTS.USER_NOT_EXISTS,
+        APP_CONSTANTS.USERNAME_OR_PASSWORD_INCORRECT,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -42,7 +42,7 @@ export class AuthService {
     const isPasswordMatching = await bcrypt.compare(password, user.password);
     if (!isPasswordMatching) {
       throw new HttpException(
-        APP_CONSTANTS.WRONG_CREDENTIALS,
+        APP_CONSTANTS.USERNAME_OR_PASSWORD_INCORRECT,
         HttpStatus.BAD_REQUEST,
       );
     }
