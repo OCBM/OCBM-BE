@@ -13,7 +13,13 @@ import {
   ParseUUIDPipe,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
 import { Role, BCRYPT_SALT_ROUNDS } from '@/common';
@@ -29,7 +35,7 @@ import {
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   // @ApiBearerAuth('access-token')
   // @Get('/profile')
@@ -54,7 +60,7 @@ export class UserController {
   async getAllUserswithoutRole(
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
-    @Query('search') search: string = ""
+    @Query('search') search: string = '',
   ): Promise<UserResponseDto> {
     try {
       return this.userService.getAllUserswithoutRole(page, limit, search);
@@ -129,6 +135,7 @@ export class UserController {
     );
     const isUserExits = await this.userService.CheckUsername({
       userName: userData.userName,
+      emailId: userData.email,
     });
 
     if (isUserExits) {
@@ -187,7 +194,7 @@ export class UserController {
     @Body() userData: UpdateUserDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, req.user.role,{
+    return this.userService.updateUser(id, req.user.role, {
       ...userData,
       ...(userData.password && {
         password: await bcrypt.hash(userData.password, BCRYPT_SALT_ROUNDS),
