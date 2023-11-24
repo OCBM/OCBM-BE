@@ -5,11 +5,12 @@ name: Node.js CI/CD
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: 
+    - main
+    
 
 jobs:
   build:
-
     runs-on: [self-hosted, Dev]
     strategy:
       matrix:
@@ -25,13 +26,13 @@ jobs:
     - run: npm ci
     - run: |
        touch .env
-        echo "${{ secrets.DEV_ENV_FILE }}" > .env
+        echo "${{ secrets.PROD_ENV_FILE }}" > .env
     - run: npm i  
     - run: npx prisma migrate deploy    
     - run: npx prisma generate
     - run: npm run build --if-present
-    #- run: pm2 start dist/main.js --name=devapi
-    - run: pm2 restart devapi
+    #- run: pm2 start dist/main.js --name=prodapi
+    - run: pm2 restart prodapi
     - run: pm2 status
     
     
