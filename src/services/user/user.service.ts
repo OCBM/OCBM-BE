@@ -144,16 +144,17 @@ export class UserService {
 
   async CheckUsername(data: any) {
     let user: UserData;
-    const username = data.username;
+    const userName = data.userName;
+    const emailId = data.email;
 
     try {
       user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
-        where: { username },
+        where: { userName, emailId },
       });
 
       if (!user) {
         user = await this.prismaDynamic.findUnique(TABLES.USER, {
-          where: { username },
+          where: { userName, emailId },
         });
       }
 
@@ -161,7 +162,9 @@ export class UserService {
         return true;
       }
       return false;
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
@@ -370,7 +373,7 @@ export class UserService {
         });
       }
 
-      if (!user) {
+      if (user === null) {
         throw new HttpException(
           APP_CONSTANTS.USER_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
@@ -383,17 +386,24 @@ export class UserService {
       };
     } catch (error) {
       console.log(error);
-      // if (error.response.code === PrismaValidation.FOREIGN_KEY) {
-      //   throw new HttpException(
-      //     APP_CONSTANTS.UNABLETODELETE,
-      //     HttpStatus.BAD_REQUEST,
-      //   );
-      // } else {
-      throw new HttpException(
-        APP_CONSTANTS.FAILED_TO_DELETE_USER,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-      //}
+      if (
+        error.response.code === PrismaValidation.RECORD_TO_DELETE_DOES_NOT_EXIST
+      ) {
+        throw new HttpException(
+          APP_CONSTANTS.RECORD_TO_DELETE_DOES_NOT_EXIST,
+          HttpStatus.BAD_REQUEST,
+        );
+        // if (error.response.code === PrismaValidation.FOREIGN_KEY) {
+        //   throw new HttpException(
+        //     APP_CONSTANTS.UNABLETODELETE,
+        //     HttpStatus.BAD_REQUEST,
+        //   );
+      } else {
+        throw new HttpException(
+          APP_CONSTANTS.FAILED_TO_DELETE_USER,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }

@@ -105,6 +105,7 @@ export class PlantResponseDto {
   @Type(() => PlantDto)
   message?: PlantDto;
   Error?: string;
+  meta?: any;
 
   constructor(partial: Partial<PlantResponseDto>) {
     Object.assign(this, partial);

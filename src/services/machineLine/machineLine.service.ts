@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { MachineLineResponseDto, UpdateMachineLineDto } from '@/utils';
 import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
+import { table } from 'console';
 
 @Injectable()
 export class MachineLineService {
@@ -35,16 +36,38 @@ export class MachineLineService {
     }
   }
 
-  async getAllMachineLine(): Promise<MachineLineResponseDto> {
+  async getAllMachineLine(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<MachineLineResponseDto> {
     try {
-      const machineLine = await this.prismaDynamic.findMany(
+      const machineLineCount = await this.prismaDynamic.findMany(
         TABLES.MACHINELINE,
         {},
+      );
+      const machineLine = await this.prismaDynamic.findMany(
+        TABLES.MACHINELINE,
+        {
+          orderBy: [
+            {
+              createdAt: sort,
+            },
+          ],
+          skip: (page - 1) * limit,
+          take: limit,
+        },
       );
       if (machineLine.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: machineLine,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: machineLineCount.length,
+            totalPage: Math.ceil(machineLineCount.length / limit),
+          },
         };
       } else {
         return {

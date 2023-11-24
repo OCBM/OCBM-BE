@@ -32,13 +32,35 @@ export class ElementService {
     }
   }
 
-  async getAllElements(): Promise<ElementResponseDto> {
+  async getAllElements(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<ElementResponseDto> {
     try {
-      const element = await this.prismaDynamic.findMany(TABLES.ELEMENT, {});
+      const elementCount = await this.prismaDynamic.findMany(
+        TABLES.ELEMENT,
+        {},
+      );
+      const element = await this.prismaDynamic.findMany(TABLES.ELEMENT, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (element.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: element,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: elementCount.length,
+            totalPage: Math.ceil(elementCount.length / limit),
+          },
         };
       } else {
         return {

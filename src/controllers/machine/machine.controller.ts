@@ -15,12 +15,15 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { MachineService } from '@/services/machine/machine.service';
 import { Roles } from '@/decorator';
-import { Role, TABLES } from '@/common';
+import { Role, Sort, TABLES } from '@/common';
 import { PrismaService } from '@/services';
+import { IsEnum } from 'class-validator';
 
 @ApiTags('Machine')
 @Controller('machine')
@@ -60,9 +63,19 @@ export class MachineController {
   }
 
   @ApiBearerAuth('access-token')
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
   @Get('/')
-  async getAllMachines(): Promise<MachineResponseDto> {
-    return this.machineService.getAllMachines();
+  async getAllMachines(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
+  ): Promise<MachineResponseDto> {
+    return this.machineService.getAllMachines(page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')

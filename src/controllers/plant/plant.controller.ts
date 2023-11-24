@@ -15,12 +15,15 @@ import {
   UseGuards,
   Delete,
   HttpStatus,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PlantService } from '@/services/plant/plant.service';
 import { Roles } from '@/decorator';
-import { Role, TABLES } from '@/common';
+import { Role, Sort, TABLES } from '@/common';
 import { PrismaService } from '@/services';
+import { IsEnum } from 'class-validator';
 
 @ApiTags('Plant')
 @Controller('plant')
@@ -60,9 +63,19 @@ export class PlantController {
   }
 
   @ApiBearerAuth('access-token')
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
   @Get('/')
-  async getAllPlants(): Promise<PlantResponseDto> {
-    return this.plantService.getAllPlants();
+  async getAllPlants(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
+  ): Promise<PlantResponseDto> {
+    return this.plantService.getAllPlants(page, limit, sort);
   }
 
 

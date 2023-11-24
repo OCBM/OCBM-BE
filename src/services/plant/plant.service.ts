@@ -30,13 +30,32 @@ export class PlantService {
     }
   }
 
-  async getAllPlants(): Promise<PlantResponseDto> {
+  async getAllPlants(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<PlantResponseDto> {
     try {
-      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {});
+      const plantsCount = await this.prismaDynamic.findMany(TABLES.PLANT, {});
+      const plants = await this.prismaDynamic.findMany(TABLES.PLANT, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (plants.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: plants,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: plantsCount.length,
+            totalPage: Math.ceil(plantsCount.length / limit),
+          },
         };
       } else {
         return {
@@ -79,7 +98,7 @@ export class PlantService {
       } else {
         return {
           statusCode: HttpStatus.OK,
-          Error: APP_CONSTANTS.THETE_IS_NO_PLANT_IN_THIS_ORGANIZATION,
+          Error: APP_CONSTANTS.THERE_IS_NO_PLANT_IN_THIS_ORGANIZATION,
         };
       }
     } catch (e) {
@@ -290,7 +309,7 @@ export class PlantService {
         });
         return {
           statusCode: HttpStatus.OK,
-          message: APP_CONSTANTS.PLANT_DELETEd_SUCCESSFULLY,
+          message: APP_CONSTANTS.PLANT_DELETED_SUCCESSFULLY,
         };
       } else if (
         checkPlant &&

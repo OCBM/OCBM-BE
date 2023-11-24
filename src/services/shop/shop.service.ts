@@ -63,13 +63,32 @@ export class ShopService {
     }
   }
 
-  async getAllShops(): Promise<ShopResponseDto> {
+  async getAllShops(
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<ShopResponseDto> {
     try {
-      const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {});
+      const shopsCount = await this.prismaDynamic.findMany(TABLES.SHOP,{});
+      const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
       if (shops.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: shops,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: shopsCount.length,
+            totalPage: Math.ceil(shopsCount.length / limit),
+          },
         };
       } else {
         return {
