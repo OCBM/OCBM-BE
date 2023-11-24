@@ -145,15 +145,16 @@ export class UserService {
   async CheckUsername(data: any) {
     let user: UserData;
     const userName = data.userName;
+    const emailId = data.email;
 
     try {
       user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
-        where: { userName },
+        where: { userName, emailId },
       });
 
       if (!user) {
         user = await this.prismaDynamic.findUnique(TABLES.USER, {
-          where: { userName },
+          where: { userName, emailId },
         });
       }
 
