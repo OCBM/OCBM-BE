@@ -24,16 +24,21 @@ export class UserService {
     page: number = 1,
     limit: number = 10,
     search: string,
+    sort: string,
   ): Promise<UserResponseDto> {
+    const totalCountQuery: string = `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
+    
     const countQuery: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
       : `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
     const query: string = search.trim()
-      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 LIMIT $2 OFFSET $3`
-      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" LIMIT $2 OFFSET $3`;
-    const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
+      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
+    console.log(query, sort)
+      const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
       query,
       `%${search.trim().replace(/"/g, '')}%`,
+      sort,
       limit,
       (page - 1) * limit,
     );
@@ -45,6 +50,12 @@ export class UserService {
       statusCode: HttpStatus.OK,
       count: totalCountDetails.length,
       message: userDetails,
+      meta: {
+        current_page: page,
+        item_count: limit,
+        total_items: totalCountQuery.length,
+        totalPage: Math.ceil(totalCountQuery.length / limit),
+      },
     };
   }
 
