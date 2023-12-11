@@ -26,7 +26,6 @@ export class UserService {
     search: string,
     sort: string,
   ): Promise<UserResponseDto> {
-    const totalCountQuery: string = `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
     
     const countQuery: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
@@ -48,13 +47,12 @@ export class UserService {
     );
     return {
       statusCode: HttpStatus.OK,
-      count: totalCountDetails.length,
       message: userDetails,
       meta: {
         current_page: page,
         item_count: limit,
-        total_items: totalCountQuery.length,
-        totalPage: Math.ceil(totalCountQuery.length / limit),
+        total_items: totalCountDetails.length,
+        totalPage: Math.ceil(totalCountDetails.length / limit),
       },
     };
   }
