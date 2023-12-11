@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { IsEnum } from 'class-validator';
-import { Role, BCRYPT_SALT_ROUNDS } from '@/common';
+import { Role, BCRYPT_SALT_ROUNDS, Sort } from '@/common';
 import { Roles } from '@/decorator';
 import { UserService } from '@/services';
 import {
@@ -56,14 +56,20 @@ export class UserController {
     name: 'limit',
     required: true,
   })
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
   @Get('/')
   async getAllUserswithoutRole(
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
     @Query('search') search: string = '',
+    @Query('sort') sort: Sort,
   ): Promise<UserResponseDto> {
     try {
-      return this.userService.getAllUserswithoutRole(page, limit, search);
+      return this.userService.getAllUserswithoutRole(page, limit, search, sort);
     } catch (e) {
       console.log(e);
     }

@@ -148,6 +148,7 @@ export class UserResponseDto {
   @Type(() => UserDto)
   message?: UserDto;
   Error?: string;
+  meta?: any;
 
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
@@ -162,7 +163,7 @@ export class UsersResponseDto {
   @Type(() => UserDto)
   message?: UserDto[];
   Error?: string;
-
+  meta?: any;
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
   }
