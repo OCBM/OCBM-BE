@@ -26,15 +26,14 @@ export class UserService {
     search: string,
     sort: string,
   ): Promise<UserResponseDto> {
-    
     const countQuery: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
       : `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
     const query: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
       : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
-    console.log(query, sort)
-      const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+    console.log(query, sort);
+    const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
       query,
       `%${search.trim().replace(/"/g, '')}%`,
       sort,
@@ -47,7 +46,9 @@ export class UserService {
     );
     return {
       statusCode: HttpStatus.OK,
-      message: userDetails,
+      message: userDetails.map(
+        (userData: Partial<UserDto>) => new UserDto(userData),
+      ),
       meta: {
         current_page: page,
         item_count: limit,
