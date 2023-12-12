@@ -32,7 +32,7 @@ export class UserService {
     const query: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
       : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
-    console.log(query, sort);
+   // console.log(query, sort);
     const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
       query,
       `%${search.trim().replace(/"/g, '')}%`,
