@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Sensor" ALTER COLUMN "sensorName" DROP NOT NULL,
+ALTER COLUMN "sensorDescription" DROP NOT NULL,
+ALTER COLUMN "image" DROP NOT NULL,
+ALTER COLUMN "imageName" DROP NOT NULL;

@@ -8,3 +8,4 @@ export * from './shop/shop.service';
 export * from './machineLine/machineLine.service';
 export * from './machine/machine.service';
 export * from './element/element.service';
+export * from './sensor/sensor.service';
