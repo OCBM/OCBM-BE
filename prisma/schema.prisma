@@ -108,30 +108,44 @@ model MachineLine {
   updatedAt              DateTime? @updatedAt
   shopId                 String    @db.Uuid
   shop                   Shop      @relation(fields: [shopId], references: [shopId])
-  machines Machine[]
+  machines               Machine[]
 }
 
 model Machine {
-  machineId          String    @id @default(uuid()) @db.Uuid
+  machineId          String      @id @default(uuid()) @db.Uuid
   machineName        String
   machineDescription String
-  image                  String
-  imageName              String
-  createdAt              DateTime? @default(now())
-  updatedAt              DateTime? @updatedAt
-  machineLineId                 String    @db.Uuid
-  machineLine                   MachineLine      @relation(fields: [machineLineId], references: [machineLineId])
-  elements Element[]
-  }
+  image              String
+  imageName          String
+  createdAt          DateTime?   @default(now())
+  updatedAt          DateTime?   @updatedAt
+  machineLineId      String      @db.Uuid
+  machineLine        MachineLine @relation(fields: [machineLineId], references: [machineLineId])
+  elements           Element[]
+}
 
 model Element {
   elementId          String    @id @default(uuid()) @db.Uuid
   elementName        String
   elementDescription String
-  image                  String
-  imageName              String
-  createdAt              DateTime? @default(now())
-  updatedAt              DateTime? @updatedAt
-  machineId                 String    @db.Uuid
-  machines                  Machine      @relation(fields: [machineId], references: [machineId])
+  image              String
+  imageName          String
+  createdAt          DateTime? @default(now())
+  updatedAt          DateTime? @updatedAt
+  machineId          String    @db.Uuid
+  machines           Machine   @relation(fields: [machineId], references: [machineId])
+  sensors            Sensor[]
+}
+
+model Sensor {
+  sensor_Id         String    @id @default(uuid()) @db.Uuid
+  sensorId          String    @unique
+  sensorName        String?
+  sensorDescription String?
+  image             String?
+  imageName         String?
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+  elementId         String    @db.Uuid
+  elements          Element   @relation(fields: [elementId], references: [elementId])
 }
