@@ -2,9 +2,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-
+import {env} from 'process';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = env.PORT || 4000;
   const options = new DocumentBuilder()
     .setTitle('Omnex API')
     .setDescription('API for Omnex')
@@ -28,7 +29,7 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: false }, //do not set it to true it will convert array of object into multidimentional array it will cause issue in prisma
     }),
   );
-  await app.listen(4000);
+  await app.listen(port,"0.0.0.0");
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
