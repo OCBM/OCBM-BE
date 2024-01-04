@@ -17,13 +17,23 @@ import {
   HttpStatus,
   ParseIntPipe,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiParam,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { ElementService } from '@/services/element/element.service';
 import { Roles } from '@/decorator';
 import { Role, Sort, TABLES } from '@/common';
-import { PrismaService } from '@/services';
+import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Element')
 @Controller('element')
@@ -32,33 +42,80 @@ export class ElementController {
   constructor(
     private readonly elementService: ElementService,
     private readonly prismaDynamic: PrismaService,
+    private readonly awsService: AwsService,
   ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
-  async createElement(@Body() elementData: CreateElementDto) {
-    const data = {
-      ...elementData,
-      machines: {
-        connect: {
-          machineId: elementData.machineId,
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        elementName: {
+          type: 'string',
+        },
+        elementDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        machineId: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
       },
-    };
-    let machine: any;
-    machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
-      where: { machineId: data.machineId },
-    });
-    if (!machine) {
+    },
+  })
+  async createElement(
+    @Body() elementData: CreateElementDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const imageData = await this.awsService.uploadFile(file, 'elements');
+      if (!imageData) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Unable to upload image',
+        };
+      }
+      const image = imageData.Location;
+      const data = {
+        ...elementData,
+        image,
+        machines: {
+          connect: {
+            machineId: elementData.machineId,
+          },
+        },
+      };
+      let machine: any;
+      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+        where: { machineId: data.machineId },
+      });
+      if (!machine) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Machine not Exists',
+        };
+      } else {
+        delete data.machineId;
+        const result = await this.elementService.createElement(data);
+        return result;
+      }
+    } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Machine not Exists',
+        Error: 'Unable to upload image',
       };
-    } else {
-      delete data.machineId;
-      const result = await this.elementService.createElement(data);
-      return result;
     }
   }
 

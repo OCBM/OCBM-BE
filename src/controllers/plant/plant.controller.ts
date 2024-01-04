@@ -17,13 +17,23 @@ import {
   HttpStatus,
   Query,
   ParseIntPipe,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiParam,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { PlantService } from '@/services/plant/plant.service';
 import { Roles } from '@/decorator';
 import { Role, Sort, TABLES } from '@/common';
-import { PrismaService } from '@/services';
+import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Plant')
 @Controller('plant')
@@ -32,33 +42,98 @@ export class PlantController {
   constructor(
     private readonly plantService: PlantService,
     private readonly prismaDynamic: PrismaService,
+    private readonly awsService: AwsService,
   ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
-  async createPlant(@Body() plantData: CreatePlantDto) {
-    const data = {
-      ...plantData,
-      organization: {
-        connect: {
-          organizationId: plantData.organizationId,
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        plantName: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        organizationId: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
       },
-    };
-    let organization: any;
-    organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
-      where: { organizationId: data.organizationId },
-    });
-    if (!organization) {
+    },
+  })
+  async createPlant(
+    @Body() plantData: CreatePlantDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const { originalname } = file;
+      //console.log('plants'+ '/' + originalname)
+      const checkImageKey = 'plants' + '/' + originalname;
+      const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { imageKey: checkImageKey },
+      });
+      if (!checkImage) {
+        const imageData = await this.awsService.uploadFile(file, 'plants');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        const image = imageData.Location;
+        const imageKey = imageData.Key;
+        const data = {
+          ...plantData,
+          image,
+          imageKey,
+          organization: {
+            connect: {
+              organizationId: plantData.organizationId,
+            },
+          },
+        };
+        let organization: any;
+        organization = await this.prismaDynamic.findUnique(
+          TABLES.ORGANIZATION,
+          {
+            where: { organizationId: data.organizationId },
+          },
+        );
+        if (!organization) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Organization not Exists',
+          };
+        } else {
+          delete data.organizationId;
+          const result = await this.plantService.createPlant(data);
+          return result;
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Image Already exists',
+        };
+      }
+    } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Organization not Exists',
+        Error: 'Unable to upload image',
       };
-    } else {
-      delete data.organizationId;
-      const result = await this.plantService.createPlant(data);
-      return result;
     }
   }
 
@@ -77,8 +152,6 @@ export class PlantController {
   ): Promise<PlantResponseDto> {
     return this.plantService.getAllPlants(page, limit, sort);
   }
-
-
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'organizationId',
@@ -117,7 +190,7 @@ export class PlantController {
   ): Promise<PlantResponseDto> {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
-  
+
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
@@ -129,15 +202,99 @@ export class PlantController {
     name: 'plantId',
     required: true,
   })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        plantName: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Put('/organizationId=:organizationId&plantId=:plantId')
   async updatePlant(
     @Body() plantData: UpdatePlantDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<PlantResponseDto> {
-    return this.plantService.updatePlant(organizationId, plantId, {
-      ...plantData,
-    });
+    try {
+       if (file) {
+        const { originalname } = file;
+        //console.log('plants'+ '/' + originalname)
+        const checkImageKey = 'plants' + '/' + originalname;
+        const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+          where: { imageKey: checkImageKey },
+        });
+        if (!checkImage) {
+          const imageData = await this.awsService.uploadFile(file, 'plants');
+
+          if (!imageData) {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to upload image',
+            };
+          }
+          plantData.image = imageData.Location;
+          plantData.imageKey = imageData.Key;
+          if (plantData.image) {
+            const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+              where: {
+                plantId: plantId,
+                organizationId: organizationId,
+              },
+            });
+            //console.log("imageData:",imageData , "plant:",plant)
+
+            //console.log('url', plant);
+            const result = plant.imageKey;
+            //console.log('result', result);
+
+            if (result) {
+              const dbDeleteimage = await this.awsService.deleteFile(result);
+              //console.log('dbDeleteimage', dbDeleteimage);
+              // return this.plantService.updatePlant(organizationId, plantId, {
+              //   ...plantData,
+              // });
+            } else {
+              return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                Error: 'Unable to fetch image-data from the Database',
+              };
+            }
+          }
+          console.log('plant dataa', plantData);
+        } else {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Image Already exists',
+          };
+        }
+      }
+      return this.plantService.updatePlant(organizationId, plantId, {
+        ...plantData,
+      });
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        Error: 'Unable to upload image',
+      };
+    }
   }
 
   @Roles(Role.ADMIN)

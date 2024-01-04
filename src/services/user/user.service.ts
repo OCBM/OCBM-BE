@@ -19,7 +19,7 @@ import { UserData, APP_CONSTANTS } from '@/common';
 @Injectable()
 export class UserService {
   constructor(private readonly prismaDynamic: PrismaService) {}
-x
+
   async getAllUserswithoutRole(
     page: number = 1,
     limit: number = 10,

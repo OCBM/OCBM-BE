@@ -18,13 +18,23 @@ import {
   ParseIntPipe,
   Query,
   HttpException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiParam,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { SensorService } from '@/services/sensor/sensor.service';
 import { Roles } from '@/decorator';
 import { APP_CONSTANTS, Role, Sort, TABLES } from '@/common';
-import { PrismaService } from '@/services';
+import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Sensor')
 @Controller('sensor')
@@ -33,43 +43,93 @@ export class SensorController {
   constructor(
     private readonly sensorService: SensorService,
     private readonly prismaDynamic: PrismaService,
+    private readonly awsService: AwsService,
   ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
-  async createSensor(@Body() sensorData: CreateSensorDto) {
-    const data = {
-      ...sensorData,
-      elements: {
-        connect: {
-          elementId: sensorData.elementId,
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        sensorId: {
+          type: 'string',
+        },
+        sensorName: {
+          type: 'string',
+        },
+        sensorDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        elementId: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
       },
-    };
-    let element: any;
-    element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
-      where: { elementId: data.elementId },
-    });
-    if (!element) {
+    },
+  })
+  async createSensor(
+    @Body() sensorData: CreateSensorDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const imageData = await this.awsService.uploadFile(file, 'elements');
+      if (!imageData) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Unable to upload image',
+        };
+      }
+      const image = imageData.Location;
+      const data = {
+        ...sensorData,
+        image,
+        elements: {
+          connect: {
+            elementId: sensorData.elementId,
+          },
+        },
+      };
+      let element: any;
+      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+        where: { elementId: data.elementId },
+      });
+      if (!element) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Element not Exists',
+        };
+      } else {
+        delete data.elementId;
+        const sensorCheck = await this.sensorService.checkSensor({
+          sensorId: data.sensorId,
+        });
+        if (sensorCheck) {
+          throw new HttpException(
+            APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+            HttpStatus.BAD_REQUEST,
+          );
+        } else {
+          const result = await this.sensorService.createSensor(data);
+          return result;
+        }
+      }
+    } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Element not Exists',
+        Error: 'Unable to upload image',
       };
-    } else {
-      delete data.elementId;
-      const sensorCheck = await this.sensorService.checkSensor({
-        sensorId: data.sensorId,
-      });
-      if (sensorCheck) {
-        throw new HttpException(
-          APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
-          HttpStatus.BAD_REQUEST,
-        );
-      } else {
-        const result = await this.sensorService.createSensor(data);
-        return result;
-      }
     }
   }
 

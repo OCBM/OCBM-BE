@@ -8,18 +8,16 @@ import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 export class SensorService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
-  async checkSensor(
-    data: any,
-  ): Promise<any> {
+  async checkSensor(data: any): Promise<any> {
     try {
       const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
         where: { sensorId: data.sensorId },
       });
-       let resultData = data.sensorId.toLowerCase()
+      const resultData = data.sensorId.toLowerCase();
 
       if (checkSensor?.sensorId === resultData) {
-       return true
-      } 
+        return true;
+      }
     } catch (error) {
       console.log(error);
       if (
@@ -41,7 +39,7 @@ export class SensorService {
       const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
         where: { sensorId: data.sensorId },
       });
-      
+
       const resultData = {
         sensorId: data.sensorId.toLowerCase(),
         sensorName: data.sensorName,
@@ -50,20 +48,18 @@ export class SensorService {
         imageName: data.imageName,
         elementId: data.elements.connect.elementId,
       };
-      console.log(resultData)
+      console.log(resultData);
 
       if (checkSensor?.sensorId === resultData.sensorId) {
-      
-      } 
-      else{
+      } else {
         const sensor = await this.prismaDynamic.create(
-            TABLES.SENSOR,
-            resultData,
-          );
-          return {
-            statusCode: HttpStatus.CREATED,
-            message: sensor,
-          };
+          TABLES.SENSOR,
+          resultData,
+        );
+        return {
+          statusCode: HttpStatus.CREATED,
+          message: sensor,
+        };
       }
     } catch (error) {
       console.log(error);

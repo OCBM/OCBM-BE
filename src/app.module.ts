@@ -14,6 +14,7 @@ import {
 import { AuthModule, GroupModule } from './modules';
 import {
   AuthService,
+  AwsService,
   ElementService,
   MachineLineService,
   MachineService,
@@ -58,6 +59,7 @@ import { ElementController } from './controllers/element/element.controller';
     MachineService,
     ElementService,
     SensorService,
+    AwsService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

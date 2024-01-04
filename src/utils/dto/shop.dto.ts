@@ -46,10 +46,10 @@ export class CreateShopDto {
   @IsNotEmpty()
   shopName: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  image: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // image: string;
 
   @ApiProperty()
   @IsString()

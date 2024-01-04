@@ -51,10 +51,10 @@ export class CreateMachineLineDto {
   @IsNotEmpty()
   machineLineDescription: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  image: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // image: string;
 
   @ApiProperty()
   @IsString()

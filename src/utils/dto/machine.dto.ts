@@ -51,10 +51,10 @@ export class CreateMachineDto {
   @IsNotEmpty()
   machineDescription: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  image: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // image: string;
 
   @ApiProperty()
   @IsString()

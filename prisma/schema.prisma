@@ -73,6 +73,7 @@ model Organization {
 model Plant {
   plantId        String       @id @default(uuid()) @db.Uuid
   image          String
+  imageKey       String       @default("") @unique
   imageName      String
   plantName      String
   description    String

@@ -63,11 +63,11 @@ export class CreateSensorDto {
   @IsOptional()
   sensorDescription?: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  @IsOptional()
-  image?: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // @IsOptional()
+  // image?: string;
 
   @ApiProperty()
   @IsString()

@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TOKEN_EXPIRY, TOKEN_SECRET } from '@/common';
 import { AuthController, PlantController, UserController } from '@/controllers';
-import { AuthService, UserService, PlantService } from '@/services';
+import { AuthService, UserService, PlantService, AwsService } from '@/services';
 import { APP_GUARD } from '@nestjs/core';
 import { GroupsGuard, JwtAuthGuard, RolesGuard } from '@/utils';
 
@@ -21,6 +21,7 @@ import { GroupsGuard, JwtAuthGuard, RolesGuard } from '@/utils';
     AuthService,
     UserService,
     PlantService,
+    AwsService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
