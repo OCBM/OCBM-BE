@@ -1,22 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class MachineLineDto {
+export class SensorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  machineLineId: string;
+  sensor_Id: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  machineLineName: string;
+  sensorId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  machineLineDescription: string;
+  sensorName?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  sensorDescription?: string;
 
   @ApiProperty()
   @IsString()
@@ -26,12 +31,12 @@ export class MachineLineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName: string;
+  imageName?: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  shopId: string;
+  elementId: string;
 
   @IsOptional()
   createdAt?: Date;
@@ -40,31 +45,40 @@ export class MachineLineDto {
   updatedAt?: Date;
 }
 
-export class CreateMachineLineDto {
+export class CreateSensorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  machineLineName: string;
+  sensorId: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  machineLineDescription: string;
+  //@IsNotEmpty()
+  @IsOptional()
+  sensorName?: string;
+
+  @ApiProperty()
+  @IsString()
+  //@IsNotEmpty()
+  @IsOptional()
+  sensorDescription?: string;
 
   // @ApiProperty()
   // @IsString()
   // @IsOptional()
-  // image: string;
+  // @IsOptional()
+  // image?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName: string;
+  @IsOptional()
+  imageName?: string;
 
   @IsString()
   @ApiProperty()
   @IsNotEmpty()
-  shopId: string;
+  elementId: string;
 
   @IsOptional()
   createdAt?: Date;
@@ -73,21 +87,26 @@ export class CreateMachineLineDto {
   updatedAt?: Date;
 
   @IsOptional()
-  shops: any;
+  elements: any;
 }
 
-export class UpdateMachineLineDto {
+export class UpdateSensorDto {
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsOptional()
+  // sensorId?: string;
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @IsOptional()
-  machineLineName?: string;
+  sensorName?: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+ // @IsNotEmpty()
   @IsOptional()
-  machineLineDescription: string;
+  sensorDescription?: string;
 
   @ApiProperty()
   @IsString()
@@ -97,18 +116,18 @@ export class UpdateMachineLineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName: string;
+  imageName?: string;
 }
 
-export class MachineLineResponseDto {
+export class SensorResponseDto {
   statusCode: number;
 
-  @Type(() => MachineLineDto)
-  message?: MachineLineDto;
+  @Type(() => SensorDto)
+  message?: SensorDto;
   Error?: string;
   meta?: any;
 
-  constructor(partial: Partial<MachineLineResponseDto>) {
+  constructor(partial: Partial<SensorResponseDto>) {
     Object.assign(this, partial);
   }
 }

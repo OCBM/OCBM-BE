@@ -210,6 +210,7 @@ export class PlantService {
     organizationId: string,
     plantid: string,
     data: UpdatePlantDto,
+    // imageUpload: string,
   ): Promise<PlantResponseDto> {
     try {
       let plant: any;
@@ -239,10 +240,12 @@ export class PlantService {
           organizationId: organization.organizationId,
         },
       });
+
       if (plant) {
         const updatedData = await this.prismaDynamic.update(TABLES.PLANT, {
           where: { plantId: plantid },
           data,
+          //imageUpload,
         });
 
         return new PlantResponseDto({

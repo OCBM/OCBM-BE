@@ -51,10 +51,10 @@ export class CreateElementDto {
   @IsNotEmpty()
   elementDescription: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  image: string;
+  // @ApiProperty()
+  // @IsString()
+  // @IsOptional()
+  // image: string;
 
   @ApiProperty()
   @IsString()

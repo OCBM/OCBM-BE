@@ -7,3 +7,4 @@ export * from './shop.dto';
 export * from './machineLine.dto';
 export * from './machine.dto';
 export * from './element.dto';
+export * from './sensor.dto';

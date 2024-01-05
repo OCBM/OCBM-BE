@@ -17,13 +17,23 @@ import {
   HttpStatus,
   Query,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiParam, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiParam,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiBody,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { MachineService } from '@/services/machine/machine.service';
 import { Roles } from '@/decorator';
 import { Role, Sort, TABLES } from '@/common';
-import { PrismaService } from '@/services';
+import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Machine')
 @Controller('machine')
@@ -32,33 +42,80 @@ export class MachineController {
   constructor(
     private readonly machineService: MachineService,
     private readonly prismaDynamic: PrismaService,
+    private readonly awsService: AwsService,
   ) {}
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
-  async createMachine(@Body() machineData: CreateMachineDto) {
-    const data = {
-      ...machineData,
-      machineLine: {
-        connect: {
-          machineLineId: machineData.machineLineId,
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        machineName: {
+          type: 'string',
+        },
+        machineDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        machineLineId: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
       },
-    };
-    let machineLine: any;
-    machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
-      where: { machineLineId: data.machineLineId },
-    });
-    if (!machineLine) {
+    },
+  })
+  async createMachine(
+    @Body() machineData: CreateMachineDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const imageData = await this.awsService.uploadFile(file, 'machines');
+      if (!imageData) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Unable to upload image',
+        };
+      }
+      const image = imageData.Location;
+      const data = {
+        ...machineData,
+        image,
+        machineLine: {
+          connect: {
+            machineLineId: machineData.machineLineId,
+          },
+        },
+      };
+      let machineLine: any;
+      machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
+        where: { machineLineId: data.machineLineId },
+      });
+      if (!machineLine) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'MachineLine not Exists',
+        };
+      } else {
+        delete data.machineLineId;
+        const result = await this.machineService.createMachine(data);
+        return result;
+      }
+    } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'MachineLine not Exists',
+        Error: 'Unable to upload image',
       };
-    } else {
-      delete data.machineLineId;
-      const result = await this.machineService.createMachine(data);
-      return result;
     }
   }
 

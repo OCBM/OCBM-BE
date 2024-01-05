@@ -24,4 +24,5 @@ export const TABLES = {
   MACHINELINE: 'machineLine',
   MACHINE: 'machine',
   ELEMENT: 'element',
+  SENSOR : 'sensor',
 };

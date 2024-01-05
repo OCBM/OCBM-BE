@@ -1,8 +1,8 @@
 import {
-  CreateElementDto,
-  ElementResponseDto,
+  CreateSensorDto,
+  SensorResponseDto,
   RolesGuard,
-  UpdateElementDto,
+  UpdateSensorDto,
 } from '@/utils';
 import {
   Body,
@@ -17,6 +17,7 @@ import {
   HttpStatus,
   ParseIntPipe,
   Query,
+  HttpException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -28,19 +29,19 @@ import {
   ApiBody,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { ElementService } from '@/services/element/element.service';
+import { SensorService } from '@/services/sensor/sensor.service';
 import { Roles } from '@/decorator';
-import { Role, Sort, TABLES } from '@/common';
+import { APP_CONSTANTS, Role, Sort, TABLES } from '@/common';
 import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('Element')
-@Controller('element')
-export class ElementController {
+@ApiTags('Sensor')
+@Controller('sensor')
+export class SensorController {
   [x: string]: any;
   constructor(
-    private readonly elementService: ElementService,
+    private readonly sensorService: SensorService,
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
@@ -56,16 +57,19 @@ export class ElementController {
     schema: {
       type: 'object',
       properties: {
-        elementName: {
+        sensorId: {
           type: 'string',
         },
-        elementDescription: {
+        sensorName: {
+          type: 'string',
+        },
+        sensorDescription: {
           type: 'string',
         },
         imageName: {
           type: 'string',
         },
-        machineId: {
+        elementId: {
           type: 'string',
         },
         image: {
@@ -75,8 +79,8 @@ export class ElementController {
       },
     },
   })
-  async createElement(
-    @Body() elementData: CreateElementDto,
+  async createSensor(
+    @Body() sensorData: CreateSensorDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
@@ -89,27 +93,37 @@ export class ElementController {
       }
       const image = imageData.Location;
       const data = {
-        ...elementData,
+        ...sensorData,
         image,
-        machines: {
+        elements: {
           connect: {
-            machineId: elementData.machineId,
+            elementId: sensorData.elementId,
           },
         },
       };
-      let machine: any;
-      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
-        where: { machineId: data.machineId },
+      let element: any;
+      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+        where: { elementId: data.elementId },
       });
-      if (!machine) {
+      if (!element) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Machine not Exists',
+          Error: 'Element not Exists',
         };
       } else {
-        delete data.machineId;
-        const result = await this.elementService.createElement(data);
-        return result;
+        delete data.elementId;
+        const sensorCheck = await this.sensorService.checkSensor({
+          sensorId: data.sensorId,
+        });
+        if (sensorCheck) {
+          throw new HttpException(
+            APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+            HttpStatus.BAD_REQUEST,
+          );
+        } else {
+          const result = await this.sensorService.createSensor(data);
+          return result;
+        }
       }
     } catch (error) {
       return {
@@ -127,81 +141,81 @@ export class ElementController {
   })
   @IsEnum(Sort)
   @Get('/')
-  async getAllElements(
+  async getAllSensors(
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
     @Query('sort') sort: Sort,
-  ): Promise<ElementResponseDto> {
-    return this.elementService.getAllElements(page, limit, sort);
+  ): Promise<SensorResponseDto> {
+    return this.sensorService.getAllSensors(page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')
-  @ApiParam({
-    name: 'machineId',
-    required: true,
-  })
-  @Get('/machineId=:machineId')
-  async getAllElement(
-    @Param('machineId', ParseUUIDPipe) machineId: string,
-  ): Promise<ElementResponseDto> {
-    return this.elementService.getAllElement(machineId);
-  }
-
-  @ApiBearerAuth('access-token')
-  @ApiParam({
-    name: 'machineId',
-    required: true,
-  })
   @ApiParam({
     name: 'elementId',
     required: true,
   })
-  @Get('/elementId=:elementId&machineId=:machineId')
-  async getElementByMachineId(
-    @Param('machineId', ParseUUIDPipe) machineId: string,
+  @Get('/elementId=:elementId')
+  async getAllSensor(
     @Param('elementId', ParseUUIDPipe) elementId: string,
-  ): Promise<ElementResponseDto> {
-    return this.elementService.getElementByMachineId(machineId, elementId);
+  ): Promise<SensorResponseDto> {
+    return this.sensorService.getAllSensor(elementId);
+  }
+
+  @ApiBearerAuth('access-token')
+  @ApiParam({
+    name: 'elementId',
+    required: true,
+  })
+  @ApiParam({
+    name: 'sensorId',
+    required: true,
+  })
+  @Get('/sensorId=:sensorId&elementId=:elementId')
+  async getSensorByElementId(
+    @Param('elementId', ParseUUIDPipe) elementId: string,
+    @Param('sensorId') sensorId: string,
+  ): Promise<SensorResponseDto> {
+    return this.sensorService.getSensorByElementId(elementId, sensorId);
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
-    name: 'machineId',
-    required: true,
-  })
-  @ApiParam({
     name: 'elementId',
     required: true,
   })
-  @Put('/machineId=:machineId&elementId=:elementId')
-  async updateElement(
-    @Body() elementData: UpdateElementDto,
-    @Param('machineId', ParseUUIDPipe) machineId: string,
+  @ApiParam({
+    name: 'sensorId',
+    required: true,
+  })
+  @Put('/elementId=:elementId&sensorId=:sensorId')
+  async updateSensor(
+    @Body() sensorData: UpdateSensorDto,
     @Param('elementId', ParseUUIDPipe) elementId: string,
-  ): Promise<ElementResponseDto> {
-    return this.elementService.updateElement(machineId, elementId, {
-      ...elementData,
+    @Param('sensorId') sensorId: string,
+  ): Promise<SensorResponseDto> {
+    return this.sensorService.updateSensor(elementId, sensorId, {
+      ...sensorData,
     });
   }
 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
-  @Delete('/machineId=:machineId&elementId=:elementId')
-  @ApiParam({
-    name: 'machineId',
-    required: true,
-  })
+  @Delete('/elementId=:elementId&sensorId=:sensorId')
   @ApiParam({
     name: 'elementId',
     required: true,
   })
-  async deleteElement(
-    @Param('machineId', ParseUUIDPipe) machineId: string,
+  @ApiParam({
+    name: 'sensorId',
+    required: true,
+  })
+  async deleteSensor(
     @Param('elementId', ParseUUIDPipe) elementId: string,
+    @Param('sensorId') sensorId: string,
   ) {
-    return this.elementService.deleteElement(machineId, elementId);
+    return this.sensorService.deleteSensor(elementId, sensorId);
   }
 }
