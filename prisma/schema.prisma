@@ -73,7 +73,7 @@ model Organization {
 model Plant {
   plantId        String       @id @default(uuid()) @db.Uuid
   image          String
-  imageKey       String       @default("") @unique
+  imageKey       String       @unique @default("")
   imageName      String
   plantName      String
   description    String
@@ -90,6 +90,7 @@ model Shop {
   shopId       String        @id @default(uuid()) @db.Uuid
   shopName     String
   image        String
+  imageKey     String        @unique @default("")
   imageName    String
   description  String
   createdAt    DateTime?     @default(now())
@@ -104,6 +105,7 @@ model MachineLine {
   machineLineName        String
   machineLineDescription String
   image                  String
+  imageKey               String    @unique @default("")
   imageName              String
   createdAt              DateTime? @default(now())
   updatedAt              DateTime? @updatedAt
@@ -117,6 +119,7 @@ model Machine {
   machineName        String
   machineDescription String
   image              String
+  imageKey           String      @unique @default("")
   imageName          String
   createdAt          DateTime?   @default(now())
   updatedAt          DateTime?   @updatedAt
@@ -130,6 +133,7 @@ model Element {
   elementName        String
   elementDescription String
   image              String
+  imageKey           String    @unique @default("")
   imageName          String
   createdAt          DateTime? @default(now())
   updatedAt          DateTime? @updatedAt
@@ -144,6 +148,7 @@ model Sensor {
   sensorName        String?
   sensorDescription String?
   image             String?
+  imageKey          String?   @unique @default("")
   imageName         String?
   createdAt         DateTime? @default(now())
   updatedAt         DateTime? @updatedAt

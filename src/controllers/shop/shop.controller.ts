@@ -80,36 +80,49 @@ export class ShopController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const imageData = await this.awsService.uploadFile(file, 'shops');
-      if (!imageData) {
-        return {
-          statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Unable to upload image',
-        };
-      }
-      const image = imageData.Location;
-      const data = {
-        ...shopData,
-        image,
-        plant: {
-          connect: {
-            plantId: shopData.plantId,
-          },
-        },
-      };
-      let plant: any;
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-        where: { plantId: data.plantId },
+      const { originalname } = file;
+      //console.log('plants'+ '/' + originalname)
+      const checkImageKey = 'shops' + '/' + originalname;
+      const checkImage = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+        where: { imageKey: checkImageKey },
       });
-      if (!plant) {
+      if (!checkImage) {
+        const imageData = await this.awsService.uploadFile(file, 'shops');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        const image = imageData.Location;
+        const data = {
+          ...shopData,
+          image,
+          plant: {
+            connect: {
+              plantId: shopData.plantId,
+            },
+          },
+        };
+        let plant: any;
+        plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+          where: { plantId: data.plantId },
+        });
+        if (!plant) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Plant not Exists',
+          };
+        } else {
+          delete data.plantId;
+          const result = await this.shopService.createShop(data);
+          return result;
+        }
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Plant not Exists',
+          Error: 'Image Already exists',
         };
-      } else {
-        delete data.plantId;
-        const result = await this.shopService.createShop(data);
-        return result;
       }
     } catch (error) {
       return {
@@ -174,6 +187,30 @@ export class ShopController {
   @ApiParam({
     name: 'shopId',
     required: true,
+  })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        shopName: {
+          type: 'string',
+        },
+        description: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @Put('/plantId=:plantId&shopId=:shopId')
   async updateShop(

@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 
 @Injectable()
 export class AwsService {
-  AWS_S3_BUCKET = 'test-image-upload-s3-test';
+  AWS_S3_BUCKET = process.env.AWS_S3_BUCKET_NAME;
   s3 = new AWS.S3({
-    accessKeyId: 'AKIASBCASOPKZBNRGRDS',
-    secretAccessKey: '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',
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_SECERET_ACCESS_KEY,
   });
 
   async uploadFile(file, type) {
     const { originalname } = file;
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
     return await this.s3_upload(
       file.buffer,
       this.AWS_S3_BUCKET,
-      type + '/' + originalname,
+      type + '/' + randomNumber + '_' + originalname,
       file.mimetype,
     );
   }
@@ -57,9 +58,17 @@ export class AwsService {
         console.log('file deleted Successfully');
       } catch (err) {
         console.log('ERROR in file Deleting : ' + JSON.stringify(err));
+        throw new HttpException(
+          'Unable to delete image in aws',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     } catch (err) {
       console.log('File not Found ERROR : ' + err.code);
+      throw new HttpException(
+        'Unable to find image  in S3',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

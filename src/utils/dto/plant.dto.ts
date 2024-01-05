@@ -16,7 +16,7 @@ export class PlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  image: string;
+  image?: string;
 
   @ApiProperty()
   @IsString()
@@ -106,6 +106,7 @@ export class UpdatePlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image?: string;
 
   @ApiProperty()

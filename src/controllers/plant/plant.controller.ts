@@ -19,6 +19,7 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseInterceptors,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -80,55 +81,56 @@ export class PlantController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const { originalname } = file;
-      //console.log('plants'+ '/' + originalname)
-      const checkImageKey = 'plants' + '/' + originalname;
-      const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-        where: { imageKey: checkImageKey },
-      });
-      if (!checkImage) {
-        const imageData = await this.awsService.uploadFile(file, 'plants');
-        if (!imageData) {
-          return {
-            statusCode: HttpStatus.BAD_REQUEST,
-            Error: 'Unable to upload image',
-          };
-        }
-        const image = imageData.Location;
-        const imageKey = imageData.Key;
-        const data = {
-          ...plantData,
-          image,
-          imageKey,
-          organization: {
-            connect: {
-              organizationId: plantData.organizationId,
-            },
-          },
-        };
-        let organization: any;
-        organization = await this.prismaDynamic.findUnique(
-          TABLES.ORGANIZATION,
-          {
-            where: { organizationId: data.organizationId },
-          },
-        );
-        if (!organization) {
-          return {
-            statusCode: HttpStatus.BAD_REQUEST,
-            Error: 'Organization not Exists',
-          };
-        } else {
-          delete data.organizationId;
-          const result = await this.plantService.createPlant(data);
-          return result;
-        }
-      } else {
+      // const { originalname } = file;
+      // const randomNumber = Math.floor(1000 + Math.random() * 9000);
+      // //console.log('plants'+ '/' + originalname)
+      // const checkImageKey = 'plants' + '/' + randomNumber + '_' + originalname;
+      // const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      //   where: { imageKey: checkImageKey },
+      // });
+      //if (!checkImage) {
+      const imageData = await this.awsService.uploadFile(file, 'plants');
+      if (!imageData) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Image Already exists',
+          Error: 'Unable to upload image',
         };
       }
+      const image = imageData.Location;
+      const imageKey = imageData.Key;
+      const data = {
+        ...plantData,
+        image,
+        imageKey,
+        organization: {
+          connect: {
+            organizationId: plantData.organizationId,
+          },
+        },
+      };
+      const organization: any = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: { organizationId: data.organizationId },
+        },
+      );
+      if (!organization) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Organization not Exists',
+        };
+      } else {
+        delete data.organizationId;
+        const result = await this.plantService.createPlant(data);
+        return result;
+      }
+      // }
+      //  else {
+      //   return {
+      //     statusCode: HttpStatus.BAD_REQUEST,
+      //     Error: 'Image Already exists',
+      //   };
+      // }
     } catch (error) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
@@ -234,66 +236,69 @@ export class PlantController {
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<PlantResponseDto> {
     try {
-       if (file) {
-        const { originalname } = file;
-        //console.log('plants'+ '/' + originalname)
-        const checkImageKey = 'plants' + '/' + originalname;
-        const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-          where: { imageKey: checkImageKey },
-        });
-        if (!checkImage) {
-          const imageData = await this.awsService.uploadFile(file, 'plants');
+      if (file) {
+        // const { originalname } = file;
+        // const randomNumber = Math.floor(1000 + Math.random() * 9000);
+        // //console.log('plants'+ '/' + originalname)
+        // const checkImageKey =
+        //   'plants' + '/' + randomNumber + '_' + originalname;
+        // const checkImage = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        //   where: { imageKey: checkImageKey },
+        // });
+        // if (!checkImage) {
+        const imageData = await this.awsService.uploadFile(file, 'plants');
 
-          if (!imageData) {
-            return {
-              statusCode: HttpStatus.BAD_REQUEST,
-              Error: 'Unable to upload image',
-            };
-          }
-          plantData.image = imageData.Location;
-          plantData.imageKey = imageData.Key;
-          if (plantData.image) {
-            const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-              where: {
-                plantId: plantId,
-                organizationId: organizationId,
-              },
-            });
-            //console.log("imageData:",imageData , "plant:",plant)
-
-            //console.log('url', plant);
-            const result = plant.imageKey;
-            //console.log('result', result);
-
-            if (result) {
-              const dbDeleteimage = await this.awsService.deleteFile(result);
-              //console.log('dbDeleteimage', dbDeleteimage);
-              // return this.plantService.updatePlant(organizationId, plantId, {
-              //   ...plantData,
-              // });
-            } else {
-              return {
-                statusCode: HttpStatus.BAD_REQUEST,
-                Error: 'Unable to fetch image-data from the Database',
-              };
-            }
-          }
-          console.log('plant dataa', plantData);
-        } else {
+        if (!imageData) {
           return {
             statusCode: HttpStatus.BAD_REQUEST,
-            Error: 'Image Already exists',
+            Error: 'Unable to upload image',
           };
         }
+        plantData.image = imageData.Location;
+        plantData.imageKey = imageData.Key;
+        if (plantData.image && plantData.imageKey) {
+          const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+            where: {
+              plantId: plantId,
+              organizationId: organizationId,
+            },
+          });
+          //console.log("imageData:",imageData , "plant:",plant)
+
+          //console.log('url', plant);
+          const result = plant.imageKey;
+          //console.log('result', result);
+
+          if (result) {
+            const dbDeleteimage = await this.awsService.deleteFile(result);
+            //console.log('dbDeleteimage', dbDeleteimage);
+            // return this.plantService.updatePlant(organizationId, plantId, {
+            //   ...plantData,
+            // });
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+        console.log('plant dataa', plantData);
+        // } else {
+        //   return {
+        //     statusCode: HttpStatus.BAD_REQUEST,
+        //     Error: 'Image Already exists',
+        //   };
+        // }
       }
       return this.plantService.updatePlant(organizationId, plantId, {
         ...plantData,
       });
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      // return {
+      //   statusCode: HttpStatus.BAD_REQUEST,
+      //   Error: 'Unable to upload image',
+      // };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -313,6 +318,24 @@ export class PlantController {
     @Param('organizationId', ParseUUIDPipe) organizationId: string,
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ) {
-    return this.plantService.deletePlant(organizationId, plantId);
+    const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      where: {
+        plantId: plantId,
+        organizationId: organizationId,
+      },
+    });
+    if (plant) {
+      await this.awsService.deleteFile(plant.imageKey);
+      return this.plantService.deletePlant(organizationId, plantId);
+    } else {
+      // return {
+      //   statusCode: HttpStatus.BAD_REQUEST,
+      //   Error: 'Unable to delete',
+      // };
+      throw new HttpException(
+        'Unable to delete due to plant not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }
