@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { SensorResponseDto, UpdateSensorDto } from '@/utils';
+import { SensorDto, SensorResponseDto, UpdateSensorDto } from '@/utils';
 import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
@@ -42,14 +42,12 @@ export class SensorService {
 
       const resultData = {
         sensorId: data.sensorId.toLowerCase(),
-        sensorName: data.sensorName,
         sensorDescription: data.sensorDescription,
         image: data.image,
+        imageKey: data.imageKey,
         imageName: data.imageName,
         elementId: data.elements.connect.elementId,
       };
-      console.log(resultData);
-
       if (checkSensor?.sensorId === resultData.sensorId) {
       } else {
         const sensor = await this.prismaDynamic.create(
@@ -305,6 +303,39 @@ export class SensorService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+
+  async getElementsbySensorId(sensorId: string): Promise<SensorResponseDto> {
+    let sensor: any;
+
+    try {
+      sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+        where: { sensorId: sensorId },
+        include: {
+          elements: {
+            include: {
+              machines: true,
+            },
+          },
+        },
+      });
+      if (sensor) {
+        return new SensorResponseDto({
+          statusCode: HttpStatus.OK,
+          message: new SensorDto(sensor),
+        });
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_SENSOR,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.SENSOR_OR_ELEMENT_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

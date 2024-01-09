@@ -19,6 +19,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,6 +56,13 @@ export class MachineController {
     required: true,
     schema: {
       type: 'object',
+      required: [
+        'machineName',
+        'machineDescription',
+        'imageName',
+        'machineLineId',
+        'image',
+      ],
       properties: {
         machineName: {
           type: 'string',
@@ -88,16 +96,18 @@ export class MachineController {
         };
       }
       const image = imageData.Location;
+      const imageKey = imageData.Key;
       const data = {
         ...machineData,
         image,
+        imageKey,
         machineLine: {
           connect: {
             machineLineId: machineData.machineLineId,
           },
         },
       };
-      let machineLine: any;
+      let machineLine: any = {};
       machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
         where: { machineLineId: data.machineLineId },
       });
@@ -112,10 +122,7 @@ export class MachineController {
         return result;
       }
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -178,15 +185,72 @@ export class MachineController {
     name: 'machineId',
     required: true,
   })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        machineName: {
+          type: 'string',
+        },
+        machineDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Put('/machineLineId=:machineLineId&machineId=:machineId')
   async updateMachine(
     @Body() machineData: UpdateMachineDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('machineLineId', ParseUUIDPipe) machineLineId: string,
     @Param('machineId', ParseUUIDPipe) machineId: string,
   ): Promise<MachineResponseDto> {
-    return this.machineService.updateMachine(machineLineId, machineId, {
-      ...machineData,
-    });
+    try {
+      if (file) {
+        const imageData = await this.awsService.uploadFile(file, 'machines');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        machineData.image = imageData.Location;
+        machineData.imageKey = imageData.Key;
+        if (machineData.image && machineData.imageKey) {
+          const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+            where: {
+              machineLineId: machineLineId,
+              machineId: machineId,
+            },
+          });
+          const result = machine.imageKey;
+          if (result) {
+            await this.awsService.deleteFile(result);
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+      }
+      return this.machineService.updateMachine(machineLineId, machineId, {
+        ...machineData,
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
+    }
   }
 
   @Roles(Role.ADMIN)
@@ -205,6 +269,20 @@ export class MachineController {
     @Param('machineLineId', ParseUUIDPipe) machineLineId: string,
     @Param('machineId', ParseUUIDPipe) machineId: string,
   ) {
-    return this.machineService.deleteMachine(machineLineId, machineId);
+    const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+      where: {
+        machineLineId: machineLineId,
+        machineId: machineId,
+      },
+    });
+    if (machine) {
+      await this.awsService.deleteFile(machine.imageKey);
+      return this.machineService.deleteMachine(machineLineId, machineId);
+    } else {
+      throw new HttpException(
+        'Unable to delete due to Machine not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

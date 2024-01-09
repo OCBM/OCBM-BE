@@ -16,7 +16,8 @@ export class ShopDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  image?: string;
+  @IsNotEmpty()
+  image: string;
 
   @ApiProperty()
   @IsString()
@@ -51,9 +52,10 @@ export class CreateShopDto {
   @IsNotEmpty()
   shopName: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: true })
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image: string;
 
   @ApiProperty()
@@ -64,6 +66,7 @@ export class CreateShopDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   imageName: string;
 
   @ApiProperty()
@@ -101,6 +104,7 @@ export class UpdateShopDto {
 
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   image?: string;
 
@@ -112,6 +116,7 @@ export class UpdateShopDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   imageName?: string;
 }
 

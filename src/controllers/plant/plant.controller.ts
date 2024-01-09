@@ -56,6 +56,13 @@ export class PlantController {
     required: true,
     schema: {
       type: 'object',
+      required: [
+        'plantName',
+        'description',
+        'imageName',
+        'organizationId',
+        'image',
+      ],
       properties: {
         plantName: {
           type: 'string',
@@ -132,10 +139,7 @@ export class PlantController {
       //   };
       // }
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -263,18 +267,9 @@ export class PlantController {
               organizationId: organizationId,
             },
           });
-          //console.log("imageData:",imageData , "plant:",plant)
-
-          //console.log('url', plant);
           const result = plant.imageKey;
-          //console.log('result', result);
-
           if (result) {
-            const dbDeleteimage = await this.awsService.deleteFile(result);
-            //console.log('dbDeleteimage', dbDeleteimage);
-            // return this.plantService.updatePlant(organizationId, plantId, {
-            //   ...plantData,
-            // });
+            await this.awsService.deleteFile(result);
           } else {
             return {
               statusCode: HttpStatus.BAD_REQUEST,
@@ -282,22 +277,11 @@ export class PlantController {
             };
           }
         }
-        console.log('plant dataa', plantData);
-        // } else {
-        //   return {
-        //     statusCode: HttpStatus.BAD_REQUEST,
-        //     Error: 'Image Already exists',
-        //   };
-        // }
       }
       return this.plantService.updatePlant(organizationId, plantId, {
         ...plantData,
       });
     } catch (error) {
-      // return {
-      //   statusCode: HttpStatus.BAD_REQUEST,
-      //   Error: 'Unable to upload image',
-      // };
       throw new HttpException(error.message, error.status || 500);
     }
   }
@@ -328,10 +312,6 @@ export class PlantController {
       await this.awsService.deleteFile(plant.imageKey);
       return this.plantService.deletePlant(organizationId, plantId);
     } else {
-      // return {
-      //   statusCode: HttpStatus.BAD_REQUEST,
-      //   Error: 'Unable to delete',
-      // };
       throw new HttpException(
         'Unable to delete due to plant not found',
         HttpStatus.BAD_REQUEST,

@@ -19,6 +19,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UploadedFile,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,6 +56,7 @@ export class ShopController {
     required: true,
     schema: {
       type: 'object',
+      required: ['shopName', 'description', 'imageName', 'plantId', 'image'],
       properties: {
         shopName: {
           type: 'string',
@@ -80,55 +82,41 @@ export class ShopController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const { originalname } = file;
-      //console.log('plants'+ '/' + originalname)
-      const checkImageKey = 'shops' + '/' + originalname;
-      const checkImage = await this.prismaDynamic.findUnique(TABLES.SHOP, {
-        where: { imageKey: checkImageKey },
-      });
-      if (!checkImage) {
-        const imageData = await this.awsService.uploadFile(file, 'shops');
-        if (!imageData) {
-          return {
-            statusCode: HttpStatus.BAD_REQUEST,
-            Error: 'Unable to upload image',
-          };
-        }
-        const image = imageData.Location;
-        const data = {
-          ...shopData,
-          image,
-          plant: {
-            connect: {
-              plantId: shopData.plantId,
-            },
-          },
-        };
-        let plant: any;
-        plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
-          where: { plantId: data.plantId },
-        });
-        if (!plant) {
-          return {
-            statusCode: HttpStatus.BAD_REQUEST,
-            Error: 'Plant not Exists',
-          };
-        } else {
-          delete data.plantId;
-          const result = await this.shopService.createShop(data);
-          return result;
-        }
-      } else {
+      const imageData = await this.awsService.uploadFile(file, 'shops');
+      if (!imageData) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          Error: 'Image Already exists',
+          Error: 'Unable to upload image',
         };
       }
-    } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
+      const image = imageData.Location;
+      const imageKey = imageData.Key;
+      const data = {
+        ...shopData,
+        image,
+        imageKey,
+        plant: {
+          connect: {
+            plantId: shopData.plantId,
+          },
+        },
       };
+      let plant: any = {};
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: data.plantId },
+      });
+      if (!plant) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: 'Plant not Exists',
+        };
+      } else {
+        delete data.plantId;
+        const result = await this.shopService.createShop(data);
+        return result;
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -215,12 +203,45 @@ export class ShopController {
   @Put('/plantId=:plantId&shopId=:shopId')
   async updateShop(
     @Body() shopData: UpdateShopDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('plantId', ParseUUIDPipe) plantId: string,
     @Param('shopId', ParseUUIDPipe) shopId: string,
   ): Promise<ShopResponseDto> {
-    return this.shopService.updateShop(plantId, shopId, {
-      ...shopData,
-    });
+    try {
+      if (file) {
+        const imageData = await this.awsService.uploadFile(file, 'shops');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        shopData.image = imageData.Location;
+        shopData.imageKey = imageData.Key;
+        if (shopData.image && shopData.imageKey) {
+          const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+            where: {
+              plantId: plantId,
+              shopId: shopId,
+            },
+          });
+          const result = shop.imageKey;
+          if (result) {
+            await this.awsService.deleteFile(result);
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+      }
+      return this.shopService.updateShop(plantId, shopId, {
+        ...shopData,
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
+    }
   }
 
   @Roles(Role.ADMIN)
@@ -239,6 +260,20 @@ export class ShopController {
     @Param('plantId', ParseUUIDPipe) plantId: string,
     @Param('shopId', ParseUUIDPipe) shopId: string,
   ) {
-    return this.shopService.deleteShop(plantId, shopId);
+    const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+      where: {
+        plantId: plantId,
+        shopId: shopId,
+      },
+    });
+    if (shop) {
+      await this.awsService.deleteFile(shop.imageKey);
+      return this.shopService.deleteShop(plantId, shopId);
+    } else {
+      throw new HttpException(
+        'Unable to delete due to Shop not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

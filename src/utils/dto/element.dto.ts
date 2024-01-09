@@ -26,6 +26,11 @@ export class ElementDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   imageName: string;
 
   @ApiProperty()
@@ -51,14 +56,21 @@ export class CreateElementDto {
   @IsNotEmpty()
   elementDescription: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // @IsOptional()
-  // image: string;
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  image: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
   imageName: string;
 
   @IsString()
@@ -87,17 +99,24 @@ export class UpdateElementDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  elementDescription: string;
+  elementDescription?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName: string;
+  imageKey?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  imageName?: string;
 }
 
 export class ElementResponseDto {

@@ -56,11 +56,15 @@ export class SensorController {
     required: true,
     schema: {
       type: 'object',
+      required: [
+        'sensorId',
+        'sensorDescription',
+        'elementId',
+        'imageName',
+        'image',
+      ],
       properties: {
         sensorId: {
-          type: 'string',
-        },
-        sensorName: {
           type: 'string',
         },
         sensorDescription: {
@@ -84,7 +88,7 @@ export class SensorController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const imageData = await this.awsService.uploadFile(file, 'elements');
+      const imageData = await this.awsService.uploadFile(file, 'sensors');
       if (!imageData) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -92,16 +96,18 @@ export class SensorController {
         };
       }
       const image = imageData.Location;
+      const imageKey = imageData.Key;
       const data = {
         ...sensorData,
         image,
+        imageKey,
         elements: {
           connect: {
             elementId: sensorData.elementId,
           },
         },
       };
-      let element: any;
+      let element: any = {};
       element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: { elementId: data.elementId },
       });
@@ -126,10 +132,7 @@ export class SensorController {
         }
       }
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -189,15 +192,69 @@ export class SensorController {
     name: 'sensorId',
     required: true,
   })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        sensorDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Put('/elementId=:elementId&sensorId=:sensorId')
   async updateSensor(
     @Body() sensorData: UpdateSensorDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('elementId', ParseUUIDPipe) elementId: string,
     @Param('sensorId') sensorId: string,
   ): Promise<SensorResponseDto> {
-    return this.sensorService.updateSensor(elementId, sensorId, {
-      ...sensorData,
-    });
+    try {
+      if (file) {
+        const imageData = await this.awsService.uploadFile(file, 'elements');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        sensorData.image = imageData.Location;
+        sensorData.imageKey = imageData.Key;
+        if (sensorData.image && sensorData.imageKey) {
+          const sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+            where: {
+              elementId: elementId,
+              sensorId: sensorId,
+            },
+          });
+          const result = sensor.imageKey;
+          if (result) {
+            await this.awsService.deleteFile(result);
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+      }
+      return this.sensorService.updateSensor(elementId, sensorId, {
+        ...sensorData,
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
+    }
   }
 
   @Roles(Role.ADMIN)
@@ -216,6 +273,35 @@ export class SensorController {
     @Param('elementId', ParseUUIDPipe) elementId: string,
     @Param('sensorId') sensorId: string,
   ) {
-    return this.sensorService.deleteSensor(elementId, sensorId);
+    const sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+      where: {
+        elementId: elementId,
+        sensorId: sensorId,
+      },
+    });
+    if (sensor) {
+      await this.awsService.deleteFile(sensor.imageKey);
+      return this.sensorService.deleteSensor(elementId, sensorId);
+    } else {
+      throw new HttpException(
+        'Unable to delete due to Sensor not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/sensorId=:sensorId')
+  @ApiParam({
+    name: 'sensorId',
+    required: true,
+  })
+  async getDetailsbySensorId(
+    @Param('sensorId') sensorId: string,
+  ): Promise<SensorResponseDto> {
+    console.log('test', sensorId);
+    return this.sensorService.getElementsbySensorId(sensorId);
   }
 }

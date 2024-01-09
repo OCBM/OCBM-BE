@@ -19,6 +19,7 @@ import {
   Query,
   UploadedFile,
   UseInterceptors,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,6 +56,13 @@ export class ElementController {
     required: true,
     schema: {
       type: 'object',
+      required: [
+        'elementName',
+        'elementDescription',
+        'imageName',
+        'machineId',
+        'image',
+      ],
       properties: {
         elementName: {
           type: 'string',
@@ -88,16 +96,18 @@ export class ElementController {
         };
       }
       const image = imageData.Location;
+      const imageKey = imageData.Key;
       const data = {
         ...elementData,
         image,
+        imageKey,
         machines: {
           connect: {
             machineId: elementData.machineId,
           },
         },
       };
-      let machine: any;
+      let machine: any = {};
       machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: { machineId: data.machineId },
       });
@@ -112,10 +122,7 @@ export class ElementController {
         return result;
       }
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -175,15 +182,72 @@ export class ElementController {
     name: 'elementId',
     required: true,
   })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        elementName: {
+          type: 'string',
+        },
+        elementDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Put('/machineId=:machineId&elementId=:elementId')
   async updateElement(
     @Body() elementData: UpdateElementDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('machineId', ParseUUIDPipe) machineId: string,
     @Param('elementId', ParseUUIDPipe) elementId: string,
   ): Promise<ElementResponseDto> {
-    return this.elementService.updateElement(machineId, elementId, {
-      ...elementData,
-    });
+    try {
+      if (file) {
+        const imageData = await this.awsService.uploadFile(file, 'elements');
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        elementData.image = imageData.Location;
+        elementData.imageKey = imageData.Key;
+        if (elementData.image && elementData.imageKey) {
+          const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+            where: {
+              elementId: elementId,
+              machineId: machineId,
+            },
+          });
+          const result = element.imageKey;
+          if (result) {
+            await this.awsService.deleteFile(result);
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+      }
+      return this.elementService.updateElement(machineId, elementId, {
+        ...elementData,
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
+    }
   }
 
   @Roles(Role.ADMIN)
@@ -202,6 +266,20 @@ export class ElementController {
     @Param('machineId', ParseUUIDPipe) machineId: string,
     @Param('elementId', ParseUUIDPipe) elementId: string,
   ) {
-    return this.elementService.deleteElement(machineId, elementId);
+    const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+      where: {
+        elementId: elementId,
+        machineId: machineId,
+      },
+    });
+    if (element) {
+      await this.awsService.deleteFile(element.imageKey);
+      return this.elementService.deleteElement(machineId, elementId);
+    } else {
+      throw new HttpException(
+        'Unable to delete due to Element not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

@@ -19,6 +19,7 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseInterceptors,
+  HttpException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -55,6 +56,13 @@ export class MachineLineController {
     required: true,
     schema: {
       type: 'object',
+      required: [
+        'machineLineName',
+        'machineLineDescription',
+        'imageName',
+        'shopId',
+        'image',
+      ],
       properties: {
         machineLineName: {
           type: 'string',
@@ -88,16 +96,18 @@ export class MachineLineController {
         };
       }
       const image = imageData.Location;
+      const imageKey = imageData.Key;
       const data = {
         ...machineLineData,
         image,
+        imageKey,
         shop: {
           connect: {
             shopId: machineLineData.shopId,
           },
         },
       };
-      let shop: any;
+      let shop: any = {};
       shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId: data.shopId },
       });
@@ -112,10 +122,7 @@ export class MachineLineController {
         return result;
       }
     } catch (error) {
-      return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        Error: 'Unable to upload image',
-      };
+      throw new HttpException(error.message, error.status || 500);
     }
   }
 
@@ -177,15 +184,78 @@ export class MachineLineController {
     name: 'machineLineId',
     required: true,
   })
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        machineLineName: {
+          type: 'string',
+        },
+        machineLineDescription: {
+          type: 'string',
+        },
+        imageName: {
+          type: 'string',
+        },
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @Put('/shopId=:shopId&machineLineId=:machineLineId')
   async updateMachineLine(
     @Body() machineLineData: UpdateMachineLineDto,
+    @UploadedFile() file: Express.Multer.File,
     @Param('shopId', ParseUUIDPipe) shopId: string,
     @Param('machineLineId', ParseUUIDPipe) machineLineId: string,
   ): Promise<MachineLineResponseDto> {
-    return this.machineLineService.updateMachineLine(shopId, machineLineId, {
-      ...machineLineData,
-    });
+    try {
+      if (file) {
+        const imageData = await this.awsService.uploadFile(
+          file,
+          'machineLines',
+        );
+        if (!imageData) {
+          return {
+            statusCode: HttpStatus.BAD_REQUEST,
+            Error: 'Unable to upload image',
+          };
+        }
+        machineLineData.image = imageData.Location;
+        machineLineData.imageKey = imageData.Key;
+        if (machineLineData.image && machineLineData.imageKey) {
+          const machineLine = await this.prismaDynamic.findUnique(
+            TABLES.MACHINELINE,
+            {
+              where: {
+                machineLineId: machineLineId,
+                shopId: shopId,
+              },
+            },
+          );
+          const result = machineLine.imageKey;
+          if (result) {
+            await this.awsService.deleteFile(result);
+          } else {
+            return {
+              statusCode: HttpStatus.BAD_REQUEST,
+              Error: 'Unable to fetch image-data from the Database',
+            };
+          }
+        }
+      }
+      return this.machineLineService.updateMachineLine(shopId, machineLineId, {
+        ...machineLineData,
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status || 500);
+    }
   }
 
   @Roles(Role.ADMIN)
@@ -204,6 +274,23 @@ export class MachineLineController {
     @Param('shopId', ParseUUIDPipe) shopId: string,
     @Param('machineLineId', ParseUUIDPipe) machineLineId: string,
   ) {
-    return this.machineLineService.deleteMachineLine(shopId, machineLineId);
+    const machineLine = await this.prismaDynamic.findUnique(
+      TABLES.MACHINELINE,
+      {
+        where: {
+          machineLineId: machineLineId,
+          shopId: shopId,
+        },
+      },
+    );
+    if (machineLine) {
+      await this.awsService.deleteFile(machineLine.imageKey);
+      return this.machineLineService.deleteMachineLine(shopId, machineLineId);
+    } else {
+      throw new HttpException(
+        'Unable to delete due to MachineLine not found',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

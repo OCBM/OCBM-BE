@@ -16,22 +16,26 @@ export class SensorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  sensorName?: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   sensorDescription?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  image?: string;
+  @IsNotEmpty()
+  image: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageKey?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
   imageName?: string;
+
+  @ApiProperty()
+  elements?: any;
 
   @ApiProperty()
   @IsString()
@@ -43,6 +47,10 @@ export class SensorDto {
 
   @IsOptional()
   updatedAt?: Date;
+
+  constructor(partial: Partial<SensorDto>) {
+    Object.assign(this, partial);
+  }
 }
 
 export class CreateSensorDto {
@@ -53,27 +61,24 @@ export class CreateSensorDto {
 
   @ApiProperty()
   @IsString()
-  //@IsNotEmpty()
-  @IsOptional()
-  sensorName?: string;
+  @IsNotEmpty()
+  sensorDescription: string;
 
   @ApiProperty()
   @IsString()
-  //@IsNotEmpty()
+  @IsNotEmpty()
   @IsOptional()
-  sensorDescription?: string;
+  image: string;
 
-  // @ApiProperty()
-  // @IsString()
-  // @IsOptional()
-  // @IsOptional()
-  // image?: string;
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  imageName: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  @IsOptional()
-  imageName?: string;
+  imageKey: string;
 
   @IsString()
   @ApiProperty()
@@ -98,24 +103,25 @@ export class UpdateSensorDto {
   // sensorId?: string;
   @ApiProperty()
   @IsString()
-  //@IsNotEmpty()
-  @IsOptional()
-  sensorName?: string;
-
-  @ApiProperty()
-  @IsString()
- // @IsNotEmpty()
+  @IsNotEmpty()
   @IsOptional()
   sensorDescription?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
   imageName?: string;
 }
 
