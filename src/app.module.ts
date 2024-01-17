@@ -7,18 +7,21 @@ import {
   MachineLineController,
   OrganizationController,
   PlantController,
+  SensorController,
   ShopController,
   UserController,
 } from './controllers';
 import { AuthModule, GroupModule } from './modules';
 import {
   AuthService,
+  AwsService,
   ElementService,
   MachineLineService,
   MachineService,
   OrganizationService,
   PlantService,
   PrismaService,
+  SensorService,
   ShopService,
   UserService,
 } from './services';
@@ -40,6 +43,7 @@ import { ElementController } from './controllers/element/element.controller';
     MachineLineController,
     MachineController,
     ElementController,
+    SensorController,
   ],
   providers: [
     PrismaService,
@@ -54,6 +58,8 @@ import { ElementController } from './controllers/element/element.controller';
     MachineLineService,
     MachineService,
     ElementService,
+    SensorService,
+    AwsService,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

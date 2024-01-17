@@ -21,6 +21,11 @@ export class PlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   imageName: string;
 
   @ApiProperty()
@@ -41,7 +46,11 @@ export class PlantDto {
 }
 
 export class CreatePlantDto {
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: 'Plant Name is required.',
+  })
   @IsString()
   @IsNotEmpty()
   plantName: string;
@@ -55,6 +64,11 @@ export class CreatePlantDto {
   @IsString()
   @IsOptional()
   image: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  imageKey: string;
 
   @ApiProperty()
   @IsString()
@@ -82,6 +96,7 @@ export class UpdatePlantDto {
   @IsNotEmpty()
   @IsOptional()
   plantName?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -91,12 +106,20 @@ export class UpdatePlantDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageName: string;
+  @IsNotEmpty()
+  imageKey?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
+  imageName?: string;
 }
 
 export class PlantResponseDto {

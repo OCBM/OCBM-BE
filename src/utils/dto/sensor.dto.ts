@@ -1,58 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class ShopDto {
+export class SensorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  shopId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  shopName: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  image: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  imageKey: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  imageName: string;
+  sensor_Id: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  sensorId: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  plantId: string;
+  sensorDescription?: string;
 
-  @IsOptional()
-  createdAt?: Date;
-
-  @IsOptional()
-  updatedAt?: Date;
-}
-
-export class CreateShopDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  shopName: string;
-
-  @ApiProperty({ required: true })
   @IsString()
   @IsOptional()
   @IsNotEmpty()
@@ -61,23 +27,63 @@ export class CreateShopDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  imageKey: string;
+  imageKey?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageName?: string;
+
+  @ApiProperty()
+  elements?: any;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  elementId: string;
+
+  @IsOptional()
+  createdAt?: Date;
+
+  @IsOptional()
+  updatedAt?: Date;
+
+  constructor(partial: Partial<SensorDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class CreateSensorDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  sensorId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  sensorDescription: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  image: string;
+
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
   imageName: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  @IsOptional()
+  imageKey: string;
 
   @IsString()
   @ApiProperty()
   @IsNotEmpty()
-  plantId: string;
+  elementId: string;
 
   @IsOptional()
   createdAt?: Date;
@@ -86,26 +92,25 @@ export class CreateShopDto {
   updatedAt?: Date;
 
   @IsOptional()
-  plants: any;
+  elements: any;
 }
 
-export class UpdateShopDto {
+export class UpdateSensorDto {
+  // @ApiProperty()
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsOptional()
+  // sensorId?: string;
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  shopName?: string;
+  sensorDescription?: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
-  description?: string;
-
-  @ApiProperty()
-  @IsString()
   @IsNotEmpty()
-  @IsOptional()
   image?: string;
 
   @ApiProperty()
@@ -120,15 +125,15 @@ export class UpdateShopDto {
   imageName?: string;
 }
 
-export class ShopResponseDto {
+export class SensorResponseDto {
   statusCode: number;
 
-  @Type(() => ShopDto)
-  message?: ShopDto;
+  @Type(() => SensorDto)
+  message?: SensorDto;
   Error?: string;
   meta?: any;
 
-  constructor(partial: Partial<ShopResponseDto>) {
+  constructor(partial: Partial<SensorResponseDto>) {
     Object.assign(this, partial);
   }
 }

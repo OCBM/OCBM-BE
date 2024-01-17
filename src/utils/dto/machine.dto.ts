@@ -26,6 +26,11 @@ export class MachineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   imageName: string;
 
   @ApiProperty()
@@ -54,11 +59,18 @@ export class CreateMachineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
   imageName: string;
 
   @IsString()
@@ -92,11 +104,18 @@ export class UpdateMachineDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @IsNotEmpty()
   image?: string;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
+  imageKey: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @IsNotEmpty()
   imageName: string;
 }
 

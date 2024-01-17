@@ -2,7 +2,8 @@ import { Expose } from 'class-transformer';
 import exp from 'constants';
 //USER
 export const USER_NOT_EXISTS = 'User not exists';
-export const USERNAME_OR_PASSWORD_INCORRECT = 'UserName or Password is incorrect';
+export const USERNAME_OR_PASSWORD_INCORRECT =
+  'UserName or Password is incorrect';
 export const WRONG_CREDENTIALS = 'Wrong Credentials';
 export const ELEMENT_ALREADY_EXISTS = 'Element already exists';
 export const FAILED_TO_CREATE_ELEMENT = 'Failed to create element';
@@ -99,3 +100,13 @@ export const UNABLE_TO_DELETE_ORGANIZATION =
 export const NO_PLANT = 'There is no Plant';
 export const RECORD_TO_DELETE_DOES_NOT_EXIST =
   'Record to delete does not exists';
+export const SENSOR_ALREADY_EXISTS = 'Sensor already exists';
+export const FAILED_TO_CREATE_SENSOR = 'Failed to create Sensor';
+export const NO_SENSOR = 'There is no Sensor';
+export const UNABLE_TO_FETCH_SENSORS = 'Unable to fetch Sensors';
+export const NO_SENSOR_IN_THIS_ELEMENT = 'There is no Sensor in this Element';
+export const SENSOR_AND_ELEMENT_MISMATCHING =
+  'Element and Sensor is mismatching';
+export const SENSOR_OR_ELEMENT_NOT_EXISTS = 'Sensor/Element not exists';
+export const SENSOR_DELETED_SUCCESSFULLY = 'Sensor deleted successfully';
+export const UNABLE_TO_DELETE_SENSOR = 'Unable to delete Sensor';
