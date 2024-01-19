@@ -131,3 +131,23 @@ export class MachineResponseDto {
     Object.assign(this, partial);
   }
 }
+
+export class MachineDtoForSetStandards {
+  machineName: string;
+  elementName: string;
+  sensorDescription: string;
+  senorId: string;
+}
+
+export class MachineResponseDtoForSetStandards {
+  statusCode: number;
+
+  @Type(() => MachineDtoForSetStandards)
+  message?: MachineDtoForSetStandards[];
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<MachineResponseDtoForSetStandards>) {
+    Object.assign(this, partial);
+  }
+}

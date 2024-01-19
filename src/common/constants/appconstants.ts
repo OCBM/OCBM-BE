@@ -1,5 +1,3 @@
-import { Expose } from 'class-transformer';
-import exp from 'constants';
 //USER
 export const USER_NOT_EXISTS = 'User not exists';
 export const USERNAME_OR_PASSWORD_INCORRECT =
@@ -41,7 +39,7 @@ export const FAILED_TO_DELETE_USER = 'Failed to delete user';
 //SHOP
 export const SHOP_ALREADY_EXISTS = 'Shop already exists';
 export const FAILED_TO_CREATE_SHOP = 'Failed to create shop';
-export const THERE_NO_PLANT = 'There no Plant';
+export const THERE_NO_PLANT = 'There is no Plant';
 export const THERE_IS_NO_SHOP_IN_THIS_PLANT = 'There is no shop in this plant';
 export const UNABLE_TO_FETCH_SHOPS = 'unable to fetch shops';
 export const THERE_IS_NO_SHOP = 'There is no shop';

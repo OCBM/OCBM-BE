@@ -1,7 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { SensorDto, SensorResponseDto, UpdateSensorDto } from '@/utils';
+import {
+  SensorDto,
+  SensorResponseDto,
+  SensorResponseDtoForSensorPage,
+  UpdateSensorDto,
+} from '@/utils';
 import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
@@ -202,16 +207,16 @@ export class SensorService {
     data: UpdateSensorDto,
   ): Promise<SensorResponseDto> {
     try {
-      let sensor: any;
-      let element: any;
-      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+      // let sensor: any;
+      // let element: any;
+      const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: { elementId: elementId },
       });
 
       const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
         where: { sensorId: sensorId },
       });
-      sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+      const sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
         where: {
           sensorId: sensorId,
           elementId: element.elementId,
@@ -248,9 +253,9 @@ export class SensorService {
 
   async deleteSensor(elementId: string, sensorId: string) {
     try {
-      let sensor: any;
-      let element: any;
-      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+      // let sensor: any;
+      // let element: any;
+      const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: { elementId },
       });
 
@@ -258,7 +263,7 @@ export class SensorService {
         where: { sensorId: sensorId },
       });
 
-      sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+      const sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
         where: {
           sensorId: sensorId,
           elementId: element.elementId,
@@ -334,6 +339,77 @@ export class SensorService {
     } catch {
       throw new HttpException(
         APP_CONSTANTS.SENSOR_OR_ELEMENT_NOT_EXISTS,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getSensorDetailsByPlantId(
+    plantId: string,
+  ): Promise<SensorResponseDtoForSensorPage> {
+    let plant: any;
+
+    try {
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    include: {
+                      elements: {
+                        include: {
+                          sensors: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (plant.shops.length > 0) {
+        for (let i = 0; i < plant.shops.length; i++) {
+          const shopsDetails = plant.shops[i];
+          for (let j = 0; j < shopsDetails.machineLines.length; j++) {
+            const machineLineDetailes = shopsDetails.machineLines[j];
+            for (let k = 0; k < machineLineDetailes.machines.length; k++) {
+              const machineDetails = machineLineDetailes.machines[k];
+              for (let l = 0; l < machineDetails.elements.length; l++) {
+                const elementDetails = machineDetails.elements[l];
+                for (let m = 0; m < elementDetails.sensors.length; m++) {
+                  const sensorDetails = elementDetails.sensors[m];
+                  resultDetails.push({
+                    sensorId: sensorDetails.sensorId,
+                    sensorDescription: sensorDetails.sensorDescription,
+                    image: sensorDetails.image,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
         HttpStatus.BAD_REQUEST,
       );
     }

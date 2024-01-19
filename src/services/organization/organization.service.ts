@@ -35,9 +35,8 @@ export class OrganizationService {
     }
   }
 
-  async getAllOrganization(
-    organization: any,
-  ): Promise<OrganizationResponseDto> {
+  async getAllOrganization() // organization: any,
+  : Promise<OrganizationResponseDto> {
     try {
       const organization = await this.prismaDynamic.findMany(
         TABLES.ORGANIZATION,
@@ -80,18 +79,21 @@ export class OrganizationService {
     data: UpdateOrganizationDto,
   ): Promise<OrganizationResponseDto> {
     try {
-      let organization: any;
-
-      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
-        where: { organizationId },
-      });
+      //let organization: any;
+      let updatedData: any;
+      const organization = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: { organizationId },
+        },
+      );
       if (!organization) {
         throw new HttpException(
           APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
         );
       } else {
-        var updatedData = await this.prismaDynamic.update(TABLES.ORGANIZATION, {
+        updatedData = await this.prismaDynamic.update(TABLES.ORGANIZATION, {
           where: { organizationId },
           data,
         });
@@ -116,11 +118,14 @@ export class OrganizationService {
 
   async deleteOrganization(organizationId: string) {
     try {
-      let organization: any;
+      // let organization: any;
 
-      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
-        where: { organizationId },
-      });
+      const organization = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: { organizationId },
+        },
+      );
       if (!organization) {
         throw new HttpException(
           APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,

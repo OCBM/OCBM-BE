@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { MachineResponseDto, UpdateMachineDto } from '@/utils';
+import {
+  MachineResponseDto,
+  MachineResponseDtoForSetStandards,
+  UpdateMachineDto,
+} from '@/utils';
 import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
@@ -166,16 +170,19 @@ export class MachineService {
     data: UpdateMachineDto,
   ): Promise<MachineResponseDto> {
     try {
-      let machine: any;
-      let machineLine: any;
-      machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
-        where: { machineLineId: machineLineId },
-      });
+      // let machine: any;
+      // let machineLine: any;
+      const machineLine = await this.prismaDynamic.findUnique(
+        TABLES.MACHINELINE,
+        {
+          where: { machineLineId: machineLineId },
+        },
+      );
 
       const checkmachine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: { machineId: machineId },
       });
-      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+      const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: {
           machineId: machineId,
           machineLineId: machineLine.machineLineId,
@@ -215,17 +222,20 @@ export class MachineService {
 
   async deleteMachine(machineLineId: string, machineId: string) {
     try {
-      let machine: any;
-      let machineLine: any;
-      machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
-        where: { machineLineId },
-      });
+      // let machine: any;
+      // let machineLine: any;
+      const machineLine = await this.prismaDynamic.findUnique(
+        TABLES.MACHINELINE,
+        {
+          where: { machineLineId },
+        },
+      );
 
       const checkmachine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: { machineId: machineId },
       });
 
-      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+      const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: {
           machineId: machineId,
           machineLineId: machineLine.machineLineId,
@@ -270,6 +280,56 @@ export class MachineService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+  async getDetailsForSetStandardsByMachineId(
+    machineId: string,
+  ): Promise<MachineResponseDtoForSetStandards> {
+    let machine: any;
+
+    try {
+      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+        where: { machineId: machineId },
+        include: {
+          elements: {
+            include: {
+              sensors: true,
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (machine.elements.length > 0) {
+        for (let i = 0; i < machine.elements.length; i++) {
+          const elementDetails = machine.elements[i];
+          for (let m = 0; m < elementDetails.sensors.length; m++) {
+            const sensorDetails = elementDetails.sensors[m];
+            resultDetails.push({
+              machine: machine.machineName,
+              element: elementDetails.elementName,
+              sensorId: sensorDetails.sensorId,
+              sensorDescription: sensorDetails.sensorDescription,
+            });
+          }
+        }
+      }
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

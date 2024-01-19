@@ -32,7 +32,7 @@ export class UserService {
     const query: string = search.trim()
       ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
       : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
-   // console.log(query, sort);
+    // console.log(query, sort);
     const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
       query,
       `%${search.trim().replace(/"/g, '')}%`,
@@ -230,7 +230,7 @@ export class UserService {
       let userData: any = {
         ...data,
       };
-
+      let updatedData: any;
       user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId },
         include: {
@@ -276,7 +276,7 @@ export class UserService {
             },
           };
         }
-        var updatedData = await this.prismaDynamic.update(TABLES.USER, {
+        updatedData = await this.prismaDynamic.update(TABLES.USER, {
           where: { userId },
           data: userData,
         });
