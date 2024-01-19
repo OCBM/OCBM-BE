@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { LoginDto } from '@/utils/dto';
 import { TOKEN_SECRET, TABLES, APP_CONSTANTS } from '@/common';
 import { PrismaService } from '../prisma/prisma.service';

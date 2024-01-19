@@ -20,7 +20,7 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { IsEnum } from 'class-validator';
 import { Role, BCRYPT_SALT_ROUNDS, Sort } from '@/common';
 import { Roles } from '@/decorator';
