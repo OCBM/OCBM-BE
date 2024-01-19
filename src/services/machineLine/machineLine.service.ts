@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { MachineLineResponseDto, UpdateMachineLineDto } from '@/utils';
 import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
-import { table } from 'console';
 
 @Injectable()
 export class MachineLineService {
@@ -177,9 +176,9 @@ export class MachineLineService {
     data: UpdateMachineLineDto,
   ): Promise<MachineLineResponseDto> {
     try {
-      let machineLine: any;
-      let shop: any;
-      shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+      // let machineLine: any;
+      // let shop: any;
+      const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId: shopId },
       });
 
@@ -189,12 +188,15 @@ export class MachineLineService {
           where: { machineLineId: machineLineId },
         },
       );
-      machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
-        where: {
-          machineLineId: machineLineId,
-          shopId: shop.shopId,
+      const machineLine = await this.prismaDynamic.findUnique(
+        TABLES.MACHINELINE,
+        {
+          where: {
+            machineLineId: machineLineId,
+            shopId: shop.shopId,
+          },
         },
-      });
+      );
       if (machineLine) {
         const updatedData = await this.prismaDynamic.update(
           TABLES.MACHINELINE,
@@ -232,9 +234,9 @@ export class MachineLineService {
 
   async deleteMachineLine(shopId: string, machineLineId: string) {
     try {
-      let machineLine: any;
-      let shop: any;
-      shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+      // let machineLine: any;
+      // let shop: any;
+      const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId },
       });
 
@@ -245,12 +247,15 @@ export class MachineLineService {
         },
       );
 
-      machineLine = await this.prismaDynamic.findUnique(TABLES.MACHINELINE, {
-        where: {
-          machineLineId: machineLineId,
-          shopId: shop.shopId,
+      const machineLine = await this.prismaDynamic.findUnique(
+        TABLES.MACHINELINE,
+        {
+          where: {
+            machineLineId: machineLineId,
+            shopId: shop.shopId,
+          },
         },
-      });
+      );
 
       if (machineLine) {
         await this.prismaDynamic.delete(TABLES.MACHINELINE, {

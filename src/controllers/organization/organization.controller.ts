@@ -36,8 +36,8 @@ export class OrganizationController {
   }
   @ApiBearerAuth('access-token')
   @Get('/')
-  async getAllOrganization(organization): Promise<OrganizationResponseDto> {
-    return this.organizationService.getAllOrganization(organization);
+  async getAllOrganization(): Promise<OrganizationResponseDto> {
+    return this.organizationService.getAllOrganization();
   }
 
   @ApiParam({

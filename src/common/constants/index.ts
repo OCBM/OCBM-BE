@@ -8,9 +8,11 @@ export const DECORATOR_KEYS = {
 };
 export const TOKEN_EXPIRY = {
   accessToken: '24h',
+  refreshToken: '30d',
 };
 export const TOKEN_SECRET = {
   accessToken: 'hellothisisjwtsecret',
+  refreshToken: 'omnexIOT',
 };
 
 export const TABLES = {
@@ -24,5 +26,5 @@ export const TABLES = {
   MACHINELINE: 'machineLine',
   MACHINE: 'machine',
   ELEMENT: 'element',
-  SENSOR : 'sensor',
+  SENSOR: 'sensor',
 };

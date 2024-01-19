@@ -1,8 +1,8 @@
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from '@/utils/dto';
-import { TOKEN_SECRET, TABLES, APP_CONSTANTS } from '@/common';
+import { LoginDto, RefreshLoginDto } from '@/utils/dto';
+import { TOKEN_SECRET, TABLES, APP_CONSTANTS, TOKEN_EXPIRY } from '@/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    console.log('UserDetails:', user);
     const payload = {
       userId: user.userId,
       userName: user.userName,
@@ -56,11 +56,27 @@ export class AuthService {
       clientId: 'Omnex',
       role: user.role,
     };
-
-    const token = this.jwtService.sign(
-      { payload },
-      { privateKey: TOKEN_SECRET.accessToken },
+    console.log('PayloadDetails:', payload);
+    const accessToken = this.jwtService.sign(
+      { payload: payload },
+      {
+        expiresIn: TOKEN_EXPIRY.accessToken,
+        privateKey: TOKEN_SECRET.accessToken,
+      },
     );
+    // const token = this.jwtService.sign(
+    //   { payload, expiresIn: TOKEN_EXPIRY.accessToken },
+    //   { privateKey: TOKEN_SECRET.accessToken },
+    // );
+    //const decodedData = this.jwtService.decode(accessToken, { json: true });
+    const refreshToken = this.jwtService.sign(
+      { payload: payload },
+      {
+        expiresIn: TOKEN_EXPIRY.refreshToken,
+        privateKey: TOKEN_SECRET.refreshToken,
+      },
+    );
+    // console.log('decodedata:', decodedData);
     return {
       statusCode: HttpStatus.OK,
       message: {
@@ -69,12 +85,42 @@ export class AuthService {
         userName: user.userName,
         email: user.email,
         role: user.role,
-        accessToken: token,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
         groups: user.groups,
       },
     };
   }
 
+  async refreshLogin(data: RefreshLoginDto) {
+    console.log('refreshData:', data.token);
+    // const data = refreshData;
+    const decodedData: any = this.jwtService.decode(data.token, { json: true });
+    console.log('decodedData:', decodedData);
+    const payload = {
+      userId: decodedData.payload.userId,
+      userName: decodedData.payload.userName,
+      name: decodedData.payload.name,
+      email: decodedData.payload.email,
+      sub: decodedData.payload.userId,
+      clientId: 'Omnex',
+      role: decodedData.payload.role,
+    };
+
+    console.log('payload:', payload);
+    const accessToken = this.jwtService.sign(
+      { payload: payload },
+      {
+        expiresIn: TOKEN_EXPIRY.accessToken,
+        privateKey: TOKEN_SECRET.accessToken,
+      },
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: { accessToken },
+    };
+  }
   async validateUser(payload: any): Promise<any> {
     if (payload.payload.role === 'ADMIN') {
       return this.prismaDynamic.findUnique(TABLES.ADMIN, {
