@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { PlantResponseDto, UpdatePlantDto } from '@/utils';
+import {
+  PlantResponseDto,
+  PlantResponseDtoForSetStandards,
+  UpdatePlantDto,
+} from '@/utils';
 import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
@@ -213,11 +217,14 @@ export class PlantService {
     // imageUpload: string,
   ): Promise<PlantResponseDto> {
     try {
-      let plant: any;
-      let organization: any;
-      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
-        where: { organizationId: organizationId },
-      });
+      // let plant: any;
+      // let organization: any;
+      const organization = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: { organizationId: organizationId },
+        },
+      );
       // if (!organization) {
       //   return {
       //     statusCode: HttpStatus.BAD_REQUEST,
@@ -234,7 +241,7 @@ export class PlantService {
       //   };
       // }
 
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: {
           plantId: plantid,
           organizationId: organization.organizationId,
@@ -276,11 +283,14 @@ export class PlantService {
 
   async deletePlant(organizationId: string, plantId: string) {
     try {
-      let plant: any;
-      let organization: any;
-      organization = await this.prismaDynamic.findUnique(TABLES.ORGANIZATION, {
-        where: { organizationId },
-      });
+      // let plant: any;
+      // let organization: any;
+      const organization = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: { organizationId },
+        },
+      );
       // if (!organization) {
       //   return {
       //     statusCode: HttpStatus.BAD_REQUEST,
@@ -296,7 +306,7 @@ export class PlantService {
       //     Error: 'Plant not Exists',
       //   };
       // }
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: {
           plantId: plantId,
           organizationId: organization.organizationId,
@@ -341,6 +351,82 @@ export class PlantService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+
+  async getDetailsForSetStandardsByPlantId(
+    plantId: string,
+  ): Promise<PlantResponseDtoForSetStandards> {
+    let plant: any;
+
+    try {
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    include: {
+                      elements: {
+                        include: {
+                          sensors: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (plant.shops.length > 0) {
+        for (let i = 0; i < plant.shops.length; i++) {
+          const shopsDetails = plant.shops[i];
+          for (let j = 0; j < shopsDetails.machineLines.length; j++) {
+            const machineLineDetailes = shopsDetails.machineLines[j];
+            for (let k = 0; k < machineLineDetailes.machines.length; k++) {
+              const machineDetails = machineLineDetailes.machines[k];
+              for (let l = 0; l < machineDetails.elements.length; l++) {
+                const elementDetails = machineDetails.elements[l];
+                for (let m = 0; m < elementDetails.sensors.length; m++) {
+                  const sensorDetails = elementDetails.sensors[m];
+                  console.log(
+                    'm',
+                    sensorDetails.sensorId && sensorDetails.sensorDescription,
+                  );
+                  resultDetails.push({
+                    machine: machineDetails.machineName,
+                    element: elementDetails.elementName,
+                    sensorId: sensorDetails.sensorId,
+                    sensorDescription: sensorDetails.sensorDescription,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

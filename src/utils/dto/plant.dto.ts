@@ -122,6 +122,25 @@ export class UpdatePlantDto {
   imageName?: string;
 }
 
+export class PlantDtoForSetStandards {
+  machineName: string;
+  elementName: string;
+  sensorDescription: string;
+  senorId: string;
+}
+
+export class PlantResponseDtoForSetStandards {
+  statusCode: number;
+
+  @Type(() => PlantDtoForSetStandards)
+  message?: PlantDtoForSetStandards[];
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<PlantResponseDtoForSetStandards>) {
+    Object.assign(this, partial);
+  }
+}
 export class PlantResponseDto {
   statusCode: number;
 

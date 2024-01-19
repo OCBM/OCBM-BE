@@ -1,6 +1,7 @@
 import {
   CreateMachineDto,
   MachineResponseDto,
+  MachineResponseDtoForSetStandards,
   RolesGuard,
   UpdateMachineDto,
 } from '@/utils';
@@ -284,5 +285,20 @@ export class MachineController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/machineId=:machineId')
+  @ApiParam({
+    name: 'machineId',
+    required: true,
+  })
+  async getDetailsForSetStandardsByMachineId(
+    @Param('machineId', ParseUUIDPipe) machineId: string,
+  ): Promise<MachineResponseDtoForSetStandards> {
+    // console.log('test', plantId);
+    return this.machineService.getDetailsForSetStandardsByMachineId(machineId);
   }
 }

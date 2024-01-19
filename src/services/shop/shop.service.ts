@@ -69,7 +69,7 @@ export class ShopService {
     sort: string,
   ): Promise<ShopResponseDto> {
     try {
-      const shopsCount = await this.prismaDynamic.findMany(TABLES.SHOP,{});
+      const shopsCount = await this.prismaDynamic.findMany(TABLES.SHOP, {});
       const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
         orderBy: [
           {
@@ -156,16 +156,16 @@ export class ShopService {
     data: UpdateShopDto,
   ): Promise<ShopResponseDto> {
     try {
-      let shop: any;
-      let plant: any;
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      // let shop: any;
+      // let plant: any;
+      const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
       });
 
       const checkShop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: { shopId: shopId },
       });
-      shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+      const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: {
           shopId: shopId,
           plantId: plant.plantId,
@@ -202,9 +202,9 @@ export class ShopService {
 
   async deleteShop(plantId: string, shopId: string) {
     try {
-      let shop: any;
-      let plant: any;
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      // let shop: any;
+      // let plant: any;
+      const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId },
       });
 
@@ -212,7 +212,7 @@ export class ShopService {
         where: { shopId: shopId },
       });
 
-      shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
+      const shop = await this.prismaDynamic.findUnique(TABLES.SHOP, {
         where: {
           shopId: shopId,
           plantId: plant.plantId,
