@@ -1,6 +1,7 @@
 import {
   CreatePlantDto,
   PlantResponseDto,
+  PlantResponseDtoForSetStandards,
   RolesGuard,
   UpdatePlantDto,
 } from '@/utils';
@@ -144,6 +145,8 @@ export class PlantController {
   }
 
   @ApiBearerAuth('access-token')
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiQuery({
     name: 'sort',
     enum: Sort,
@@ -317,6 +320,21 @@ export class PlantController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/plantId=:plantId')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  async getDetailsForSetStandardsByPlantId(
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+  ): Promise<PlantResponseDtoForSetStandards> {
+    // console.log('test', plantId);
+    return this.plantService.getDetailsForSetStandardsByPlantId(plantId);
   }
 
   @Public()

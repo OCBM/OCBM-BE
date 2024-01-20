@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SensorDto {
@@ -134,6 +134,25 @@ export class SensorResponseDto {
   meta?: any;
 
   constructor(partial: Partial<SensorResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class SenorDtoForSensorPage {
+  image: string;
+  sensorDescription: string;
+  senorId: string;
+}
+
+export class SensorResponseDtoForSensorPage {
+  statusCode: number;
+
+  @Type(() => SenorDtoForSensorPage)
+  message?: SenorDtoForSensorPage[];
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<SensorResponseDtoForSensorPage>) {
     Object.assign(this, partial);
   }
 }

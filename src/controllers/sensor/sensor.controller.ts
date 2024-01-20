@@ -3,6 +3,7 @@ import {
   SensorResponseDto,
   RolesGuard,
   UpdateSensorDto,
+  SensorResponseDtoForSensorPage,
 } from '@/utils';
 import {
   Body,
@@ -299,9 +300,24 @@ export class SensorController {
     required: true,
   })
   async getDetailsbySensorId(
-    @Param('sensorId') sensorId: string,
+    @Param('sensorId', ParseUUIDPipe) sensorId: string,
   ): Promise<SensorResponseDto> {
     console.log('test', sensorId);
     return this.sensorService.getElementsbySensorId(sensorId);
+  }
+
+  @Roles(Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/plantId=:plantId')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  async getSensorDetailsByPlantId(
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+  ): Promise<SensorResponseDtoForSensorPage> {
+    console.log('test', plantId);
+    return this.sensorService.getSensorDetailsByPlantId(plantId);
   }
 }

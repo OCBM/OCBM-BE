@@ -163,16 +163,16 @@ export class ElementService {
     data: UpdateElementDto,
   ): Promise<ElementResponseDto> {
     try {
-      let element: any;
-      let machine: any;
-      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+      //let element: any;
+      // let machine: any;
+      const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: { machineId: machineId },
       });
 
       const checkElement = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: { elementId: elementId },
       });
-      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+      const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: {
           elementId: elementId,
           machineId: machine.machineId,
@@ -212,9 +212,9 @@ export class ElementService {
 
   async deleteElement(machineId: string, elementId: string) {
     try {
-      let element: any;
-      let machine: any;
-      machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
+      // let element: any;
+      // let machine: any;
+      const machine = await this.prismaDynamic.findUnique(TABLES.MACHINE, {
         where: { machineId },
       });
 
@@ -222,7 +222,7 @@ export class ElementService {
         where: { elementId: elementId },
       });
 
-      element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
+      const element = await this.prismaDynamic.findUnique(TABLES.ELEMENT, {
         where: {
           elementId: elementId,
           machineId: machine.machineId,
