@@ -30,7 +30,7 @@ import {
   ApiConsumes,
 } from '@nestjs/swagger';
 import { PlantService } from '@/services/plant/plant.service';
-import { Roles } from '@/decorator';
+import { Public, Roles } from '@/decorator';
 import { Role, Sort, TABLES } from '@/common';
 import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
@@ -317,5 +317,27 @@ export class PlantController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Public()
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: 'multipart/form-data',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @Post('/test-upload-file')
+  async testUpload(@UploadedFile() file: Express.Multer.File) {
+    const imageData = await this.awsService.uploadFile(file, 'plants');
+    return imageData;
   }
 }

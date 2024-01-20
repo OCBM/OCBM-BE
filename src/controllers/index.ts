@@ -8,3 +8,4 @@ export * from './machineLine/machineLine.controller';
 export * from './machine/machine.controller';
 export * from './element/element.controller';
 export * from './sensor/sensor.controller';
+export * from './storage/storage.controller';

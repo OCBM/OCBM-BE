@@ -9,6 +9,7 @@ import {
   PlantController,
   SensorController,
   ShopController,
+  StorageController,
   UserController,
 } from './controllers';
 import { AuthModule, GroupModule } from './modules';
@@ -44,6 +45,7 @@ import { ElementController } from './controllers/element/element.controller';
     MachineController,
     ElementController,
     SensorController,
+    StorageController,
   ],
   providers: [
     PrismaService,
