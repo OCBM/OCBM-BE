@@ -74,8 +74,8 @@ export class AwsService {
       ? `${process.env.DOWNLOAD_URL}/file-download/${path}`
       : `http://localhost:3000/file-download/${path}`;
     const val: any = {
-      location: downloadUrl,
-      key: key,
+      Location: downloadUrl,
+      Key: key,
     };
     return val;
   }
