@@ -1,0 +1,41 @@
+version: '3.7'
+# https://docs.docker.com/compose/production/
+# https://www.docker.com/blog/top-tips-and-use-cases-for-managing-your-volumes/
+services:
+  ocbm-be-db:
+    image: postgres
+    restart: always
+    ports:
+      - 9150:5432
+    environment:
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+    - ocbm-be-network
+
+  ocbm-be-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: always
+    container_name: ocbm_be_server
+    # command: /bin/bash -c "npm run prisma:migrate"
+    volumes:
+      - storage:/storage
+    ports:
+      - 9160:4000
+    depends_on:
+      - ocbm-be-db
+    env_file: .env
+    networks:
+      - ocbm-be-network
+
+networks:
+  ocbm-be-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  storage:
