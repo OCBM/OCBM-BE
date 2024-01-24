@@ -11,6 +11,7 @@ import {
   ShopController,
   StorageController,
   UserController,
+  UserSeedController,
 } from './controllers';
 import { AuthModule, GroupModule } from './modules';
 import {
@@ -38,6 +39,7 @@ import { ElementController } from './controllers/element/element.controller';
     AppController,
     AuthController,
     UserController,
+    UserSeedController,
     OrganizationController,
     PlantController,
     ShopController,
