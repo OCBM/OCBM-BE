@@ -14,3 +14,5 @@ OMNEX Conditional Based Management Backend
 8. Click on `Exec`
 9. Then inside the `Exec` run `npm run prisma:migrate`
 10. In OCBM-FE replace the new URL `VITE_APP_API_BASE_URL=http://localhost:9160`
+
+- if you want to run in detach mode `docker-compose -f docker-compose.staging.yml up -d`
