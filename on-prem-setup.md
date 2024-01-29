@@ -115,3 +115,47 @@ docker-compose -f docker-compose.prod.yml build
 ```bash
 docker-compose -f docker-compose.prod.yml up -d
 ```
+
+- Bash into container
+
+```bash
+docker exec -it 33affbecb0c4 /bin/sh
+```
+
+`Run npm run prisma:migrate`
+
+Stop and Remove All Containers:
+Stop all running containers and remove them:
+
+```bash
+  docker stop $(docker ps -a -q)
+  docker rm $(docker ps -a -q)
+```
+
+Remove All Images:
+Remove all Docker images:
+
+```bash
+  docker rmi $(docker images -a -q)
+```
+
+Remove All Volumes:
+Remove all Docker volumes:
+
+```bash
+  docker volume rm $(docker volume ls -q)
+```
+
+Uninstall Docker:
+Now you can uninstall Docker using the package manager:
+
+```bash
+  sudo yum remove docker
+```
+
+Clean Up Remaining Docker Files (Optional):
+After uninstalling Docker, you might want to clean up any remaining Docker files:
+
+```bash
+  sudo rm -rf /var/lib/docker
+```
