@@ -48,10 +48,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  organization: any;
-
-  @IsNotEmpty()
-  @ApiProperty()
   plants: any;
 
   @ApiProperty()
@@ -92,11 +88,6 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @IsOptional()
   groups?: any;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsOptional()
-  organization?: any;
 
   @ApiProperty()
   @IsNotEmpty()

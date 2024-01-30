@@ -4,7 +4,7 @@ import {
   HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
-import { TABLES, TokenType } from '@/common';
+import { Sort, TABLES, TokenType } from '@/common';
 import { PrismaValidation, Role } from '@/common';
 import {
   UpdateUserDto,
@@ -25,35 +25,92 @@ export class UserService {
     limit: number = 10,
     search: string,
     sort: string,
+    orgId: any,
   ): Promise<UserResponseDto> {
-    const countQuery: string = search.trim()
-      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
-      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
-    const query: string = search.trim()
-      ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
-      : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
+    //console.log('orgId:', orgId);
+    let checkOrganization: any;
+    checkOrganization = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+      where: {
+        userId: orgId.userId,
+      },
+      include: {
+        organization: true,
+      },
+    });
+    if (!checkOrganization) {
+      checkOrganization = await this.prismaDynamic.findUnique(TABLES.USER, {
+        where: {
+          userId: orgId.userId,
+        },
+        include: {
+          organization: true,
+        },
+      });
+    }
+
+    // console.log(
+    //   'organization:',
+    //   checkOrganization.organization.filter(
+    //     (data) => data.organizationName === 'Flyerssoft Private Limited',
+    //   ),
+    // );
+
+    const getAllUsersWithOrganization = await this.prismaDynamic.findUnique(
+      TABLES.ORGANIZATION,
+      {
+        include: {
+          admins: true,
+          users: true,
+        },
+        where: {
+          organizationId: checkOrganization.organization[0].organizationId,
+        },
+      },
+    );
+    // const admins = getAllUsersWithOrganization?.admins.map(admin => admin.userId)
+    // const users = getAllUsersWithOrganization?.users.map(user => user.userId)
+    const users = [
+      ...getAllUsersWithOrganization?.admins,
+      ...getAllUsersWithOrganization?.users,
+    ];
+    let filteredUsers: any = users.filter((user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()),
+    );
+    filteredUsers.sort((a, b) => {
+      return sort === Sort.ASC
+        ? a.createdAt - b.createdAt
+        : b.createdAt - a.createdAt;
+    });
+    filteredUsers = filteredUsers.slice((page - 1) * limit, limit);
+    //console.log('getAllUsersWithOrganization', getAllUsersWithOrganization);
+    // const countQuery: string = search.trim()
+    //   ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1`
+    //   : `SELECT * FROM "Admin" UNION ALL SELECT * from "User"`;
+    // const query: string = search.trim()
+    //   ? `SELECT * FROM "Admin" WHERE name ILIKE $1 UNION ALL SELECT * from "User" WHERE name ILIKE $1 ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4`
+    //   : `SELECT * FROM "Admin" UNION ALL SELECT * from "User" ORDER BY "createdAt" ${sort} LIMIT $3 OFFSET $4 `;
     // console.log(query, sort);
-    const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
-      query,
-      `%${search.trim().replace(/"/g, '')}%`,
-      sort,
-      limit,
-      (page - 1) * limit,
-    );
-    const totalCountDetails: any = await this.prismaDynamic.$queryRawUnsafe(
-      countQuery,
-      `%${search.trim().replace(/"/g, '')}%`,
-    );
+    // const userDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+    //   query,
+    //   `%${search.trim().replace(/"/g, '')}%`,
+    //   sort,
+    //   limit,
+    //   (page - 1) * limit,
+    // );
+    // const totalCountDetails: any = await this.prismaDynamic.$queryRawUnsafe(
+    //   countQuery,
+    //   `%${search.trim().replace(/"/g, '')}%`,
+    // );
     return {
       statusCode: HttpStatus.OK,
-      message: userDetails.map(
+      message: filteredUsers.map(
         (userData: Partial<UserDto>) => new UserDto(userData),
       ),
       meta: {
         current_page: page,
         item_count: limit,
-        total_items: totalCountDetails.length,
-        totalPage: Math.ceil(totalCountDetails.length / limit),
+        total_items: users.length,
+        totalPage: Math.ceil(users.length / limit),
       },
     };
   }

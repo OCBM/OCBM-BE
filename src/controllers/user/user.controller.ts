@@ -67,9 +67,16 @@ export class UserController {
     @Query('limit', ParseIntPipe) limit: number,
     @Query('search') search: string = '',
     @Query('sort') sort: Sort,
+    @Req() request: Request | any,
   ): Promise<UserResponseDto> {
     try {
-      return this.userService.getAllUserswithoutRole(page, limit, search, sort);
+      return this.userService.getAllUserswithoutRole(
+        page,
+        limit,
+        search,
+        sort,
+        request.user,
+      );
     } catch (e) {
       console.log(e);
     }
@@ -103,7 +110,7 @@ export class UserController {
     return this.userService.getUserById(id);
   }
 
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiBody({
     type: CreateUserDto,
@@ -120,11 +127,6 @@ export class UserController {
           groups: {
             connect: [{ groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
           },
-          organization: {
-            connect: [
-              { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
-            ],
-          },
           plants: {
             connect: [{ plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
           },
@@ -134,7 +136,7 @@ export class UserController {
     },
   })
   @Post('/')
-  async createUser(@Body() userData: CreateUserDto) {
+  async createUser(@Body() userData: CreateUserDto, @Req() req: Request | any) {
     const hashedPassword = await bcrypt.hash(
       userData.password,
       BCRYPT_SALT_ROUNDS,
@@ -144,22 +146,36 @@ export class UserController {
       emailId: userData.email,
     });
 
-    if (isUserExits) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-    } else {
-      if (userData.role === Role.ADMIN) {
-        const result = await this.userService.createAdmin({
-          ...userData,
-          password: hashedPassword,
-        });
-        return result;
-      } else if (userData.role === Role.USER) {
-        const result = await this.userService.createUser({
-          ...userData,
-          password: hashedPassword,
-        });
-        return result;
+    userData['organization'] = {
+      connect: [
+        {
+          organizationId: req.user.organization[0]?.organizationId,
+        },
+      ],
+    };
+    if (req.user.role === Role.ADMIN) {
+      if (isUserExits) {
+        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+      } else {
+        if (userData.role === Role.ADMIN) {
+          const result = await this.userService.createAdmin({
+            ...userData,
+            password: hashedPassword,
+          });
+          return result;
+        } else if (userData.role === Role.USER) {
+          const result = await this.userService.createUser({
+            ...userData,
+            password: hashedPassword,
+          });
+          return result;
+        }
       }
+    } else {
+      throw new HttpException(
+        "User don't have permission to create user",
+        HttpStatus.UNAUTHORIZED,
+      );
     }
   }
 
@@ -180,11 +196,6 @@ export class UserController {
           role: 'USER',
           groups: {
             connect: [{ groupId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
-          },
-          organization: {
-            connect: [
-              { organizationId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' },
-            ],
           },
           plants: {
             connect: [{ plantId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d' }],
