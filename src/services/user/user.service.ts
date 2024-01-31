@@ -20,6 +20,87 @@ import { UserData, APP_CONSTANTS } from '@/common';
 export class UserService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
+  async getAllUsersbyToken(
+    page: number = 1,
+    limit: number = 10,
+    search: string,
+    sort: string,
+    orgId: any,
+  ): Promise<any> {
+    let users: UserData[];
+    try {
+      users = await this.prismaDynamic.findMany(TABLES.USER, {
+        include: {
+          organization: true,
+          plants: true,
+        },
+      });
+      let filteredUsers: any = users.filter((user) =>
+        user.name.toLowerCase().includes(search.toLowerCase()),
+      );
+      filteredUsers.sort((a, b) => {
+        return sort === Sort.ASC
+          ? a.createdAt - b.createdAt
+          : b.createdAt - a.createdAt;
+      });
+      filteredUsers = filteredUsers.slice((page - 1) * limit, limit);
+      return {
+        statusCode: HttpStatus.OK,
+        message: filteredUsers.map((user: UserData) => new UserDto(user)),
+        meta: {
+          current_page: page,
+          item_count: limit,
+          total_items: users.length,
+          totalPage: Math.ceil(users.length / limit),
+        },
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getUsersbyToken(
+    page: number = 1,
+    limit: number = 10,
+    search: string,
+    sort: string,
+    userdetails: any,
+  ): Promise<any> {
+    let users: any;
+    console.log(userdetails, 'hello');
+    try {
+      users = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: {
+          plantId: userdetails.plants[0].plantId,
+        },
+        include: {
+          users: true,
+        },
+      });
+      let filteredUsers: any = users.users.filter((user) =>
+        user.name.toLowerCase().includes(search.toLowerCase()),
+      );
+      filteredUsers.sort((a, b) => {
+        return sort === Sort.ASC
+          ? a.createdAt - b.createdAt
+          : b.createdAt - a.createdAt;
+      });
+      filteredUsers = filteredUsers.slice((page - 1) * limit, limit);
+      return {
+        statusCode: HttpStatus.OK,
+        message: filteredUsers.map((user: UserData) => new UserDto(user)),
+        meta: {
+          current_page: page,
+          item_count: limit,
+          total_items: users.users.length,
+          totalPage: Math.ceil(users.users.length / limit),
+        },
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async getAllUserswithoutRole(
     page: number = 1,
     limit: number = 10,
@@ -29,24 +110,15 @@ export class UserService {
   ): Promise<UserResponseDto> {
     //console.log('orgId:', orgId);
     let checkOrganization: any;
-    checkOrganization = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+    checkOrganization = await this.prismaDynamic.findUnique(TABLES.USER, {
       where: {
         userId: orgId.userId,
       },
       include: {
         organization: true,
+        plants: true,
       },
     });
-    if (!checkOrganization) {
-      checkOrganization = await this.prismaDynamic.findUnique(TABLES.USER, {
-        where: {
-          userId: orgId.userId,
-        },
-        include: {
-          organization: true,
-        },
-      });
-    }
 
     // console.log(
     //   'organization:',
@@ -59,7 +131,6 @@ export class UserService {
       TABLES.ORGANIZATION,
       {
         include: {
-          admins: true,
           users: true,
         },
         where: {
@@ -69,10 +140,7 @@ export class UserService {
     );
     // const admins = getAllUsersWithOrganization?.admins.map(admin => admin.userId)
     // const users = getAllUsersWithOrganization?.users.map(user => user.userId)
-    const users = [
-      ...getAllUsersWithOrganization?.admins,
-      ...getAllUsersWithOrganization?.users,
-    ];
+    const users = [...getAllUsersWithOrganization?.users];
     let filteredUsers: any = users.filter((user) =>
       user.name.toLowerCase().includes(search.toLowerCase()),
     );
@@ -176,7 +244,7 @@ export class UserService {
   async getUserById(userId: string): Promise<UserResponseDto> {
     let user: UserData;
 
-    user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+    user = await this.prismaDynamic.findUnique(TABLES.USER, {
       where: { userId },
       include: {
         groups: true,
@@ -184,16 +252,7 @@ export class UserService {
         plants: true,
       },
     });
-    if (!user) {
-      user = await this.prismaDynamic.findUnique(TABLES.USER, {
-        where: { userId },
-        include: {
-          groups: true,
-          organization: true,
-          plants: true,
-        },
-      });
-    }
+
     if (!user) {
       throw new HttpException(
         APP_CONSTANTS.USER_NOT_EXISTS,
@@ -215,15 +274,9 @@ export class UserService {
     const emailId = data.email;
 
     try {
-      user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+      user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userName, emailId },
       });
-
-      if (!user) {
-        user = await this.prismaDynamic.findUnique(TABLES.USER, {
-          where: { userName, emailId },
-        });
-      }
 
       if (user) {
         return true;
@@ -256,34 +309,14 @@ export class UserService {
     }
   }
 
-  async createAdmin(data: Prisma.UserCreateInput): Promise<UserResponseDto> {
-    try {
-      const user = await this.prismaDynamic.create(TABLES.ADMIN, data);
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: new UserDto(user),
-      };
-    } catch (error) {
-      if (error.response.code === PrismaValidation.ALREADY_EXITS) {
-        throw new HttpException(
-          APP_CONSTANTS.USER_ALREADY_EXISTS,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      throw new HttpException(
-        APP_CONSTANTS.FAILED_TO_CREATE_ADMIN,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
   async updateUser(
     userId: string,
-    role: string,
+    currentUser: any,
     data: UpdateUserDto,
   ): Promise<UserResponseDto> {
     try {
       let user: any;
+      let canAdd = false;
       let userData: any = {
         ...data,
       };
@@ -297,20 +330,6 @@ export class UserService {
         },
       });
       if (user) {
-        if (
-          user?.organization?.length &&
-          userData?.organization?.connect?.length
-        ) {
-          userData = {
-            ...userData,
-            organization: {
-              disconnect: user.organization.map((organization) => ({
-                organizationId: organization.organizationId,
-              })),
-              ...userData.organization,
-            },
-          };
-        }
         if (user?.plants?.length && userData?.plants?.connect?.length) {
           userData = {
             ...userData,
@@ -333,65 +352,29 @@ export class UserService {
             },
           };
         }
-        updatedData = await this.prismaDynamic.update(TABLES.USER, {
-          where: { userId },
-          data: userData,
-        });
-      } else {
-        user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
-          where: { userId },
-          include: {
-            plants: true,
-            organization: true,
-            groups: true,
-          },
-        });
-        if ((role === Role.ADMIN, user.role === Role.ADMIN)) {
-          throw new UnauthorizedException();
-        }
-        // if (
-        //   user?.organization?.length &&
-        //   userData?.organization?.connect?.length
-        // ) {
-        //   userData = {
-        //     ...userData,
-        //     organization: {
-        //       disconnect: user.organization.map((organization) => ({
-        //         organizationId: organization.organizationId,
-        //       })),
-        //       ...userData.organization,
-        //     },
-        //   };
-        // }
-        // if (user?.plants?.length && userData?.plant?.connect?.length) {
-        //   userData = {
-        //     ...userData,
-        //     plant: {
-        //       disconnect: user.plants.map((plant) => ({
-        //         plantId: plant.plantId,
-        //       })),
-        //       ...userData.plant,
-        //     },
-        //   };
-        // }
-        // if (user?.groups?.length && userData?.group?.connect?.length) {
-        //   userData = {
-        //     ...userData,
-        //     group: {
-        //       disconnect: user.groups.map((group) => ({
-        //         groupId: group.groupId,
-        //       })),
-        //       ...userData.group,
-        //     },
-        //   };
-        // }
-        // var updatedData = await this.prismaDynamic.update(TABLES.ADMIN, {
-        //   where: { userId },
-        //   data: updatedData,
-        // });
-      }
 
-      if (!user) {
+        if (currentUser?.role === Role.USER && currentUser?.userId === userId) {
+          canAdd = true;
+        } else if (currentUser?.role === Role.ADMIN) {
+          if (currentUser?.userId === userId || data.role === Role.USER) {
+            canAdd = true;
+          }
+        } else if (currentUser?.role === Role.SUPERADMIN) {
+          canAdd = true;
+        }
+
+        if (canAdd) {
+          updatedData = await this.prismaDynamic.update(TABLES.USER, {
+            where: { userId },
+            data: userData,
+          });
+        } else {
+          throw new HttpException(
+            APP_CONSTANTS.PERMISSION_DENIED,
+            HttpStatus.FORBIDDEN,
+          );
+        }
+      } else {
         throw new HttpException(
           APP_CONSTANTS.USER_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
@@ -407,6 +390,12 @@ export class UserService {
         throw new HttpException(
           APP_CONSTANTS.USER_NOT_EXISTS,
           HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (error?.status === HttpStatus.FORBIDDEN) {
+        throw new HttpException(
+          APP_CONSTANTS.PERMISSION_DENIED,
+          HttpStatus.FORBIDDEN,
         );
       }
       if (error?.status === HttpStatus.UNAUTHORIZED) {

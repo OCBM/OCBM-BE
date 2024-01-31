@@ -68,7 +68,7 @@ export class UserSeedController {
         //     };
         //   }
         if (seedDto.userData.role === Role.ADMIN) {
-          const result = await this.userService.createAdmin({
+          const result = await this.userService.createUser({
             userName: seedDto.userData.userName,
             name: seedDto.userData.name,
             email: seedDto.userData.email,

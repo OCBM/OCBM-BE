@@ -22,7 +22,13 @@ import {
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';
 import { IsEnum } from 'class-validator';
-import { Role, BCRYPT_SALT_ROUNDS, Sort } from '@/common';
+import {
+  Role,
+  BCRYPT_SALT_ROUNDS,
+  Sort,
+  APP_CONSTANTS,
+  UserData,
+} from '@/common';
 import { Roles } from '@/decorator';
 import { UserService } from '@/services';
 import {
@@ -70,13 +76,24 @@ export class UserController {
     @Req() request: Request | any,
   ): Promise<UserResponseDto> {
     try {
-      return this.userService.getAllUserswithoutRole(
-        page,
-        limit,
-        search,
-        sort,
-        request.user,
-      );
+      if(request.user.role === Role.SUPERADMIN){
+        return this.userService.getAllUsersbyToken(
+          page,
+          limit,
+          search,
+          sort,
+          request.user
+        );
+      } else {
+        return this.userService.getUsersbyToken(
+          page,
+          limit,
+          search,
+          sort,
+          request.user
+        )
+      }
+     
     } catch (e) {
       console.log(e);
     }
@@ -153,33 +170,40 @@ export class UserController {
         },
       ],
     };
-    if (req.user.role === Role.ADMIN) {
-      if (isUserExits) {
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-      } else {
-        if (userData.role === Role.ADMIN) {
-          const result = await this.userService.createAdmin({
-            ...userData,
-            password: hashedPassword,
-          });
-          return result;
-        } else if (userData.role === Role.USER) {
+    if (!isUserExits) {
+      if (req.user.role === Role.USER) {
+        throw new HttpException(
+          APP_CONSTANTS.PERMISSION_DENIED,
+          HttpStatus.FORBIDDEN,
+        );
+      } else if (req.user.role === Role.ADMIN) {
+        if (userData.role === Role.ADMIN || userData.role === Role.SUPERADMIN) {
+          throw new HttpException(
+            APP_CONSTANTS.PERMISSION_DENIED,
+            HttpStatus.FORBIDDEN,
+          );
+        } else {
           const result = await this.userService.createUser({
             ...userData,
             password: hashedPassword,
           });
           return result;
         }
+      } else {
+        const result = await this.userService.createUser({
+          ...userData,
+          password: hashedPassword,
+        });
+        return result;
       }
     } else {
       throw new HttpException(
-        "User don't have permission to create user",
-        HttpStatus.UNAUTHORIZED,
+        APP_CONSTANTS.USER_ALREADY_EXISTS,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
-  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'id',
@@ -211,7 +235,7 @@ export class UserController {
     @Body() userData: UpdateUserDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, req.user.role, {
+    return this.userService.updateUser(id, req.user, {
       ...userData,
       ...(userData.password && {
         password: await bcrypt.hash(userData.password, BCRYPT_SALT_ROUNDS),
@@ -219,14 +243,34 @@ export class UserController {
     });
   }
 
-  @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @Delete('/:id')
   @ApiParam({
     name: 'id',
     required: true,
   })
-  async deleteUser(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.deleteUser(id);
+  async deleteUser(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request | any,
+  ) {
+
+    let user: UserResponseDto = await this.userService.getUserById(id);
+    if (req.user.role === Role.USER) {
+      throw new HttpException(
+        APP_CONSTANTS.PERMISSION_DENIED,
+        HttpStatus.FORBIDDEN,
+      );
+    } else if (req.user.role === Role.ADMIN) {
+      if (user.message.role === Role.ADMIN || user.message.role === Role.SUPERADMIN) {
+        throw new HttpException(
+          APP_CONSTANTS.PERMISSION_DENIED,
+          HttpStatus.FORBIDDEN,
+        );
+      } else {
+        return this.userService.deleteUser(id);
+      }
+    } else {
+      return this.userService.deleteUser(id);
+    }
   }
 }
