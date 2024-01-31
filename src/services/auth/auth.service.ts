@@ -20,6 +20,7 @@ export class AuthService {
       where: { userName },
       include: {
         groups: true,
+        organization: true,
       },
     });
 
@@ -28,6 +29,7 @@ export class AuthService {
         where: { userName },
         include: {
           groups: true,
+          organization: true,
         },
       });
     }
@@ -55,6 +57,7 @@ export class AuthService {
       sub: user.userId,
       clientId: 'Omnex',
       role: user.role,
+      organization: user.organization[0].organizationId,
     };
     console.log('PayloadDetails:', payload);
     const accessToken = this.jwtService.sign(
@@ -88,6 +91,7 @@ export class AuthService {
         accessToken: accessToken,
         refreshToken: refreshToken,
         groups: user.groups,
+        organization: user.organization,
       },
     };
   }
@@ -105,6 +109,7 @@ export class AuthService {
       sub: decodedData.payload.userId,
       clientId: 'Omnex',
       role: decodedData.payload.role,
+      organization: decodedData.payload.organization,
     };
 
     console.log('payload:', payload);
@@ -125,10 +130,12 @@ export class AuthService {
     if (payload.payload.role === 'ADMIN') {
       return this.prismaDynamic.findUnique(TABLES.ADMIN, {
         where: { userId: payload.payload.userId },
+        include: { organization: true },
       });
     } else if (payload.payload.role === 'USER') {
       return this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId: payload.payload.userId },
+        include: { organization: true },
       });
     }
   }
