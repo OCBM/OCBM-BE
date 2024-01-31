@@ -97,6 +97,7 @@ export class AuthService {
       clientId: 'Omnex',
       role: decodedData.payload.role,
       organization: decodedData.payload.organization,
+      plant:decodedData.payload.plant
     };
 
     console.log('payload:', payload);
