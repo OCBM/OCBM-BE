@@ -1,6 +1,7 @@
 import {
   CreateMachineDto,
   MachineResponseDto,
+  MachineResponseDtoForGetByPlantId,
   MachineResponseDtoForSetStandards,
   RolesGuard,
   UpdateMachineDto,
@@ -46,8 +47,8 @@ export class MachineController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -63,12 +64,16 @@ export class MachineController {
         'imageName',
         'machineLineId',
         'image',
+        'machineNumber',
       ],
       properties: {
         machineName: {
           type: 'string',
         },
         machineDescription: {
+          type: 'string',
+        },
+        machineNumber: {
           type: 'string',
         },
         imageName: {
@@ -175,8 +180,8 @@ export class MachineController {
     );
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'machineLineId',
@@ -198,6 +203,9 @@ export class MachineController {
           type: 'string',
         },
         machineDescription: {
+          type: 'string',
+        },
+        machineNumber: {
           type: 'string',
         },
         imageName: {
@@ -254,8 +262,8 @@ export class MachineController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/machineLineId=:machineLineId&machineId=:machineId')
   @ApiParam({
@@ -287,8 +295,8 @@ export class MachineController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Get('/machineId=:machineId')
   @ApiParam({
@@ -300,5 +308,29 @@ export class MachineController {
   ): Promise<MachineResponseDtoForSetStandards> {
     // console.log('test', plantId);
     return this.machineService.getDetailsForSetStandardsByMachineId(machineId);
+  }
+
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/plantId=:plantId')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
+  async getMachineDetailsByPlantId(
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
+  ): Promise<MachineResponseDtoForGetByPlantId> {
+    console.log('test', plantId);
+    return this.machineService.getMachineDetailsByPlantId(plantId, page, limit, sort);
   }
 }

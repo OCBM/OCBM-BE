@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import {
   MachineResponseDto,
+  MachineResponseDtoForGetByPlantId,
   MachineResponseDtoForSetStandards,
   UpdateMachineDto,
 } from '@/utils';
@@ -318,6 +319,93 @@ export class MachineService {
         return {
           statusCode: HttpStatus.OK,
           message: resultDetails,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getMachineDetailsByPlantId(
+    plantId: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<MachineResponseDtoForGetByPlantId> {
+    let plant: any;
+
+    try {
+      const machineCount = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    orderBy: [
+                      {
+                        createdAt: sort,
+                      },
+                    ],
+                    skip: (page - 1) * limit,
+                    take: limit,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (plant.shops.length > 0) {
+        for (let i = 0; i < plant.shops.length; i++) {
+          const shopsDetails = plant.shops[i];
+          for (let j = 0; j < shopsDetails.machineLines.length; j++) {
+            const machineLineDetailes = shopsDetails.machineLines[j];
+            for (let k = 0; k < machineLineDetailes.machines.length; k++) {
+              const machineDetails = machineLineDetailes.machines[k];
+              resultDetails.push(machineDetails );
+            }
+          }
+        }
+      }
+      const machine = machineCount?.shops?.flatMap(
+        (shop) => shop?.machineLines?.flatMap(machineLine => machineLine?.machines),
+      );
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: machine?.length || 0,
+            totalPage: Math.ceil((machine?.length || 0) / limit),
+          },
         };
       } else {
         return {

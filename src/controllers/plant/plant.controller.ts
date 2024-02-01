@@ -4,6 +4,7 @@ import {
   PlantResponseDtoForSetStandards,
   RolesGuard,
   UpdatePlantDto,
+  UpdateUserDto,
 } from '@/utils';
 import {
   Body,
@@ -21,6 +22,7 @@ import {
   UploadedFile,
   UseInterceptors,
   HttpException,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -33,7 +35,7 @@ import {
 import { PlantService } from '@/services/plant/plant.service';
 import { Public, Roles } from '@/decorator';
 import { Role, Sort, TABLES } from '@/common';
-import { AwsService, PrismaService } from '@/services';
+import { AwsService, PrismaService, UserService } from '@/services';
 import { IsEnum } from 'class-validator';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -45,9 +47,10 @@ export class PlantController {
     private readonly plantService: PlantService,
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
+    private readonly userService: UserService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -87,6 +90,7 @@ export class PlantController {
   async createPlant(
     @Body() plantData: CreatePlantDto,
     @UploadedFile() file: Express.Multer.File,
+    @Req() request: Request | any,
   ) {
     try {
       // const { originalname } = file;
@@ -130,6 +134,22 @@ export class PlantController {
       } else {
         delete data.organizationId;
         const result = await this.plantService.createPlant(data);
+        const plantData: UpdateUserDto = {
+          plants: {
+            connect: [
+              {
+                plantId: result.message.plantId,
+              },
+            ],
+          },
+        };
+        if (request.user.role === Role.SUPERADMIN) {
+          const user = await this.userService.updateUser(
+            request.user.userId,
+            request.user,
+            plantData,
+          );
+        }
         return result;
       }
       // }
@@ -200,8 +220,8 @@ export class PlantController {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'organizationId',
@@ -289,8 +309,8 @@ export class PlantController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/organizationId=:organizationId&plantId=:plantId')
   @ApiParam({
@@ -322,8 +342,8 @@ export class PlantController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Get('/plantId=:plantId')
   @ApiParam({

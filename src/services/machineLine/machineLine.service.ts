@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { MachineLineResponseDto, UpdateMachineLineDto } from '@/utils';
+import {
+  MachineLineResponseDto,
+  MachineLineResponseDtoForGetByPlantId,
+  UpdateMachineLineDto,
+} from '@/utils';
 import { PrismaValidation, TABLES, APP_CONSTANTS } from '@/common';
 
 @Injectable()
@@ -295,6 +299,85 @@ export class MachineLineService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+
+  async getMachineLineDetailsByPlantId(
+    plantId: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<MachineLineResponseDtoForGetByPlantId> {
+    let plant: any;
+    let machineLineDetailes: any;
+    try {
+      const machineLineCount = await this.prismaDynamic.findUnique(
+        TABLES.PLANT,
+        {
+          where: { plantId: plantId },
+          include: {
+            shops: {
+              include: {
+                machineLines: true,
+              },
+            },
+          },
+        },
+      );
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                orderBy: [
+                  {
+                    createdAt: sort,
+                  },
+                ],
+                skip: (page - 1) * limit,
+                take: limit,
+              },
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (plant.shops.length > 0) {
+        for (let i = 0; i < plant.shops.length; i++) {
+          const shopsDetails = plant.shops[i];
+          for (let j = 0; j < shopsDetails.machineLines.length; j++) {
+            machineLineDetailes = shopsDetails.machineLines[j];
+            resultDetails.push(machineLineDetailes);
+          }
+        }
+      }
+      const machineLines = machineLineCount?.shops?.flatMap(
+        (shop) => shop?.machineLines,
+      );
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: machineLines?.length || 0,
+            totalPage: Math.ceil((machineLines?.length || 0) / limit),
+          },
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch (e) {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

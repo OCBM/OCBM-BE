@@ -1,7 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { ElementResponseDto, UpdateElementDto } from '@/utils';
+import {
+  ElementResponseDto,
+  ElementResponseDtoForGetByPlantId,
+  UpdateElementDto,
+} from '@/utils';
 import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 
 @Injectable()
@@ -267,6 +271,106 @@ export class ElementService {
           HttpStatus.BAD_REQUEST,
         );
       }
+    }
+  }
+
+  async getElementDetailsByPlantId(
+    plantId: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<ElementResponseDtoForGetByPlantId> {
+    let plant: any;
+
+    try {
+      const elementCount = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    include: {
+                      elements: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    include: {
+                      elements: {
+                        orderBy: [
+                          {
+                            createdAt: sort,
+                          },
+                        ],
+                        skip: (page - 1) * limit,
+                        take: limit,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const resultDetails = [];
+      if (plant.shops.length > 0) {
+        for (let i = 0; i < plant.shops.length; i++) {
+          const shopsDetails = plant.shops[i];
+          for (let j = 0; j < shopsDetails.machineLines.length; j++) {
+            const machineLineDetailes = shopsDetails.machineLines[j];
+            for (let k = 0; k < machineLineDetailes.machines.length; k++) {
+              const machineDetails = machineLineDetailes.machines[k];
+              for (let l = 0; l < machineDetails.elements.length; l++) {
+                const elementDetails = machineDetails.elements[l];
+                resultDetails.push(elementDetails);
+              }
+            }
+          }
+        }
+      }
+      const element = elementCount?.shops?.flatMap((shop) =>
+        shop?.machineLines?.flatMap((machineLine) =>
+          machineLine?.machines?.flatMap((machine) => machine?.elemnets),
+        ),
+      );
+      console.log('resultDetails', resultDetails);
+      if (resultDetails) {
+        return {
+          statusCode: HttpStatus.OK,
+          message: resultDetails,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: element?.length || 0,
+            totalPage: Math.ceil((element?.length || 0) / limit),
+          },
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.NO_PLANT,
+        };
+      }
+    } catch {
+      throw new HttpException(
+        APP_CONSTANTS.THERE_NO_PLANT,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

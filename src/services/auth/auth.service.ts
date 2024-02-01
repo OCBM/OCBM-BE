@@ -16,23 +16,14 @@ export class AuthService {
     const { userName, password } = loginData;
     let user: any;
 
-    user = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
+    user = await this.prismaDynamic.findUnique(TABLES.USER, {
       where: { userName },
       include: {
         groups: true,
         organization: true,
+        plants: true
       },
     });
-
-    if (!user) {
-      user = await this.prismaDynamic.findUnique(TABLES.USER, {
-        where: { userName },
-        include: {
-          groups: true,
-          organization: true,
-        },
-      });
-    }
 
     if (!user) {
       throw new HttpException(
@@ -58,6 +49,7 @@ export class AuthService {
       clientId: 'Omnex',
       role: user.role,
       organization: user.organization[0].organizationId,
+      plant: user.plants.length ? user.plants.map(plant => plant.plantId) : [],
     };
     console.log('PayloadDetails:', payload);
     const accessToken = this.jwtService.sign(
@@ -67,11 +59,7 @@ export class AuthService {
         privateKey: TOKEN_SECRET.accessToken,
       },
     );
-    // const token = this.jwtService.sign(
-    //   { payload, expiresIn: TOKEN_EXPIRY.accessToken },
-    //   { privateKey: TOKEN_SECRET.accessToken },
-    // );
-    //const decodedData = this.jwtService.decode(accessToken, { json: true });
+   
     const refreshToken = this.jwtService.sign(
       { payload: payload },
       {
@@ -79,7 +67,6 @@ export class AuthService {
         privateKey: TOKEN_SECRET.refreshToken,
       },
     );
-    // console.log('decodedata:', decodedData);
     return {
       statusCode: HttpStatus.OK,
       message: {
@@ -92,13 +79,13 @@ export class AuthService {
         refreshToken: refreshToken,
         groups: user.groups,
         organization: user.organization,
+        plant: user.plants,
       },
     };
   }
 
   async refreshLogin(data: RefreshLoginDto) {
     console.log('refreshData:', data.token);
-    // const data = refreshData;
     const decodedData: any = this.jwtService.decode(data.token, { json: true });
     console.log('decodedData:', decodedData);
     const payload = {
@@ -110,6 +97,7 @@ export class AuthService {
       clientId: 'Omnex',
       role: decodedData.payload.role,
       organization: decodedData.payload.organization,
+      plant:decodedData.payload.plant
     };
 
     console.log('payload:', payload);
@@ -127,16 +115,9 @@ export class AuthService {
     };
   }
   async validateUser(payload: any): Promise<any> {
-    if (payload.payload.role === 'ADMIN') {
-      return this.prismaDynamic.findUnique(TABLES.ADMIN, {
-        where: { userId: payload.payload.userId },
-        include: { organization: true },
-      });
-    } else if (payload.payload.role === 'USER') {
-      return this.prismaDynamic.findUnique(TABLES.USER, {
-        where: { userId: payload.payload.userId },
-        include: { organization: true },
-      });
-    }
+    return this.prismaDynamic.findUnique(TABLES.USER, {
+      where: { userId: payload.payload.userId },
+      include: { organization: true,plants:true },
+    });
   }
 }

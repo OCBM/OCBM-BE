@@ -1,6 +1,7 @@
 import {
   CreateMachineLineDto,
   MachineLineResponseDto,
+  MachineLineResponseDtoForGetByPlantId,
   RolesGuard,
   UpdateMachineLineDto,
 } from '@/utils';
@@ -45,8 +46,8 @@ export class MachineLineController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -173,8 +174,8 @@ export class MachineLineController {
     );
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'shopId',
@@ -258,8 +259,8 @@ export class MachineLineController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/shopId=:shopId&machineLineId=:machineLineId')
   @ApiParam({
@@ -293,4 +294,34 @@ export class MachineLineController {
       );
     }
   }
+
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/plantId=:plantId')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
+  async getMachineLineDetailsByPlantId(
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
+  ): Promise<MachineLineResponseDtoForGetByPlantId> {
+    console.log('test', plantId);
+    return this.machineLineService.getMachineLineDetailsByPlantId(
+      plantId,
+      page,
+      limit,
+      sort,
+    );
+  }
+  
 }

@@ -24,8 +24,8 @@ import { Role } from '@/common';
 @Controller('organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   async createOrganization(@Body() organizationData: CreateOrganizationDto) {
@@ -52,8 +52,8 @@ export class OrganizationController {
     return this.organizationService.getOrganizationById(id);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'id',
@@ -69,8 +69,8 @@ export class OrganizationController {
     });
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/:id')
   @ApiParam({

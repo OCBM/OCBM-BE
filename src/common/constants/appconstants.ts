@@ -108,3 +108,4 @@ export const SENSOR_AND_ELEMENT_MISMATCHING =
 export const SENSOR_OR_ELEMENT_NOT_EXISTS = 'Sensor/Element not exists';
 export const SENSOR_DELETED_SUCCESSFULLY = 'Sensor deleted successfully';
 export const UNABLE_TO_DELETE_SENSOR = 'Unable to delete Sensor';
+export const PERMISSION_DENIED = "Permission denied"

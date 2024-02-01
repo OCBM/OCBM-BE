@@ -400,6 +400,7 @@ export class PlantService {
                   );
                   resultDetails.push({
                     machine: machineDetails.machineName,
+                    machineNumber: machineDetails.machineNumber,
                     element: elementDetails.elementName,
                     sensorId: sensorDetails.sensorId,
                     sensorDescription: sensorDetails.sensorDescription,
