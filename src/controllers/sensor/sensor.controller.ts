@@ -46,8 +46,8 @@ export class SensorController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -182,8 +182,8 @@ export class SensorController {
     return this.sensorService.getSensorByElementId(elementId, sensorId);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'elementId',
@@ -258,8 +258,8 @@ export class SensorController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/elementId=:elementId&sensorId=:sensorId')
   @ApiParam({
@@ -291,8 +291,8 @@ export class SensorController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Get('/sensorId=:sensorId')
   @ApiParam({
@@ -306,18 +306,32 @@ export class SensorController {
     return this.sensorService.getElementsbySensorId(sensorId);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
   @Get('/plantId=:plantId')
   @ApiParam({
     name: 'plantId',
     required: true,
   })
   async getSensorDetailsByPlantId(
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
     @Param('plantId', ParseUUIDPipe) plantId: string,
   ): Promise<SensorResponseDtoForSensorPage> {
     console.log('test', plantId);
-    return this.sensorService.getSensorDetailsByPlantId(plantId);
+    return this.sensorService.getSensorDetailsByPlantId(
+      plantId,
+      page,
+      limit,
+      sort,
+    );
   }
 }

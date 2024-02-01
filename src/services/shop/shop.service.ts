@@ -30,7 +30,12 @@ export class ShopService {
     }
   }
 
-  async getAllShopsByPlantId(plantId: any): Promise<ShopResponseDto> {
+  async getAllShopsByPlantId(
+    plantId: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ): Promise<ShopResponseDto> {
     try {
       const plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
@@ -41,13 +46,29 @@ export class ShopService {
           Error: APP_CONSTANTS.THERE_NO_PLANT,
         };
       }
+      const shopsCount = await this.prismaDynamic.findMany(TABLES.SHOP, {
+        where: { plantId: plant.plantId },
+      });
       const shops = await this.prismaDynamic.findMany(TABLES.SHOP, {
         where: { plantId: plant.plantId },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: [
+          {
+            createdAt: sort,
+          },
+        ],
       });
       if (shops.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: shops,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: shopsCount.length,
+            totalPage: Math.ceil(shopsCount.length / limit),
+          },
         };
       } else {
         return {

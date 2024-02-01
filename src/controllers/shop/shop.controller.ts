@@ -45,8 +45,8 @@ export class ShopController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -141,11 +141,20 @@ export class ShopController {
     name: 'plantId',
     required: true,
   })
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
   @Get('/plantId=:plantId')
   async getAllShopsByPlantId(
     @Param('plantId', ParseUUIDPipe) plantId: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
   ): Promise<ShopResponseDto> {
-    return this.shopService.getAllShopsByPlantId(plantId);
+    return this.shopService.getAllShopsByPlantId(plantId, page, limit, sort);
   }
 
   @ApiBearerAuth('access-token')
@@ -165,8 +174,8 @@ export class ShopController {
     return this.shopService.getShopByPlantId(plantId, shopId);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'plantId',
@@ -244,8 +253,8 @@ export class ShopController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/plantId=:plantId&shopId=:shopId')
   @ApiParam({

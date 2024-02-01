@@ -1,6 +1,7 @@
 import {
   CreateElementDto,
   ElementResponseDto,
+  ElementResponseDtoForGetByPlantId,
   RolesGuard,
   UpdateElementDto,
 } from '@/utils';
@@ -45,8 +46,8 @@ export class ElementController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -171,8 +172,8 @@ export class ElementController {
     return this.elementService.getElementByMachineId(machineId, elementId);
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'machineId',
@@ -250,8 +251,8 @@ export class ElementController {
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/machineId=:machineId&elementId=:elementId')
   @ApiParam({
@@ -281,5 +282,29 @@ export class ElementController {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  // @Roles(Role.ADMIN)
+  // @UseGuards(RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Get('/plantId=:plantId')
+  @ApiParam({
+    name: 'plantId',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'sort',
+    enum: Sort,
+    required: true,
+  })
+  @IsEnum(Sort)
+  async getElementDetailsByPlantId(
+    @Param('plantId', ParseUUIDPipe) plantId: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('sort') sort: Sort,
+  ): Promise<ElementResponseDtoForGetByPlantId> {
+    console.log('test', plantId);
+    return this.elementService.getElementDetailsByPlantId(plantId, page, limit, sort);
   }
 }

@@ -130,3 +130,16 @@ export class MachineLineResponseDto {
     Object.assign(this, partial);
   }
 }
+
+export class MachineLineResponseDtoForGetByPlantId {
+  statusCode: number;
+
+  @Type(() => MachineLineDto)
+  message?: MachineLineDto[];
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<MachineLineResponseDto>) {
+    Object.assign(this, partial);
+  }
+}

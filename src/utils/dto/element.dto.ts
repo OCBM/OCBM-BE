@@ -131,3 +131,16 @@ export class ElementResponseDto {
     Object.assign(this, partial);
   }
 }
+
+export class ElementResponseDtoForGetByPlantId {
+  statusCode: number;
+
+  @Type(() => ElementDto)
+  message?: ElementDto[];
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<ElementResponseDto>) {
+    Object.assign(this, partial);
+  }
+}

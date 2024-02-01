@@ -1,20 +1,4 @@
 -- CreateTable
-CREATE TABLE "Admin" (
-    "userId" UUID NOT NULL,
-    "userName" TEXT NOT NULL,
-    "employeeId" TEXT NOT NULL,
-    "name" TEXT,
-    "position" TEXT,
-    "role" TEXT,
-    "password" TEXT,
-    "email" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
-
-    CONSTRAINT "Admin_pkey" PRIMARY KEY ("userId")
-);
-
--- CreateTable
 CREATE TABLE "User" (
     "userId" UUID NOT NULL,
     "userName" TEXT NOT NULL,
@@ -64,6 +48,7 @@ CREATE TABLE "Organization" (
 CREATE TABLE "Plant" (
     "plantId" UUID NOT NULL,
     "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
     "imageName" TEXT NOT NULL,
     "plantName" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -79,6 +64,7 @@ CREATE TABLE "Shop" (
     "shopId" UUID NOT NULL,
     "shopName" TEXT NOT NULL,
     "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
     "imageName" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
@@ -94,6 +80,7 @@ CREATE TABLE "MachineLine" (
     "machineLineName" TEXT NOT NULL,
     "machineLineDescription" TEXT NOT NULL,
     "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
     "imageName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -107,7 +94,9 @@ CREATE TABLE "Machine" (
     "machineId" UUID NOT NULL,
     "machineName" TEXT NOT NULL,
     "machineDescription" TEXT NOT NULL,
+    "machineNumber" TEXT NOT NULL DEFAULT '',
     "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
     "imageName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -122,6 +111,7 @@ CREATE TABLE "Element" (
     "elementName" TEXT NOT NULL,
     "elementDescription" TEXT NOT NULL,
     "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
     "imageName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
@@ -131,21 +121,18 @@ CREATE TABLE "Element" (
 );
 
 -- CreateTable
-CREATE TABLE "_AdminToGroup" (
-    "A" UUID NOT NULL,
-    "B" UUID NOT NULL
-);
+CREATE TABLE "Sensor" (
+    "sensor_Id" UUID NOT NULL,
+    "sensorId" TEXT NOT NULL,
+    "sensorDescription" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
+    "imageKey" TEXT NOT NULL DEFAULT '',
+    "imageName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "elementId" UUID NOT NULL,
 
--- CreateTable
-CREATE TABLE "_AdminToOrganization" (
-    "A" UUID NOT NULL,
-    "B" UUID NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "_AdminToPlant" (
-    "A" UUID NOT NULL,
-    "B" UUID NOT NULL
+    CONSTRAINT "Sensor_pkey" PRIMARY KEY ("sensor_Id")
 );
 
 -- CreateTable
@@ -167,15 +154,6 @@ CREATE TABLE "_UserToPlant" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Admin_userName_key" ON "Admin"("userName");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Admin_employeeId_key" ON "Admin"("employeeId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
-
--- CreateIndex
 CREATE UNIQUE INDEX "User_userName_key" ON "User"("userName");
 
 -- CreateIndex
@@ -188,22 +166,25 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Group_groupName_key" ON "Group"("groupName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_AdminToGroup_AB_unique" ON "_AdminToGroup"("A", "B");
+CREATE UNIQUE INDEX "Plant_imageKey_key" ON "Plant"("imageKey");
 
 -- CreateIndex
-CREATE INDEX "_AdminToGroup_B_index" ON "_AdminToGroup"("B");
+CREATE UNIQUE INDEX "Shop_imageKey_key" ON "Shop"("imageKey");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_AdminToOrganization_AB_unique" ON "_AdminToOrganization"("A", "B");
+CREATE UNIQUE INDEX "MachineLine_imageKey_key" ON "MachineLine"("imageKey");
 
 -- CreateIndex
-CREATE INDEX "_AdminToOrganization_B_index" ON "_AdminToOrganization"("B");
+CREATE UNIQUE INDEX "Machine_imageKey_key" ON "Machine"("imageKey");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_AdminToPlant_AB_unique" ON "_AdminToPlant"("A", "B");
+CREATE UNIQUE INDEX "Element_imageKey_key" ON "Element"("imageKey");
 
 -- CreateIndex
-CREATE INDEX "_AdminToPlant_B_index" ON "_AdminToPlant"("B");
+CREATE UNIQUE INDEX "Sensor_sensorId_key" ON "Sensor"("sensorId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Sensor_imageKey_key" ON "Sensor"("imageKey");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserToGroup_AB_unique" ON "_UserToGroup"("A", "B");
@@ -242,22 +223,7 @@ ALTER TABLE "Machine" ADD CONSTRAINT "Machine_machineLineId_fkey" FOREIGN KEY ("
 ALTER TABLE "Element" ADD CONSTRAINT "Element_machineId_fkey" FOREIGN KEY ("machineId") REFERENCES "Machine"("machineId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_AdminToGroup" ADD CONSTRAINT "_AdminToGroup_A_fkey" FOREIGN KEY ("A") REFERENCES "Admin"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_AdminToGroup" ADD CONSTRAINT "_AdminToGroup_B_fkey" FOREIGN KEY ("B") REFERENCES "Group"("groupId") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_AdminToOrganization" ADD CONSTRAINT "_AdminToOrganization_A_fkey" FOREIGN KEY ("A") REFERENCES "Admin"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_AdminToOrganization" ADD CONSTRAINT "_AdminToOrganization_B_fkey" FOREIGN KEY ("B") REFERENCES "Organization"("organizationId") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_AdminToPlant" ADD CONSTRAINT "_AdminToPlant_A_fkey" FOREIGN KEY ("A") REFERENCES "Admin"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_AdminToPlant" ADD CONSTRAINT "_AdminToPlant_B_fkey" FOREIGN KEY ("B") REFERENCES "Plant"("plantId") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Sensor" ADD CONSTRAINT "Sensor_elementId_fkey" FOREIGN KEY ("elementId") REFERENCES "Element"("elementId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserToGroup" ADD CONSTRAINT "_UserToGroup_A_fkey" FOREIGN KEY ("A") REFERENCES "Group"("groupId") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -16,6 +16,11 @@ export class MachineDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  machineNumber: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   machineDescription: string;
 
   @ApiProperty()
@@ -55,6 +60,11 @@ export class CreateMachineDto {
   @IsString()
   @IsNotEmpty()
   machineDescription: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  machineNumber: string;
 
   @ApiProperty()
   @IsString()
@@ -103,6 +113,12 @@ export class UpdateMachineDto {
 
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  machineNumber: string;
+
+  @ApiProperty()
+  @IsString()
   @IsOptional()
   @IsNotEmpty()
   image?: string;
@@ -124,6 +140,19 @@ export class MachineResponseDto {
 
   @Type(() => MachineDto)
   message?: MachineDto;
+  Error?: string;
+  meta?: any;
+
+  constructor(partial: Partial<MachineResponseDto>) {
+    Object.assign(this, partial);
+  }
+}
+
+export class MachineResponseDtoForGetByPlantId {
+  statusCode: number;
+
+  @Type(() => MachineDto)
+  message?: MachineDto[];
   Error?: string;
   meta?: any;
 

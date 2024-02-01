@@ -346,11 +346,14 @@ export class SensorService {
 
   async getSensorDetailsByPlantId(
     plantId: string,
+    page: number,
+    limit: number,
+    sort: string,
   ): Promise<SensorResponseDtoForSensorPage> {
     let plant: any;
 
     try {
-      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      const sensorCount = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: { plantId: plantId },
         include: {
           shops: {
@@ -362,6 +365,37 @@ export class SensorService {
                       elements: {
                         include: {
                           sensors: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      plant = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+        where: { plantId: plantId },
+        include: {
+          shops: {
+            include: {
+              machineLines: {
+                include: {
+                  machines: {
+                    include: {
+                      elements: {
+                        include: {
+                          sensors: {
+                            orderBy: [
+                              {
+                                createdAt: sort,
+                              },
+                            ],
+                            skip: (page - 1) * limit,
+                            take: limit,
+                          },
                         },
                       },
                     },
@@ -395,11 +429,25 @@ export class SensorService {
           }
         }
       }
+
+      const sensor = sensorCount?.shops?.flatMap((shop) =>
+        shop?.machineLines?.flatMap((machineLine) =>
+          machineLine?.machines?.flatMap((machine) =>
+            machine?.elemnets?.flatMap((element) => element?.sensors),
+          ),
+        ),
+      );
       console.log('resultDetails', resultDetails);
       if (resultDetails) {
         return {
           statusCode: HttpStatus.OK,
           message: resultDetails,
+          meta: {
+            current_page: page,
+            item_count: limit,
+            total_items: sensor?.length || 0,
+            totalPage: Math.ceil((sensor?.length || 0) / limit),
+          },
         };
       } else {
         return {

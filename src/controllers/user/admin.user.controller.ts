@@ -67,7 +67,7 @@ export class UserSeedController {
         //       },
         //     };
         //   }
-        if (seedDto.userData.role === Role.ADMIN) {
+        if (seedDto.userData.role === Role.SUPERADMIN) {
           const result = await this.userService.createUser({
             userName: seedDto.userData.userName,
             name: seedDto.userData.name,
