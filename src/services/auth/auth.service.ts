@@ -49,7 +49,7 @@ export class AuthService {
       clientId: 'Omnex',
       role: user.role,
       organization: user.organization[0].organizationId,
-      plant: user.plants.length ? user.plants[0].plantId : "",
+      plant: user.plants.length ? user.plants.map(plant => plant.plantId) : [],
     };
     console.log('PayloadDetails:', payload);
     const accessToken = this.jwtService.sign(

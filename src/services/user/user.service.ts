@@ -321,6 +321,7 @@ export class UserService {
         ...data,
       };
       let updatedData: any;
+      
       user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId },
         include: {
@@ -330,17 +331,17 @@ export class UserService {
         },
       });
       if (user) {
-        if (user?.plants?.length && userData?.plants?.connect?.length) {
-          userData = {
-            ...userData,
-            plants: {
-              disconnect: user.plants.map((plant) => ({
-                plantId: plant.plantId,
-              })),
-              ...userData.plants,
-            },
-          };
-        }
+        // if (user?.plants?.length && userData?.plants?.connect?.length) {
+        //   userData = {
+        //     ...userData,
+        //     plants: {
+        //       disconnect: user.plants.map((plant) => ({
+        //         plantId: plant.plantId,
+        //       })),
+        //       ...userData.plants,
+        //     },
+        //   };
+        // }
         if (user?.groups?.length && userData?.groups?.connect?.length) {
           userData = {
             ...userData,
