@@ -337,7 +337,7 @@ export class ElementService {
               const machineDetails = machineLineDetailes.machines[k];
               for (let l = 0; l < machineDetails.elements.length; l++) {
                 const elementDetails = machineDetails.elements[l];
-                resultDetails.push({ elementDetails });
+                resultDetails.push(elementDetails);
               }
             }
           }

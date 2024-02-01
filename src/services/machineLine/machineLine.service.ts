@@ -348,7 +348,7 @@ export class MachineLineService {
           const shopsDetails = plant.shops[i];
           for (let j = 0; j < shopsDetails.machineLines.length; j++) {
             machineLineDetailes = shopsDetails.machineLines[j];
-            resultDetails.push({ machineLineDetailes });
+            resultDetails.push(machineLineDetailes);
           }
         }
       }

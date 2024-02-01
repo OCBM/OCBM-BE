@@ -387,7 +387,7 @@ export class MachineService {
             const machineLineDetailes = shopsDetails.machineLines[j];
             for (let k = 0; k < machineLineDetailes.machines.length; k++) {
               const machineDetails = machineLineDetailes.machines[k];
-              resultDetails.push({ machineDetails });
+              resultDetails.push(machineDetails );
             }
           }
         }
