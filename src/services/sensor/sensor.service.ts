@@ -426,6 +426,11 @@ export class SensorService {
                     sensorId: sensorDetails.sensorId,
                     sensorDescription: sensorDetails.sensorDescription,
                     image: sensorDetails.image,
+                    elementId: sensorDetails.elementId,
+                    machineId: elementDetails.machineId,
+                    machineLineId: machineDetails.machineLineId,
+                    shopId: machineLineDetailes.shopId,
+                    plantId: shopsDetails.plantId,
                   });
                 }
               }
