@@ -115,23 +115,23 @@ export class PlantService {
 
   async getAllPlantsByUser(userId: any): Promise<PlantResponseDto> {
     try {
+      // const user = await this.prismaDynamic.findUnique(TABLES.USER, {
+      //   where: { userId: userId },
+      //   include: { plants: true },
+      // });
+
       const user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId: userId },
         include: { plants: true },
       });
-
-      const admin = await this.prismaDynamic.findUnique(TABLES.ADMIN, {
-        where: { userId: userId },
-        include: { plants: true },
-      });
-      if (!user && !admin) {
-        return {
-          statusCode: HttpStatus.BAD_REQUEST,
-          Error: APP_CONSTANTS.THERE_IS_NO_USER_AND_ADMIN,
-        };
-      }
-      const plants = user?.plants || admin?.plants;
-      if (plants?.length) {
+      // if (!user) {
+      //   return {
+      //     statusCode: HttpStatus.BAD_REQUEST,
+      //     Error: APP_CONSTANTS.THERE_IS_NO_USER_AND_ADMIN,
+      //   };
+      // }
+      const plants = user?.plants;
+      if (plants.length > 0) {
         return {
           statusCode: HttpStatus.OK,
           message: plants,
