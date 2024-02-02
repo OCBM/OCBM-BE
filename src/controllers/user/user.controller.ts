@@ -76,13 +76,13 @@ export class UserController {
     @Req() request: Request | any,
   ): Promise<UserResponseDto> {
     try {
-      if(request.user.role === Role.SUPERADMIN){
+      if (request.user.role === Role.SUPERADMIN) {
         return this.userService.getAllUsersbyToken(
           page,
           limit,
           search,
           sort,
-          request.user
+          request.user,
         );
       } else {
         return this.userService.getUsersbyToken(
@@ -90,10 +90,9 @@ export class UserController {
           limit,
           search,
           sort,
-          request.user
-        )
+          request.user,
+        );
       }
-     
     } catch (e) {
       console.log(e);
     }
@@ -253,15 +252,17 @@ export class UserController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() req: Request | any,
   ) {
-
-    let user: UserResponseDto = await this.userService.getUserById(id);
+    const user: UserResponseDto = await this.userService.getUserById(id);
     if (req.user.role === Role.USER) {
       throw new HttpException(
         APP_CONSTANTS.PERMISSION_DENIED,
         HttpStatus.FORBIDDEN,
       );
     } else if (req.user.role === Role.ADMIN) {
-      if (user.message.role === Role.ADMIN || user.message.role === Role.SUPERADMIN) {
+      if (
+        user.message.role === Role.ADMIN ||
+        user.message.role === Role.SUPERADMIN
+      ) {
         throw new HttpException(
           APP_CONSTANTS.PERMISSION_DENIED,
           HttpStatus.FORBIDDEN,
