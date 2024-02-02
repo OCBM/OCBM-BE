@@ -44,7 +44,8 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  groups: any;
+  @IsOptional()
+  groups?: any;
 
   @IsNotEmpty()
   @ApiProperty()

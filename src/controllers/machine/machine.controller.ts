@@ -47,8 +47,8 @@ export class MachineController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -180,8 +180,8 @@ export class MachineController {
     );
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'machineLineId',
@@ -262,8 +262,8 @@ export class MachineController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/machineLineId=:machineLineId&machineId=:machineId')
   @ApiParam({
@@ -331,6 +331,11 @@ export class MachineController {
     @Query('sort') sort: Sort,
   ): Promise<MachineResponseDtoForGetByPlantId> {
     console.log('test', plantId);
-    return this.machineService.getMachineDetailsByPlantId(plantId, page, limit, sort);
+    return this.machineService.getMachineDetailsByPlantId(
+      plantId,
+      page,
+      limit,
+      sort,
+    );
   }
 }

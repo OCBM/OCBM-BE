@@ -13,7 +13,7 @@ import {
   Param,
   ParseUUIDPipe,
   UseGuards,
-  Delete,
+  //Delete,
 } from '@nestjs/common';
 import { ApiTags, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { OrganizationService } from '@/services';
@@ -52,8 +52,8 @@ export class OrganizationController {
     return this.organizationService.getOrganizationById(id);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'id',
@@ -69,15 +69,15 @@ export class OrganizationController {
     });
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
-  @ApiBearerAuth('access-token')
-  @Delete('/:id')
-  @ApiParam({
-    name: 'id',
-    required: true,
-  })
-  async deleteOrganization(@Param('id', ParseUUIDPipe) id: string) {
-    return this.organizationService.deleteOrganization(id);
-  }
+  // // @Roles(Role.ADMIN)
+  // // @UseGuards(RolesGuard)
+  // @ApiBearerAuth('access-token')
+  // @Delete('/:id')
+  // @ApiParam({
+  //   name: 'id',
+  //   required: true,
+  // })
+  // async deleteOrganization(@Param('id', ParseUUIDPipe) id: string) {
+  //   return this.organizationService.deleteOrganization(id);
+  // }
 }

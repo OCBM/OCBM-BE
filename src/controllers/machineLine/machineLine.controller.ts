@@ -46,8 +46,8 @@ export class MachineLineController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -174,8 +174,8 @@ export class MachineLineController {
     );
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'shopId',
@@ -259,8 +259,8 @@ export class MachineLineController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/shopId=:shopId&machineLineId=:machineLineId')
   @ApiParam({
@@ -323,5 +323,4 @@ export class MachineLineController {
       sort,
     );
   }
-  
 }

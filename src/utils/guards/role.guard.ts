@@ -1,7 +1,13 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@/common/enum';
-import { DECORATOR_KEYS } from '@/common';
+import { APP_CONSTANTS, DECORATOR_KEYS } from '@/common';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -16,6 +22,16 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => role === request?.user?.role);
+    const havPermission = requiredRoles.some(
+      (role) => role === request?.user?.role,
+    );
+    if (havPermission) {
+      return true;
+    } else {
+      throw new HttpException(
+        APP_CONSTANTS.PERMISSION_DENIED,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
   }
 }
