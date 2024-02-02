@@ -32,7 +32,7 @@ import {
 } from '@nestjs/swagger';
 import { SensorService } from '@/services/sensor/sensor.service';
 import { Roles } from '@/decorator';
-import { APP_CONSTANTS, Role, Sort, TABLES } from '@/common';
+import { Role, Sort, TABLES } from '@/common';
 import { AwsService, PrismaService } from '@/services';
 import { IsEnum } from 'class-validator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -46,8 +46,8 @@ export class SensorController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -117,20 +117,22 @@ export class SensorController {
           statusCode: HttpStatus.BAD_REQUEST,
           Error: 'Element not Exists',
         };
-      } else {
+      }
+      //else {
+      //   delete data.elementId;
+      //   const sensorCheck = await this.sensorService.checkSensor({
+      //     sensorId: data.sensorId,
+      //   });
+      //   if (sensorCheck) {
+      //     throw new HttpException(
+      //       APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+      //       HttpStatus.BAD_REQUEST,
+      //     );
+      //   }
+      else {
         delete data.elementId;
-        const sensorCheck = await this.sensorService.checkSensor({
-          sensorId: data.sensorId,
-        });
-        if (sensorCheck) {
-          throw new HttpException(
-            APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
-            HttpStatus.BAD_REQUEST,
-          );
-        } else {
-          const result = await this.sensorService.createSensor(data);
-          return result;
-        }
+        const result = await this.sensorService.createSensor(data);
+        return result;
       }
     } catch (error) {
       throw new HttpException(error.message, error.status || 500);
@@ -182,8 +184,8 @@ export class SensorController {
     return this.sensorService.getSensorByElementId(elementId, sensorId);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'elementId',
@@ -258,8 +260,8 @@ export class SensorController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/elementId=:elementId&sensorId=:sensorId')
   @ApiParam({
@@ -291,8 +293,6 @@ export class SensorController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Get('/sensorId=:sensorId')
   @ApiParam({
@@ -300,14 +300,12 @@ export class SensorController {
     required: true,
   })
   async getDetailsbySensorId(
-    @Param('sensorId', ParseUUIDPipe) sensorId: string,
+    @Param('sensorId') sensorId: string,
   ): Promise<SensorResponseDto> {
     console.log('test', sensorId);
     return this.sensorService.getElementsbySensorId(sensorId);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiQuery({
     name: 'sort',

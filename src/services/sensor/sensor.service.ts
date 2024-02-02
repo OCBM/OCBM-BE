@@ -13,29 +13,29 @@ import { APP_CONSTANTS, PrismaValidation, TABLES } from '@/common';
 export class SensorService {
   constructor(private readonly prismaDynamic: PrismaService) {}
 
-  async checkSensor(data: any): Promise<any> {
-    try {
-      const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
-        where: { sensorId: data.sensorId },
-      });
-      const resultData = data.sensorId.toLowerCase();
+  // async checkSensor(data: any): Promise<any> {
+  //   try {
+  //     const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+  //       where: { sensorId: data.sensorId },
+  //     });
+  //     const resultData = data.sensorId.toLowerCase();
 
-      if (checkSensor?.sensorId === resultData) {
-        return true;
-      }
-    } catch (error) {
-      console.log(error);
-      if (
-        error.response.code ||
-        error.response === PrismaValidation.ALREADY_EXITS
-      ) {
-        throw new HttpException(
-          APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-  }
+  //     if (checkSensor?.sensorId === resultData) {
+  //       return true;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     if (
+  //       error.response.code ||
+  //       error.response === PrismaValidation.ALREADY_EXITS
+  //     ) {
+  //       throw new HttpException(
+  //         APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+  //         HttpStatus.BAD_REQUEST,
+  //       );
+  //     }
+  //   }
+  // }
 
   async createSensor(
     data: Prisma.SensorCreateInput,
@@ -46,7 +46,7 @@ export class SensorService {
       });
 
       const resultData = {
-        sensorId: data.sensorId.toLowerCase(),
+        sensorId: data.sensorId,
         sensorDescription: data.sensorDescription,
         image: data.image,
         imageKey: data.imageKey,
@@ -54,6 +54,10 @@ export class SensorService {
         elementId: data.elements.connect.elementId,
       };
       if (checkSensor?.sensorId === resultData.sensorId) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          Error: APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+        };
       } else {
         const sensor = await this.prismaDynamic.create(
           TABLES.SENSOR,
@@ -422,6 +426,11 @@ export class SensorService {
                     sensorId: sensorDetails.sensorId,
                     sensorDescription: sensorDetails.sensorDescription,
                     image: sensorDetails.image,
+                    elementId: sensorDetails.elementId,
+                    machineId: elementDetails.machineId,
+                    machineLineId: machineDetails.machineLineId,
+                    shopId: machineLineDetailes.shopId,
+                    plantId: shopsDetails.plantId,
                   });
                 }
               }

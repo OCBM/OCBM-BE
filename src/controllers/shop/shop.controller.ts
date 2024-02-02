@@ -45,8 +45,8 @@ export class ShopController {
     private readonly prismaDynamic: PrismaService,
     private readonly awsService: AwsService,
   ) {}
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -174,8 +174,8 @@ export class ShopController {
     return this.shopService.getShopByPlantId(plantId, shopId);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'plantId',
@@ -253,8 +253,8 @@ export class ShopController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/plantId=:plantId&shopId=:shopId')
   @ApiParam({

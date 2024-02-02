@@ -116,43 +116,43 @@ export class OrganizationService {
     }
   }
 
-  async deleteOrganization(organizationId: string) {
-    try {
-      // let organization: any;
+  // async deleteOrganization(organizationId: string) {
+  //   try {
+  //     // let organization: any;
 
-      const organization = await this.prismaDynamic.findUnique(
-        TABLES.ORGANIZATION,
-        {
-          where: { organizationId },
-        },
-      );
-      if (!organization) {
-        throw new HttpException(
-          APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
-          HttpStatus.BAD_REQUEST,
-        );
-      } else {
-        await this.prismaDynamic.delete(TABLES.ORGANIZATION, {
-          where: { organizationId },
-        });
-      }
+  //     const organization = await this.prismaDynamic.findUnique(
+  //       TABLES.ORGANIZATION,
+  //       {
+  //         where: { organizationId },
+  //       },
+  //     );
+  //     if (!organization) {
+  //       throw new HttpException(
+  //         APP_CONSTANTS.ORGANIZATION_NOT_EXISTS,
+  //         HttpStatus.BAD_REQUEST,
+  //       );
+  //     } else {
+  //       await this.prismaDynamic.delete(TABLES.ORGANIZATION, {
+  //         where: { organizationId },
+  //       });
+  //     }
 
-      return {
-        statusCode: HttpStatus.OK,
-        message: APP_CONSTANTS.ORGANIZATION_DELETED_SUCCESFULLY,
-      };
-    } catch (error) {
-      if (error.response.code === PrismaValidation.FOREIGN_KEY) {
-        throw new HttpException(
-          APP_CONSTANTS.UNABLE_TO_DELETE_ORGANIZATION,
-          HttpStatus.BAD_REQUEST,
-        );
-      } else {
-        throw new HttpException(
-          APP_CONSTANTS.FAILED_TO_DELETE_ORGANIZATION,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
-  }
+  //     return {
+  //       statusCode: HttpStatus.OK,
+  //       message: APP_CONSTANTS.ORGANIZATION_DELETED_SUCCESFULLY,
+  //     };
+  //   } catch (error) {
+  //     if (error.response.code === PrismaValidation.FOREIGN_KEY) {
+  //       throw new HttpException(
+  //         APP_CONSTANTS.UNABLE_TO_DELETE_ORGANIZATION,
+  //         HttpStatus.BAD_REQUEST,
+  //       );
+  //     } else {
+  //       throw new HttpException(
+  //         APP_CONSTANTS.FAILED_TO_DELETE_ORGANIZATION,
+  //         HttpStatus.INTERNAL_SERVER_ERROR,
+  //       );
+  //     }
+  //   }
+  // }
 }

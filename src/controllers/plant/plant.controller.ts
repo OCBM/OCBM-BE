@@ -49,8 +49,8 @@ export class PlantController {
     private readonly awsService: AwsService,
     private readonly userService: UserService,
   ) {}
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Post('/')
   @UseInterceptors(FileInterceptor('image'))
@@ -164,9 +164,8 @@ export class PlantController {
     }
   }
 
+
   @ApiBearerAuth('access-token')
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
   @ApiQuery({
     name: 'sort',
     enum: Sort,
@@ -220,8 +219,8 @@ export class PlantController {
     return this.plantService.getPlantByOrganizationId(organizationId, plantId);
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiParam({
     name: 'organizationId',
@@ -309,8 +308,8 @@ export class PlantController {
     }
   }
 
-  // @Roles(Role.ADMIN)
-  // @UseGuards(RolesGuard)
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(RolesGuard)
   @ApiBearerAuth('access-token')
   @Delete('/organizationId=:organizationId&plantId=:plantId')
   @ApiParam({

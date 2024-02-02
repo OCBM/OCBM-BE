@@ -22,14 +22,7 @@ import {
 } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';
 import { IsEnum } from 'class-validator';
-import {
-  Role,
-  BCRYPT_SALT_ROUNDS,
-  Sort,
-  APP_CONSTANTS,
-  UserData,
-} from '@/common';
-import { Roles } from '@/decorator';
+import { Role, BCRYPT_SALT_ROUNDS, Sort, APP_CONSTANTS } from '@/common';
 import { UserService } from '@/services';
 import {
   CreateUserDto,
@@ -126,7 +119,6 @@ export class UserController {
     return this.userService.getUserById(id);
   }
 
-  // @Roles(Role.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiBody({
     type: CreateUserDto,
