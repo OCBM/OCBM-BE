@@ -1,5 +1,7 @@
 # CLOUD SETUP
 
+- chmod 600 ec2-keypair.pem // access permission
+
 ## Connect with SSH
 
 - Navigate to folder containing .pem
