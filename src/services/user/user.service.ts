@@ -79,17 +79,31 @@ export class UserService {
     userdetails: any,
   ): Promise<any> {
     let users: any;
-    console.log(userdetails, 'hello');
     try {
-      users = await this.prismaDynamic.findUnique(TABLES.PLANT, {
+      users = await this.prismaDynamic.findMany(TABLES.PLANT, {
         where: {
-          plantId: userdetails.plants[0].plantId,
+          plantId: {
+            in: userdetails.plants?.length
+              ? userdetails.plants.map((plant) => plant.plantId)
+              : [],
+          },
         },
+        // where: {
+        //   plantId: userdetails.plants.length
+        //     ? userdetails.plants.Map((plant) => plant.plantId)
+        //     : [],
+        // },
         include: {
           users: true,
         },
       });
-      let filteredUsers: any = users.users.filter((user) =>
+      const resultDetails = [];
+      for (let i = 0; i < users.length; i++) {
+        const check = users[i];
+
+        resultDetails.push(...check.users);
+      }
+      let filteredUsers: any = resultDetails.filter((user) =>
         user.name.toLowerCase().includes(search.toLowerCase()),
       );
       filteredUsers.sort((a, b) => {
@@ -100,12 +114,13 @@ export class UserService {
       filteredUsers = filteredUsers.slice((page - 1) * limit, limit);
       return {
         statusCode: HttpStatus.OK,
-        message: filteredUsers.map((user: UserData) => new UserDto(user)),
+        // message: filteredUsers.map((user: UserData) => new UserDto(user)),
+        message: filteredUsers,
         meta: {
           current_page: page,
           item_count: limit,
-          total_items: users.users.length,
-          totalPage: Math.ceil(users.users.length / limit),
+          total_items: resultDetails.length,
+          totalPage: Math.ceil(resultDetails.length / limit),
         },
       };
     } catch (e) {
