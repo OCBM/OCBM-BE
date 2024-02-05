@@ -307,6 +307,7 @@ export class MachineService {
             const sensorDetails = elementDetails.sensors[m];
             resultDetails.push({
               machine: machine.machineName,
+              machineNumber: machine.machineNumber,
               element: elementDetails.elementName,
               sensorId: sensorDetails.sensorId,
               sensorDescription: sensorDetails.sensorDescription,

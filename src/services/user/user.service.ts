@@ -25,11 +25,23 @@ export class UserService {
     limit: number = 10,
     search: string,
     sort: string,
-    orgId: any,
+    userData: any,
   ): Promise<any> {
     let users: UserData[];
+
     try {
       users = await this.prismaDynamic.findMany(TABLES.USER, {
+        where: {
+          organization: {
+            every: {
+              organizationId: {
+                in: userData.organization.map(
+                  (organization) => organization.organizationId,
+                ),
+              },
+            },
+          },
+        },
         include: {
           organization: true,
           plants: true,
@@ -321,7 +333,7 @@ export class UserService {
         ...data,
       };
       let updatedData: any;
-      
+
       user = await this.prismaDynamic.findUnique(TABLES.USER, {
         where: { userId },
         include: {
