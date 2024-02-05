@@ -21,7 +21,7 @@ export class AuthService {
       include: {
         groups: true,
         organization: true,
-        plants: true
+        plants: true,
       },
     });
 
