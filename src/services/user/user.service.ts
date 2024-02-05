@@ -83,17 +83,8 @@ export class UserService {
     try {
       users = await this.prismaDynamic.findUnique(TABLES.PLANT, {
         where: {
-          plantId: {
-            in: userdetails.plants?.length
-              ? userdetails.plants.Map((plant) => plant.plantId)
-              : [],
-          },
+          plantId: userdetails.plants[0].plantId,
         },
-        // where: {
-        //   plantId: userdetails.plants.length
-        //     ? userdetails.plants.Map((plant) => plant.plantId)
-        //     : [],
-        // },
         include: {
           users: true,
         },
