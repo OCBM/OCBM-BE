@@ -60,6 +60,7 @@ export class SensorController {
       required: [
         'sensorId',
         'sensorDescription',
+        'sensorLabel',
         'elementId',
         'imageName',
         'image',
@@ -69,6 +70,9 @@ export class SensorController {
           type: 'string',
         },
         sensorDescription: {
+          type: 'string',
+        },
+        sensorLabel:{
           type: 'string',
         },
         imageName: {

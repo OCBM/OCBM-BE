@@ -129,6 +129,7 @@ model Sensor {
   sensor_Id         String    @id @default(uuid()) @db.Uuid
   sensorId          String    @unique
   sensorDescription String
+  sensorLabel       String
   image             String
   imageKey          String    @unique @default("")
   imageName         String
