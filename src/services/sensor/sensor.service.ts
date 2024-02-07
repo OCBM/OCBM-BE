@@ -48,7 +48,7 @@ export class SensorService {
       const resultData = {
         sensorId: data.sensorId,
         sensorDescription: data.sensorDescription,
-        sensorLabel:data.sensorLabel,
+        sensorLabel: data.sensorLabel,
         image: data.image,
         imageKey: data.imageKey,
         imageName: data.imageName,
@@ -426,6 +426,7 @@ export class SensorService {
                   resultDetails.push({
                     sensorId: sensorDetails.sensorId,
                     sensorDescription: sensorDetails.sensorDescription,
+                    sensorLabel: sensorDetails.sensorLabel,
                     image: sensorDetails.image,
                     elementId: sensorDetails.elementId,
                     machineId: elementDetails.machineId,
