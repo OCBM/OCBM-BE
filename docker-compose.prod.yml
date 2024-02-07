@@ -24,11 +24,27 @@ services:
     # command: /bin/bash -c "npm run prisma:migrate"
     volumes:
       - storage:/storage
-    ports:
-      - 9160:4000
+    expose:
+      - 4000
+    # ports:
+    #   - 9160:4000
     depends_on:
       - ocbm-be-db
     env_file: .env.prod
+    networks:
+      - ocbm-be-network
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certificates/ssl:/etc/nginx/certs
+    ports:
+      - "9160:443"
+      - "443:443"
+      # - "3001-3999:3001-3999"
+    depends_on:
+      - ocbm-be-server
     networks:
       - ocbm-be-network
 
