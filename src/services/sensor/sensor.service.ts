@@ -48,6 +48,7 @@ export class SensorService {
       const resultData = {
         sensorId: data.sensorId,
         sensorDescription: data.sensorDescription,
+        sensorLabel:data.sensorLabel,
         image: data.image,
         imageKey: data.imageKey,
         imageName: data.imageName,

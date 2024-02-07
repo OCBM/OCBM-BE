@@ -20,6 +20,12 @@ export class SensorDto {
 
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  sensorLabel: string;
+
+  @ApiProperty()
+  @IsString()
   @IsOptional()
   @IsNotEmpty()
   image: string;
@@ -73,6 +79,12 @@ export class CreateSensorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
+  sensorLabel: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   imageName: string;
 
   @ApiProperty()
@@ -117,6 +129,12 @@ export class UpdateSensorDto {
   @IsString()
   @IsOptional()
   imageKey?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  sensorLabel: string;
 
   @ApiProperty()
   @IsString()
