@@ -311,6 +311,7 @@ export class MachineService {
               element: elementDetails.elementName,
               sensorId: sensorDetails.sensorId,
               sensorDescription: sensorDetails.sensorDescription,
+              sensorLabel: sensorDetails.sensorLabel,
             });
           }
         }
@@ -388,13 +389,13 @@ export class MachineService {
             const machineLineDetailes = shopsDetails.machineLines[j];
             for (let k = 0; k < machineLineDetailes.machines.length; k++) {
               const machineDetails = machineLineDetailes.machines[k];
-              resultDetails.push(machineDetails );
+              resultDetails.push(machineDetails);
             }
           }
         }
       }
-      const machine = machineCount?.shops?.flatMap(
-        (shop) => shop?.machineLines?.flatMap(machineLine => machineLine?.machines),
+      const machine = machineCount?.shops?.flatMap((shop) =>
+        shop?.machineLines?.flatMap((machineLine) => machineLine?.machines),
       );
       console.log('resultDetails', resultDetails);
       if (resultDetails) {

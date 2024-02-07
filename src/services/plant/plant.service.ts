@@ -404,6 +404,7 @@ export class PlantService {
                     element: elementDetails.elementName,
                     sensorId: sensorDetails.sensorId,
                     sensorDescription: sensorDetails.sensorDescription,
+                    sensorLabel: sensorDetails.sensorLabel,
                   });
                 }
               }
