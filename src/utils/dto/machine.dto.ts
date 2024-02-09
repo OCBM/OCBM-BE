@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsAlphanumeric, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class MachineDto {
   @ApiProperty()
@@ -64,6 +64,7 @@ export class CreateMachineDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  @IsAlphanumeric()
   machineNumber: string;
 
   @ApiProperty()

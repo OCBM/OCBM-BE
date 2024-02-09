@@ -21,6 +21,7 @@ import {
   HttpException,
   UploadedFile,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -72,7 +73,7 @@ export class SensorController {
         sensorDescription: {
           type: 'string',
         },
-        sensorLabel:{
+        sensorLabel: {
           type: 'string',
         },
         imageName: {
@@ -91,6 +92,7 @@ export class SensorController {
   async createSensor(
     @Body() sensorData: CreateSensorDto,
     @UploadedFile() file: Express.Multer.File,
+    @Req() request: Request | any,
   ) {
     try {
       const imageData = await this.awsService.uploadFile(file, 'sensors');
@@ -135,7 +137,7 @@ export class SensorController {
       //   }
       else {
         delete data.elementId;
-        const result = await this.sensorService.createSensor(data);
+        const result = await this.sensorService.createSensor(data, request);
         return result;
       }
     } catch (error) {

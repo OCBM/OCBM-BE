@@ -39,11 +39,41 @@ export class SensorService {
 
   async createSensor(
     data: Prisma.SensorCreateInput,
+    request: Request | any,
   ): Promise<SensorResponseDto> {
     try {
-      const checkSensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
-        where: { sensorId: data.sensorId },
-      });
+      console.log('request', request.user.organization[0].organizationId);
+      const checkSensor = await this.prismaDynamic.findUnique(
+        TABLES.ORGANIZATION,
+        {
+          where: {
+            organizationId: request.user.organization[0].organizationId,
+          },
+          include: {
+            plants: {
+              include: {
+                shops: {
+                  include: {
+                    machineLines: {
+                      include: {
+                        machines: {
+                          include: {
+                            elements: {
+                              include: {
+                                sensors: true,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      );
 
       const resultData = {
         sensorId: data.sensorId,
@@ -54,12 +84,45 @@ export class SensorService {
         imageName: data.imageName,
         elementId: data.elements.connect.elementId,
       };
-      if (checkSensor?.sensorId === resultData.sensorId) {
+
+      //console.log('CheckSensor', checkSensor);
+      const resultDetails = [];
+      if (checkSensor.plants.length > 0) {
+        for (let i = 0; i < checkSensor.plants.length; i++) {
+          const plantDetails = checkSensor.plants[i];
+          for (let j = 0; j < plantDetails.shops.length; j++) {
+            const shopsDetails = plantDetails.shops[j];
+            for (let k = 0; k < shopsDetails.machineLines.length; k++) {
+              const machineLineDetailes = shopsDetails.machineLines[k];
+              for (let l = 0; l < machineLineDetailes.machines.length; l++) {
+                const machineDetails = machineLineDetailes.machines[l];
+                for (let m = 0; m < machineDetails.elements.length; m++) {
+                  const elementDetails = machineDetails.elements[m];
+                  for (let n = 0; n < elementDetails.sensors.length; n++) {
+                    const sensorDetails = elementDetails.sensors[n];
+                    resultDetails.push({ sensorId: sensorDetails.sensorId });
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log('CheckSensor', resultDetails);
+
+      if (resultDetails.some((obj) => obj.sensorId === resultData.sensorId)) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
           Error: APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
         };
-      } else {
+      }
+      // if (checkSensor?.sensorId === resultData.sensorId) {
+      //   return {
+      //     statusCode: HttpStatus.BAD_REQUEST,
+      //     Error: APP_CONSTANTS.SENSOR_ALREADY_EXISTS,
+      //   };
+      //}
+      else {
         const sensor = await this.prismaDynamic.create(
           TABLES.SENSOR,
           resultData,
