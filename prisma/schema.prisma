@@ -127,7 +127,7 @@ model Element {
 
 model Sensor {
   sensor_Id         String    @id @default(uuid()) @db.Uuid
-  sensorId          String    @unique
+  sensorId          String    
   sensorDescription String
   sensorLabel       String
   image             String
