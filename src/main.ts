@@ -20,7 +20,9 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
-  // app.enableCors();
+  if (process.env.ENABLE_SERVER_CORS === 'true') {
+    app.enableCors();
+  }
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

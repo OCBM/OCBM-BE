@@ -383,7 +383,7 @@ export class SensorService {
     let sensor: any;
 
     try {
-      sensor = await this.prismaDynamic.findUnique(TABLES.SENSOR, {
+      sensor = await this.prismaDynamic.findfirst(TABLES.SENSOR, {
         where: { sensorId: sensorId },
         include: {
           elements: {
@@ -404,7 +404,7 @@ export class SensorService {
           Error: APP_CONSTANTS.NO_SENSOR,
         };
       }
-    } catch {
+    } catch (e) {
       throw new HttpException(
         APP_CONSTANTS.SENSOR_OR_ELEMENT_NOT_EXISTS,
         HttpStatus.BAD_REQUEST,
@@ -504,12 +504,15 @@ export class SensorService {
         }
       }
 
-      const sensor = sensorCount?.shops?.flatMap((shop) =>
-        shop?.machineLines?.flatMap((machineLine) =>
-          machineLine?.machines?.flatMap((machine) =>
-            machine?.elemnets?.flatMap((element) => element?.sensors),
+      const sensor = sensorCount?.shops?.flatMap(
+        (shop) =>
+          shop?.machineLines?.flatMap(
+            (machineLine) =>
+              machineLine?.machines?.flatMap(
+                (machine) =>
+                  machine?.elemnets?.flatMap((element) => element?.sensors),
+              ),
           ),
-        ),
       );
       console.log('resultDetails', resultDetails);
       if (resultDetails) {
